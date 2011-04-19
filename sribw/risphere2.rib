@@ -1,0 +1,9 @@
+##RenderMan RIB-Structure 1.0
+version 3.03
+Display "a.tif" "framebuffer" "rgba" 
+Format 250 250 1
+Projection "orthographic" 
+Translate 0 0 3.5
+Rotate 90 1 0 0
+Sphere 1 -1 1 360 "Cs" [0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1]
+##End of first tests.

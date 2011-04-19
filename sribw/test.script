@@ -1,0 +1,8 @@
+#!
+testbase | catrib > testbase.rib
+catrib risphere.rib > risphere1.rib
+testrib  | catrib > testrib.rib
+catrib risphere.rib > risphere2.rib
+diff testrib.rib testbase.rib
+echo '-----------------------------------'
+diff risphere1.rib risphere2.rib

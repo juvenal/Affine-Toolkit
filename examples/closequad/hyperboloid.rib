@@ -1,0 +1,19 @@
+Display "hyberboloid.tif" "file" "rgb"
+Format 250 250 1
+Clipping 0.001 1000
+Projection "perspective"
+Translate 0 0 5
+WorldBegin
+LightSource "distantlight" 1 "intensity" [1.0]
+LightSource "ambientlight" 2 "intensity" [0.3]
+Surface "paintedplastic" "texturename" ["grid2.tex"]
+Rotate 45 1 0 0 
+Rotate -55 0 0 1
+Hyperboloid -1 -1 -2  3 1 2 240
+#Sides 1
+#Rotate 65 1 0 0 
+#Hyperboloid 2.5 0 -2.5  -2.5 0 2.5  70
+#Hyperboloid 0 2.5 2.5  0 -2.5 2.5  70
+#Hyperboloid 0 2.5 -2.5  0 -2.5 2.5  70
+#Hyperboloid -1 -1 -2  3 1 2 0
+WorldEnd

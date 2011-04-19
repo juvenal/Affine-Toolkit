@@ -1,0 +1,109 @@
+<!--
+/* $RCSfile: rib.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  rib.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H1><CENTER>Affine RIB Utilities</CENTER></H1>
+<P>
+The following utilities are included in the Affine Toolkit:
+</P>
+<UL>
+<LI>
+<A HREF="./ribbish.html">ribbish</A>
+-- Filter RIB files for certain RIB calls.
+</LI>
+<LI>
+<A HREF="./ribdump.html">ribdump</A>
+-- Dump binary or ASCII uncompressed RIBs.  Useful for seeing 
+   how the encoding is done.
+</LI>
+<LI>
+<A HREF="./ribfixer.html">ribfixer</A>
+-- Touch-up and fix some problems with exported RIB files.
+</LI>
+<LI>
+ribobjmod  -- Convert NuPatch statements into WaveFront OBJ format.  
+              Functionality is very limited -- I only needed to write this
+              utility for one RIB file a while back.
+</LI>
+<LI>
+ribtree    -- Little demo program that creates toy-like trees.
+</LI>
+<LI>
+<A HREF="./snulen.html">snulen</A>
+-- Creates IEEE TIFF files that gives the arc length parametrization
+   of a NURB surface.  User specifies u or v direction.  I've been working
+   on three version.  One is the Simple NuPatch Arc Length tool called
+   snulen for short.  The others use adaptive subdivision and are much faster.
+   The snulen tool is provided in case someone is interested in a simple
+   algorithm -- which technically calculates a chord length and honestly is
+   quite slow.
+</LI>
+<LI>
+<A HREF="./tokentbl.html">tokentbl</A>
+-- Creates a table that can be used by certain functions to find tokens in a string
+   or file.
+</LI>
+<LI>
+typerib    -- Print RIB files as ASCII, binary, gzipped RIB files.
+</LI>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,129 @@
+
+
+                          RIBDUMP UTILITIES
+
+
+  Copyright (c) 1995, 1996 Thomas E. Burge.  All rights reserved.  
+  
+  Affine Toolkit
+ 
+          The RenderMan (R) Interface Procedures and Protocol are:
+                     Copyright 1988, 1989, Pixar
+                         All Rights Reserved
+ 
+              Renderman (R) is a registered trademark of Pixar
+
+RIBDUMP
+-------
+
+Prints a rib file in the format shown on page 165 of the RenderMan 
+Specification.  Ribdump provides an easy way to test binary RIB
+file utilities and is included in the Affine Toolkit to help 
+answer questions about the binary format.
+
+Example:
+
+ ribdump bin.rib
+
+   #    #    R    e    n    d    e    r   # ##Render
+   M    a    n  040    R    I    B   \n   # Man RIB\n
+   v    e    r    s    i    o    n  212   # version
+ 003  007  256    D    i    s    p    l   # 3.03 Displ
+   a    y  315  000  225    a    .    t   # ay <defstr 0 "a.t
+   i    f  317  000  315  001  233    f   # if"> <str 0> <defstr 1 "f
+   r    a    m    e    b    u    f    f   # ramebuff
+   e    r  317  001  315  002  224    r   # er"> <str 1> <defstr 2 "r
+   g    b    a  317  002    F    o    r   # gba"> <str 2> For
+   m    a    t  201  000  310  201  000   # mat 200
+ -----(The output continues, but was cut here)-----
+
+HEX2BIN/OCT2BIN
+---------------
+
+Takes a series of numbers written as ASCII hex/octal values and outputs
+a binary file where each hex/octal value is converted into a binary
+character from 0 to 255.
+
+BIN2HEX/BIN2OCT
+---------------
+
+Takes a binary file and outputs a series of numbers written as ASCII 
+hex/octal values.  
+
+Example:
+  
+  bin2oct bin.rib
+
+  043  043  122  145  156  144  145  162  
+  115  141  156  040  122  111  102  012  
+  166  145  162  163  151  157  156  212  
+  003  007  256  104  151  163  160  154  
+ -----(The output continues, but was cut here)-----
+
+Basically acts like the od utility provided on some UNIX systems.
+
+
+DBL2OCT/FLT2OCT/STR2OCT
+-----------------------
+
+Utilities such as flt2oct show how a float can be stored in an encoded
+format.  The following command shows what the number 12345.0
+looks like when encoded:
+
+          flt2oct 12345.0
+
+The following is the output from flt2oct 12345.0:
+          201  060  071  
+
+The 201 060 071 are three octal numbers that represent the three bytes used
+to store the number 12345.
+
+To see both octal and a more readable decimal format, pipe the output from 
+flt2oct through oct2bin and then to ribdump:
+
+          flt2oct 12345 | oct2bin | ribdump
+
+The following output was printed:
+
+          201  060  071                            # 12345
+
+Some more examples:
+-------------------
+
+echo 244 075 006 067 275 | oct2bin | ribdump
+244  075  006  067  275                  # 0.032768
+
+echo 211 010 143 201 | oct2bin | ribdump
+211  010  143  201                       # 0.0327606
+
+echo 211 254 036 | oct2bin | ribdump
+211  254  036                            # -0.327667
+
+echo 216 254 035 052 | oct2bin | ribdump
+216  254  035  052                       # -0.32768
+
+flt2oct 234 0.035 -0.01 0.01 3.1415927
+201  000  352  
+211  010  365  
+244  274  043  327  012  
+244  074  043  327  012  
+212  003  044  077  
+
+flt2oct 234 0.035 -0.01 3.1415927 | oct2bin | ribdump
+201  000  352  211  010  365  244  274   # 234 0.0349884 
+043  327  012  212  003  044  077        # -0.01 3.14159
+
+dbl2oct 234 0.035 -0.01 3.1415927 | oct2bin | ribdump
+245  100  155  100  000  000  000  000   # 
+000  245  077  241  353  205  036  270   # 234 
+121  354  245  277  204  172  341  107   # 0.035 
+256  024  173  245  100  011  041  373   # -0.01 
+132  176  321  227                       # 3.14159
+
+dbl2oct 0.0000000001
+245  075  333  174  337  331  327  275  273  
+
+dbl2oct 0.0000000001 | oct2bin | ribdump
+245  075  333  174  337  331  327  275   # 
+273                                      # 1e-10
+

@@ -1,0 +1,97 @@
+# $RCSfile: config.mak.sgi32,v $  $Revision: 1.5 $ $Date: 2000/02/29 07:44:48 $
+# 
+# Copyright (c) 2000 Thomas E. Burge.  All rights reserved.
+# 
+# Affine (R) is a registered trademark of Thomas E. Burge
+#
+# THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+# AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+# PARTICULAR PURPOSE.  
+#
+# In no event shall Thomas E. Burge be liable for any indirect or
+# consequential damages or loss of data resulting from use or performance 
+# of this software.
+# 
+# Permission is granted to include compiled versions of this code in
+# noncommercially sold software provided the following copyrights and
+# notices appear in all software and any related documentation:
+#
+#                The Affine (R) Libraries and Tools are 
+#    Copyright (c) 1995, 1996, 1997, 1998, 1999, 2000 Thomas E. Burge.  
+#                          All rights reserved.
+#        Affine (R) is a registered trademark of Thomas E. Burge.
+#
+# Also refer to any additional requirements presently set by Pixar 
+# in regards to the RenderMan (R) Interface Procedures and Protocol.
+#
+# Those wishing to distribute this software commercially and those wishing 
+# to redistribute the source code must get written permission from the 
+# author, Thomas E. Burge.  
+#
+# Basically for now, I would like folks to get the source code directly 
+# from me rather than to have a bunch of different versions circulating
+# about.
+#
+# 
+# Affine Toolkit
+#
+# FILE:  Include file for for SGI 6.X Makefiles
+#
+# PROGRAMS/LIBRARIES:  
+#
+#
+#
+
+# Make certain that there is no name conflict with another libz.a file.
+#
+# If there are unresolved externals involving gzIsaGZippedFile, gzGetFile
+#   and gzSetFile; the wrong zlib library is being linked to.  Check
+#   /usr/lib or rename the Affine version of libz.a to libaffinez.a and
+#   change ZLIB=-laffinez.  The Affine modified version of zlib only adds
+#   some functionality and should be linkable to other programs that use
+#   the libz.a library.
+#
+# See comments below regarding RIB_ZLIB compile flag for more options.
+#
+ZLIB=-lz
+Z_PATH=${TOP}/../zlib
+ZINC_PATH=-I${Z_PATH}
+ZLIB_PATH=-L${Z_PATH}
+
+# Add any special locations for libraries related to OpenGL to OGL_PATH.
+#  For example Sun's need OGL_PATH=-L/usr/openwin/lib and Linux may need 
+#  a pointer to a directory with Mesa.  More than one -L path can be listed.
+# Leaving OGL_INCPATH and OGL_LIBPATH means that the libraries are located
+#  in a standard directory that the compiler finds without extra flags:
+OGLXLIB=-lGL -lX11
+OGL_INCPATH= 
+OGL_LIBPATH= 
+
+# Libtiff location:
+TIFFLIB=-ltiff
+TIFFPATH=${TOP}/../libtiff/libtiff
+TIFF_INCPATH=-I${TIFFPATH}
+TIFF_LIBPATH=-L${TIFFPATH}
+
+# For SGI C compiler:
+CC= cc
+CFLAGS= -g -ansi -fullwarn ${INCPATHS}
+LFLAGS= 
+CFLAGS32= -n32 -mips4
+LFLAGS32= -n32 -mips4
+CFLAGS64=
+LFLAGS64=
+DSOFLAGS=-shared
+
+# Use -DRIB_MEMORY_TESTS to get statistics on memory leaks.
+#
+#COPTS=-DRIB_MEMORY_TESTS -DRIB_ZLIB
+
+# Use Z library for gzip RIB file support (use with zlib 1.1.3 or higher):
+#
+COPTS=-DRIB_ZLIB
+
+AR= ar rc
+
+.c.o:
+	${CC} -c $< ${CFLAGS} ${CFLAGS32} ${COPTS} ${INCPATH} 

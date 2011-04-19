@@ -1,0 +1,32 @@
+##RenderMan RIB-Structure 1.0
+PointsPolygons [3 3 3] [0 1 2 3 4 5 6 7 8] "P" [
+0 0 0
+1 1 1
+2 2 2
+3 3 3
+4 4 4
+5 5 5
+6 6 6
+7 7 7
+8 8 8]
+"texturename" ["tex1" "tex2" "tex3"
+               "tex4" "tex5" "tex6"
+               "tex7" "tex8" "tex9"]
+PointsPolygons [3 3 3] [0 1 2 0 1 2 0 1 2] "P" [
+0 0 0
+1 1 1
+2 2 2]
+"texturename" ["tex1" "tex2" "tex3"]
+#cause error about there being 2 extra strings
+PointsPolygons [3 3 3] [0 1 2 0 1 2 0 1 2] "P" [
+0 0 0
+1 1 1
+2 2 2]
+"N" [
+0 0 0
+1 1 1
+2 2 2
+123 123 123
+123 123 123
+]
+"texturename" ["tex1" "tex2" "tex3""extra1""extra2"]

@@ -1,0 +1,22 @@
+
+#Test a comment with only a '\n' right after the '#'.
+#This test has caught an error in code before.  Next line is only {'#','\n'}:
+#
+
+# Comment migration Test
+Sides 1 #test a statement with no parameter lists.
+#
+Sphere 1 2 3 4 #Should appear after Sphere if no migration.
+Cone 1 2 3 ##Hint1 Should appear after Cone if no migration.
+Cylinder 1 2 3 4##1Hint Should appear after Cylinder if no migration.
+#2 Should appear after Cylinder if no migration.
+#3 Should appear after Cylinder if no migration.
+##4Hint Should appear after Cylinder if no migration.
+#5 Should appear after Cylinder if no migration.
+Torus 1 2 3 4 5
+"texturename" #1 Should appear after Torus if no migration. 
+"tex1" #2 Should appear after Torus if no migration. 
+"Cs" [1 2 3  4 5 6  7 8 9  10 11 12] 
+#3 Should appear after Torus if no migration. 
+"P" [1 2 3  4 5 6  7 8 9  10 11 12] 
+#4 Should appear after Torus if no migration. 

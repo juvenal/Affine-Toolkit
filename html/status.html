@@ -1,0 +1,148 @@
+<!--
+/* $RCSfile: status.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  status.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#ffffff"></FONT>
+<H1><CENTER>Status Flags</CENTER></H1>
+
+<P>
+The following is a list of the status flags and their uses:
+</P>
+<PRE>
+<b>kRIB_STATUS_BEGUN</b>
+/* Indicates the RiBegin() call was made for the RIB file.  RibBegin() 
+ *    checks this to make certain RiBegin() calls are not made more 
+ *    than once.
+ *
+ * Note:  The differences in the prefixes of RibBegin() and RiBegin().
+ *    RibBegin() is function in the RIB Reader library.  RiBegin() is 
+ *    the standard RenderMan Interface call.
+ */
+#define  kRIB_STATUS_BEGUN         0x00000001
+
+<b>kRIB_STATUS_SUBFILEOPEN</b>
+/* Mark file as having a subfile open because a ReadArchive statement or 
+ *    ##Include hint (if support was added) was encountered in the RIB file.
+ */
+#define  kRIB_STATUS_SUBFILEOPEN   0x00000002
+
+<b>kRIB_STATUS_USINGSHARED</b>
+/* Mark file as using a buffer, hash table and caches that are from another
+ *    RIB instance and should not be deleted when RibClose() is called. 
+ */
+#define  kRIB_STATUS_USINGSHARED   0x00000004
+
+<b>kRIB_STATUS_EXTERNHASHTBL</b>
+/* Mark RIB file as using a hash table not created during RibOpen(). */
+#define  kRIB_STATUS_EXTERNHASHTBL 0x00000008
+
+<b>kRIB_STATUS_CLOSED</b>
+/* Mark file as being temporarily closed so a file descriptor could be
+ *    be made available. 
+ */
+#define  kRIB_STATUS_CLOSED        0x00000010
+
+<b>kRIB_STATUS_ENCODEDDATA</b>
+/* Mark file as using the binary encoded format. */
+#define  kRIB_STATUS_ENCODEDDATA   0x00000020
+
+<b>kRIB_STATUS_SAVETOBUFFER</b>
+/* Have each character read by RibGetChar() stored into a buffer.  The
+ *    buffer can then be used to create strings or arrays.
+ */
+#define  kRIB_STATUS_SAVETOBUFFER  0x00000040
+
+<b>kRIB_STATUS_KEEP_DATA</b>
+/* After the RIB reader has called a Ri...() call do not free the data 
+ *    represented by the pointers given in the Ri...() call's C parameter
+ *    list.  Refer to RibKeepData() and RibShouldFreeData().
+ */
+#define  kRIB_STATUS_KEEP_DATA     0x00000080
+
+<b>kRIB_STATUS_ENDED</b>
+/* The RiEnd() call was made for the RIB file.  RibEnd() checks this
+ *    to make certain RiEnd() calls are not made more than once.
+ *
+ * Note:  The differences in the prefixes of RibEnd() and RiEnd().
+ *    RibEnd() is function in the RIB Reader library.  RiEnd() is 
+ *    the standard RenderMan Interface call.
+ */
+#define  kRIB_STATUS_ENDED         0x00000100
+
+<b>kRIB_STATUS_COMPRESSED</b>
+/* Zip compressed file is begin read. */
+#define  kRIB_STATUS_COMPRESSED    0x00000200
+
+<b>kRIB_STATUS_STDIN</b>
+/* RIB is being read from stdin. */
+#define  kRIB_STATUS_STDIN         0x00000400
+
+<b>kRIB_STATUS_PARAML</b>
+/* Presently reading a parameter list. */
+#define  kRIB_STATUS_PARAML        0x00000800
+
+<b>kRIB_STATUS_ARRAY</b>
+/* Presently reading an integer, float or string array. */
+#define  kRIB_STATUS_ARRAY         0x00001000
+</PRE>
+
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

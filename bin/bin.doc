@@ -1,0 +1,56 @@
+The following utilities are included in the Affine Toolkit:
+
+bin2hex    -- Convert binary characters into ASCII printed hex numbers.
+bin2oct    -- Convert binary characters into ASCII printed octal numbers.
+dbl2oct    -- Convert ASCII printed floating point values into RIB encoded
+              IEEE double precision form.
+dec2hex    -- Convert ASCII printed decimal numbers into ASCII printed 
+              hex numbers.
+flt2oct    -- Convert ASCII printed floating point values into RIB encoded
+              IEEE floats.
+fp2tiff    -- Store ASCII printed floating point values into an IEEE TIFF
+              file of a user specified size.
+hex2bin    -- Convert ASCII printed hex numbers into binary characters.
+hex2dec    -- Convert ASCII printed hex numbers into ASCII printed decimal
+              numbers.
+ibm2unix   -- Remove DOS, NT and OS/2 two byte carriage returns in favor 
+              of UNIX version of '\n'.
+mac2unix   -- Remove Mac carriage returns in favor of UNIX version of '\n'.
+normfptiff -- Adjust the min to max range of values in an IEEE TIFF file 
+              to be from 0 to 1.  
+nulen      -- Creates IEEE TIFF files that give the arc length parameterization
+              of a NURB surface.  User specifies u or v direction.
+oct2bin    -- Convert ASCII printed octal numbers into binary characters.
+pix2tiff   -- Convert Alias PIX files into TIFF.
+pixinfo    -- Print size information of Alias PIX files.
+ribbish    -- Filter RIB files for certain RIB calls.
+ribdump    -- Dump binary or ASCII uncompressed RIBs.  Useful for seeing 
+              how the encoding is done.
+ribfixer   -- Touch-up and fix some problems with exported RIB files.
+ribobjmod  -- Convert NuPatch statements into WaveFront OBJ format.  
+              Functionality is very limited -- I only needed to write this
+              utility for one RIB file a while back.
+ribtree    -- Little demo program that creates toy-like trees.
+showbits   -- Displays Alias PIX, TIFF and TGA files.  Showbits will try
+              to figure out the file format if the user doesn't indicate which.
+str2oct    -- Convert given ASCII strings into RIB encoded strings printed
+              out as a series of ASCII octal numbers.
+tga2tga    -- Test program to convert TGA uncompressed/compressed to 
+              TGA compressed.
+tga2tiff   -- Convert TGA to TIFF.
+tgainfo    -- Print size information of TGA files.
+tif2tif    -- Test program to convert TIFF uncompressed/compressed to 
+              TIFF compressed files.
+tiff2X     -- Convert a black and white TIFF into X Window's ASCII format.
+tiff2fp    -- Print IEEE values in an IEEE TIFF file.
+tiff2pix   -- Convert TIFF to Alias PIX.
+tiff2tga   -- Convert TIFF to TGA compressed.
+tiffedge   -- Composite TIFF images of constant surface shaded objects, 
+              normal-variance shaded object, and depth maps into a Sobel
+              filtered image that looks like the ink lines of a cartoon.
+tokentbl   -- Creates a table that can be used to find tokens in a string
+              or file.
+typerib    -- Print RIB files as ASCII, binary, gzipped RIB files.
+untab      -- Remove tabs from ASCII files.
+z2tiff     -- Takes Pixar's Z format and converts the data into a TIFF image.
+

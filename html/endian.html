@@ -1,0 +1,157 @@
+<!--
+/* $RCSfile: endian.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  endian.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H1><CENTER>Ten Little Endians</CENTER></H1>
+<P>
+A common question that eventually comes from college students
+new to the computer industry after they have misheard the
+term "endian" a few times in a department meeting or hallway 
+conversation is 
+"What does little <i>indian</i> mean?".  
+</P>
+<P>
+What is being said is the word "endian" used to refer to the byte order 
+a processor accesses and stores its data in memory given the unit size 
+of the data.  It comes from Swift's <i>Gulliver's Travels</i> (1726) 
+which long before inspiring the term endian had directly added such words 
+to the English language as "yahoo" referring to a brute or crude person 
+and now a website.  
+The word "endian" refers to the "endedness" of a piece of data 
+larger than a single byte in size such as a 32-bit <i>long int</i>.  There
+are two types of endedness big and little.  Depending on which of the
+two a processor uses it is referred to as a big-endian or little-endian 
+processor.  Alpha processors and Intel's x86 based processors use little 
+endian.  Sparc, Mips and PowerPC are big endian processors. 
+</P>
+<P>
+How Swift's <i>Gulliver's Travels</i> fits into this has to do with a war
+that took place between the peoples of two cities that Gulliver encountered.  
+One group cracked their eggs open on the big end and the other cracked their 
+eggs open on the little end.  Hence of course, war.
+</P>
+<P>
+The endedness of a processor is just as arbitrary.  You could argue
+advantages for either way.  For programmers it really only effects those 
+dealing with file formats that store binary values larger than one-byte or
+those using a low level debugger that displays blocks of memory as bytes.
+When a 32-bit value is stored at a given address it takes four bytes of memory.
+A processor typically can address each byte of memory individually meaning 
+that each byte is given a unique physical address.  Since a 32-bit value 
+such as a <i>long int</i> is made up of four bytes, each byte could be 
+accessed individually using four addresses.  Regardless of the endedness of a 
+processor the lowest of the four byte addresses is the same address used 
+to identify the 32-bit value.  Unless you need to look at 32-bit value as
+a series of bytes, endedness is not an issue.  But 32-bit values have their
+bytes ordered differently depending on the endedness of the processor.  A 
+<i>short</i>, a 16-bit word, also has its two bytes ordered according to
+the endedness.  
+</P>
+<P>
+A 16-bit value in little endian format has its least significant byte --
+the little end -- stored in the lowest address and the most significant 
+byte in the byte of memory that follows.  A word in big endian format 
+places the most significant byte -- the big end -- first in the lowest 
+address and the least significant byte in the byte of memory that follows.  
+For a 32-bit value the little endian order is the least significant byte 
+in the lowest address with the next least significant in the next byte that 
+follows.  Big-endian stores a 32-bit values four bytes in the reverse order 
+to little endian.
+</P>
+<P>
+If a file has four bytes that represent a 32-bit <i>int</i> in big-endian 
+format the following code will store the 32-bit value in little endian format
+at address <I>baseptr</i>:
+<PRE>
+   #ifdef LITTLE_ENDIAN
+      p = baseptr;
+      if ( fread( b, 1, 4, z ) < 4 )
+	goto Error;
+      *p++ = b[3];
+      *p++ = b[2];
+      *p++ = b[1];
+      *p++ = b[0];
+   #else
+      if ( fread( p, 1, 4, z ) < 4 )
+	goto Error;
+      p += 4;
+   #endif
+</PRE>
+For a processor that has 32-bit registers, code can be written to compile
+correctly for little or big endian without resorting to <i>#ifdef</i>.  
+The following code reads a 16-bit value that is in big-endian format and 
+stores it in <i>yres</i>:
+<PRE>
+   if ( fread( b, 1, 2, pix ) < 2 )
+     goto Error;
+   yres = (b[0]<<8) | b[1];
+</PRE>
+If the buffer <i>b</i> contained a four byte big-endian value, <i>yres</i>
+would need more shifting operators as in the following code:
+<PRE>
+   if ( fread( b, 1, 4, pix ) < 4 )
+     goto Error;
+   yres = (b[0]<<24) | (b[1]<<16) | (b[2]<<8) | b[3];
+</PRE>
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

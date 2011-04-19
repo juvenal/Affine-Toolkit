@@ -1,0 +1,130 @@
+<!--
+/* $RCSfile: lib.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  lib.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H1><CENTER>Affine RIB Libraries</CENTER></H1>
+<P>
+Most utilities should just use -lributil -lm.  But if you just want to read a 
+   RIB file use -lribrdr -lribhash -lm.  
+</P>
+<UL>
+<LI>
+libribconst.a -- Contains only the RI_ exported variables with the values
+                 defined by the RI Specification.
+</LI>
+<LI>
+libriberror.a -- Contains a default error message handler.
+</LI>
+<LI>
+libribhash.a  -- Hash library for reading and writing RIB files.  Contains
+                 the RI_ constants, since they are needed for setting up
+                 the initial hash table.
+</LI>
+<LI>
+libribmsg.a   -- Contains error messages listed in RI specification.
+</LI>
+<LI>
+libribnop.a   -- Provides a Ri table with functions that do nothing but
+                 return.  NOP is a abbreviation for No Operation.  This is
+                 useful from filters that are only looking for one or two
+                 types of RIB statements.
+</LI>
+<LI>
+libribrdr.a   -- RIB Reader library.  RI_ constants and error messages 
+                 included.
+</LI>
+<LI>
+libribtable.a -- A table that lists all the Ri calls in the order given in
+                 ribrdr.h.
+</LI>
+<LI>
+libributil.a  -- Contains the RIB reader and writer functions.  Basically
+                 it's libribrdr.a, libribwrtr.a and libsribhash.a put 
+                 together (libz.a also included as of 7-15-97).
+</LI>
+<LI>
+libribwrtr.a  -- RIB writer library.  Has the RI_ constants and all the 
+                 Ri calls listed in the RI Specification and the 
+                 RenderMan Artist's Toolkit 3.6 and 3.7 additions.  
+		 Supports ASCII and binary RIB output.  Pixel filter 
+                 functions are supported as well.
+</LI>
+<LI>
+libsribhash.a -- Simple ribhash, basically libribhash.a but without the
+                 RI_ constants.
+</LI>
+<LI>
+libsribrdr.a  -- Simple RIB Reader, basically libribrdr.a but without the 
+                 Ri table (libribtable.a) and error messages (libribmsg.a).
+</LI>
+<LI>
+libsribw.a    -- Simple RIB writer.  Has the RI_ constants and all the
+                 Ri calls listed by the RI specification and the RenderMan
+                 Artist's Toolkit 3.6 additions.  It is called simple 
+                 because it's basically just a bunch of printf()s, only ASCII 
+                 RIB output is supported, and the pixel filter functions just 
+                 return zero.
+</LI>
+</UL>
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

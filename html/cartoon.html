@@ -1,0 +1,170 @@
+<!--
+/* $RCSfile: cartoon.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  cartoon.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<PRE>
+/* 
+ * 
+ * FILE:  tebSimpleCartoon.sl
+ *
+ *
+ * DESCRIPTION:  
+ *   
+ *      
+ * Copyright (c) 1996 Thomas E. Burge.  All rights reserved.  
+ *
+ */
+
+surface
+tebSimpleCartoon(
+	    float   Ka = 1.0;
+	    float   Kd = 1.0;
+	    float   Ks = 1.0;
+	    float   roughness = 0.1;
+	    float   inkwidth = 0.445; /* smaller numbers are thicker lines. */
+	    color   inkcolor = 0;
+	    float   speclevel = 0.9; /* Setting to 1.0 removes highlights. */
+	    float   shadowlevel = 0.5;
+	    color   specularcolor = 1;
+	    float   useshadowpaint = 0.0;
+	    color   shadowpaint = 0; )
+{
+   point  II;        /* -normalize(Incident) */
+   point  Nf;        /* face forward normal */
+   point  HV;        /* halfway vector */
+   point  NN;        /* normalized N */
+   point  LL;        /* normalized L */
+   float  spec;      /* amount of light from specular reflection */
+   float  diff;      /* amount of light from diffuse reflection */
+   float  acosIINf;  /* acos(II.Nf) */
+   float  iw;        /* inkwidth*PI */
+   color  Cink;      /* calculated color of ink */
+   color  Cspec;     /* calculated color of specular highlight */
+   color  Cdiff;     /* calculated color of diffuse reflection */
+   float  Oink;      /* color contribution of ink */
+   float  Ospec;     /* color contribution of specular highlight */
+   float  Odiff;     /* color contribution of diffuse reflection */   
+   float  diffmix;
+
+
+   II = -normalize(I);
+   NN = normalize(N);
+   Nf = faceforward( normalize(N), I );
+
+
+   /* The shader uses the value speclevel for the determining the sizes of 
+    *    highlights on the surface.  It ignores the intensity of the light 
+    *    source and cares only about its position.  
+    */
+   spec = 0;
+   diff = 0;
+   illuminance( P, Nf, PI/2 )
+   {
+      LL = normalize(L);
+      HV = normalize(LL+II);
+      spec += pow(max(0.0,Nf.HV),1/roughness);
+      diff += LL.Nf;
+   }
+
+   acosIINf = acos(II.Nf);
+   iw = inkwidth*PI;
+   if ( acosIINf > iw )
+   {
+      Cink = inkcolor;
+      Oink = smoothstep( iw, iw+0.07*iw, acosIINf );
+   }
+   else 
+   {
+      Cink = 0.0;
+      Oink = 0.0;
+   }
+   
+   spec = Ks*spec;
+   diff = Kd*diff;   
+   if ( spec > speclevel )
+   {
+      Cspec = specularcolor;
+      Ospec = 1 - Oink;
+      Ospec = Ospec * smoothstep( speclevel, speclevel+0.02*speclevel, spec );
+   }
+   else
+   {
+      Cspec = 0.0;
+      Ospec = 0.0;
+   }
+
+   diffmix = smoothstep( shadowlevel-0.05*shadowlevel, shadowlevel, diff );
+   if (useshadowpaint!=0)
+   {
+      Cdiff = Cs * (diffmix) + shadowpaint * (1-diffmix);
+   }
+   else
+   {
+      Cdiff = Cs * (diffmix) + Cs * shadowlevel * (1-diffmix);
+   }
+   Odiff = 1 - clamp( Oink+Ospec, 0, 1 );
+
+   Ci = Odiff*Cdiff + Ospec*Cspec + Oink*Cink;
+}
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

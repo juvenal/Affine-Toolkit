@@ -1,0 +1,4 @@
+Surface "plastic" "roughness" [0.3]
+Points "P" [1 2 3] "uniform color roughness" [1 2 3]
+Surface "plastic" "roughness" [0.1]
+Surface "plastic" "uniform float[2] roughness" [1 2]

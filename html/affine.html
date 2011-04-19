@@ -1,0 +1,224 @@
+<!--
+/* $RCSfile: affine.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  affine.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<CENTER><P><IMG SRC="AffineTitle.jpeg" HEIGHT=100 WIDTH=500></P></CENTER>
+<FONT COLOR="#FFFFFF"></FONT>
+<H1><CENTER>Tools Based on the RenderMan Standard</CENTER></H1>
+<P>
+The Affine Toolkit is published to provide some useful tools to folks
+using the RenderMan Standard.  Even those with a full-blown setup that
+includes Pixar's RenderMan Artist Tools and an inexpensive Alias 
+AutoStudio license should find the toolkit to be useful.  Those with a 
+slightly cheaper setup such as a system running Amapi, Sketch! or other
+PC/Mac based applications that export RIBs should also find the tools 
+to be extremely helpful.
+</P>
+
+<H1><CENTER>Items Included in the Affine Toolkit</CENTER></H1>
+<P>Several utilities and libraries are provided that work with RIB 
+files and various bitmap formats.  The following sections provide 
+an overview of what is included in the toolkit:</P>
+<UL>
+<LI>
+<A HREF="./rib.html">RIB Utilities</A>
+</LI>
+<LI>
+<A HREF="./bmp.html">Bitmap Utilities</A>
+</LI>
+<LI>
+<A HREF="./lib.html">Libraries</A>
+</LI>
+<LI>
+<A HREF="./util.html">Handy little utilities</A>
+</LI>
+<LI>
+<A HREF="./affine.html#Additions">Updates to toolkit as of April 16, 1998</A>
+</LI>
+</UL>
+
+<A NAME="Additions"></A>
+<CENTER><H2>Updates to Toolkit as of 4-25-98</H2></CENTER>
+<P>
+Code was added to handle matching Frame, World and Attribute Begin/End
+statements in separate RIB files.
+RiReadArchive() is documented as acting like an inline function,
+so statements that begin a Frame, World, or Attribute block 
+could -- and with an very odd RIB structure -- have their
+matching end block statements inside a RIB's subfile read by 
+RiReadArchive().  Note that this matching scheme would cause
+problems with tools such as catrib and typerib that normally
+just read a RIB and do not expand given subfiles.
+</P>
+<P>
+The following calls were added to handle querying the number of uniform,
+varying and vertex parameters there are based on what the Reader library
+has calculated:
+</P>
+<UL>
+<LI><A HREF="./ribcalls.html#RibGetParameterTypeInfo">RibGetParameterTypeInfo</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetLastNUniform">RibGetLastNUniform</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetLastNVarying">RibGetLastNVarying</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetLastNVertex">RibGetLastNVertex</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetLastNUniform">RibSetLastNUniform</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetLastNVarying">RibSetLastNVarying</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetLastNVertex">RibSetLastNVertex</A>()</LI>
+</UL>
+
+<H1><CENTER>History Behind the Affine Toolkit</CENTER></H1>
+<P>
+The Affine Toolkit is based on only published materials regarding the
+RenderMan Standard and the general subject of computer graphics.  I 
+developed the code without reference to any proprietary code from 
+Pixar -- inshort this code is mine and is the result of some 
+research, e-mails and also experimentation with the Pixar and BMRT 
+tools such as prman, rendrib and catrib.
+</P>
+<P>
+Feed back on the toolkit is appreciated.  I will check e-mail at the
+Affine domain name probably on a weekly basis depending on work.  If 
+you have found a bug or have a suggestion, send e-mail to 
+teb@affine.com.  Please do not send "junk e-mail" to this account.  
+</P>
+<P>
+Hopefully this work will provide some answers to those developing 
+code to export RIB files.  It would be great to see more modeling 
+packages support the RenderMan Standard and export good valid RIB 
+files.  Also hopefully, some folks will write some cool utilities 
+that the rest of us can use.
+</P>
+<P>
+I have tried to give credit to where credit is due.  You'll find that
+each C file has a header that lists books, articles and e-mails that 
+were referred to or provided inspiration in writing the code.  Many
+books give a huge list of books and articles, the ones listed in the
+C code are the actual references that were used not just an endless
+list.  One or two books are out of print, but are accessible through 
+inter-library loans.  You should still be able to assemble a good 
+reference library based on the references listed.
+</P>
+<P>
+Please follow the copyright rules given in the license file included
+in the Affine Toolkit.  
+</P>
+
+<H1><CENTER>How to Write Programs Using the Affine Toolkit</CENTER></H1>
+<P>
+Several libraries are included for reading, altering, and writing RIB files.  
+Some of the libraries simply provide different ways of packaging the code that provides the
+reading and writing functionality of the Affine Toolkit.  To know which library is right
+for your tool and to see some examples using the Affine Toolkit refer to the following link:  
+<A HREF="./coding.html">Developing Tools Using the Affine Toolkit</A>.
+</P>
+<P>
+For reading and writing various image formats refer to the section 
+<A HREF="./bmp.html#BitmapCode">Reading and Writing Various 2D Image Formats</A>.  
+This section covers the functions that can be called for handling Alias's PIX, 
+TIFF, TGA, Pixar's zfile and X Windows file formats.  
+</P>
+
+<H1><CENTER>Notices and Other Legal Stuff</CENTER></H1>
+<P>Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.</P>
+<P>Affine is a trademark of Thomas E. Burge</P>
+  
+<P>THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+PARTICULAR PURPOSE.</P>
+   
+<P>
+In no event shall Thomas E. Burge be liable for any indirect or
+consequential damages or loss of data resulting from use or performance 
+of this software.
+</P>
+<P>    
+Permission is granted to include compiled versions of this code in
+noncommercially sold software provided the following copyrights and
+notices appear in all software and any related documentation:
+</P>
+<P>
+<CENTER>The Affine Libraries and Tools are</CENTER>
+<CENTER>Copyright (c) 1996, 1997, 1998 Thomas E. Burge</CENTER>
+<CENTER>All rights reserved.</CENTER>   
+</P>
+<P>
+Also refer to any additional requirements presently required by Pixar 
+in regards to the RenderMan (R) Interface Procedures and Protocol.
+</P>
+<P>  
+Those wishing to distribute this software commercially and those wishing 
+to redistribute the source code must get written permission from the 
+author, Thomas E. Burge.  
+</P>   
+<P>  
+Basically for now, I would like folks to get the source code directly 
+from me rather than to have a bunch of different versions circulating
+about.
+</P>
+<P>
+<CENTER>The RenderMan (R) Interface Procedures and Protocol are:</CENTER>
+<CENTER>Copyright 1988, 1989, Pixar</CENTER>
+<CENTER>All Rights Reserved</CENTER>
+</P>
+<P>
+<CENTER>RenderMan (R) is a registered trademark of Pixar</CENTER>
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

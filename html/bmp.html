@@ -1,0 +1,181 @@
+<!--
+/* $RCSfile: bmp.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  bmp.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H1><CENTER>Affine Bitmap Utilities</CENTER></H1>
+<P>
+</P>
+<UL>
+<LI>
+fp2tiff    -- Store ASCII printed floating point values into an IEEE TIFF
+              file of a user specified size.
+<LI>
+</LI>
+normfptiff -- Adjust the min to max range of values in an IEEE TIFF file 
+              to be from 0 to 1.  
+<LI>
+</LI>
+pix2tiff   -- Convert Alias PIX files into TIFF.
+<LI>
+</LI>
+pixinfo    -- Print size information of Alias PIX files.
+<LI>
+</LI>
+showbits   -- Displays Alias PIX, TIFF and TGA files.  Showbits will try
+              to figure out the file format if the user doesn't indicate which.
+<LI>
+</LI>
+tga2tga    -- Test program to convert TGA uncompressed/compressed to 
+              TGA compressed.
+<LI>
+</LI>
+tga2tiff   -- Convert TGA to TIFF.
+<LI>
+</LI>
+tgainfo    -- Print size information of TGA files.
+<LI>
+</LI>
+tif2tif    -- Test program to convert TIFF uncompressed/compressed to 
+              TIFF compressed files.
+<LI>
+</LI>
+tiff2X     -- Convert a black and white TIFF into X Window's ASCII format.
+<LI>
+</LI>
+tiff2fp    -- Print IEEE values in an IEEE TIFF file.
+<LI>
+</LI>
+tiff2pix   -- Convert TIFF to Alias PIX.
+<LI>
+</LI>
+tiff2tga   -- Convert TIFF to TGA compressed.
+<LI>
+</LI>
+<A HREF="./tiffedge.html">tiffedge</A>
+-- Composite TIFF images of constant surface shaded objects, 
+   normal-variance shaded object, and depth maps into a Sobel
+   filtered image that looks like the ink lines of a cartoon.
+   Some additional filtering is really needed to smooth out the
+   lines a bit.  I will try to add this in later.  
+<LI>
+</LI>
+z2tiff     -- Takes Pixar's Z format and converts the data into a TIFF image.
+</LI>
+</UL>
+
+<A NAME="BitmapCode"></A>
+<H2>Reading and Writing Various 2D Image Formats</H2>
+<P>
+Located in affine/pixNtiff/ are several C files that are used to
+read and write Alias's PIX, TIFF, and TGA file formats.  
+Included is also the ability to write X Windows bitmaps or 
+read Pixar's zfile format.
+<P>
+</P>
+Each fully supported format has two self-named C files prefixed with a
+'r' for reading and a 'w' for writing.  TIFF for example has rtiff.c
+and wtiff.c with the functions ReadTiff() and WriteTiff() respectively.  
+Each 'r' and 'w' file has an associated header file with a ".h" 
+filename extension.  Refer to these headers for the main function 
+exported by its associated C file.  
+</P>
+<P>
+The writing functions rely on a data structure called simply BITMAP 
+defined in the header affine/pixNtiff/bitmap.h with the following code:
+<PRE>
+     typedef struct _BITMAP {
+        unsigned int  xres;
+        unsigned int  yres;
+        unsigned int  rowbytes;  /* for an RGB image rowbytes = 3*xres */
+                          /* rowbytes is needed incase padding is needed */
+        int    pixelsize; /* number of bits per pixel */
+        PBITS  pbits;
+     } BITMAP;
+     typedef BITMAP *PBITMAP;
+</PRE>
+The field <i>pixelsize</i> is the number of bits needed to store a pixel's
+color.  This field has a special meaning when given the value
+BITMAP_IEEE (defined in bitmap.h as -32) and indicates to the function 
+WriteTiff() in wtiff.c to treat the bitmap data as an array of single 
+precision IEEE floats.  
+Of the supported formats in the Affine Toolkit, only TIFF supports 
+IEEE floats.  
+</P>
+<P>
+So far the code in affine/pixNtiff/ has avoided issues with the processor's
+endedness -- Actually I noticed that the rz.c code slipped by with a 
+dependence on endedness.  I'll fix and test it later. --  
+A flag called LITTLE_ENDIAN is used by parts of the Affine
+Toolkit such as code in affine/ribdump.  For information on big-endian 
+and little-endian refer to the 
+section <A HREF="./endian.html">Ten Little Endians</A>
+for a brief overview of what the term "endian" means.
+</P>
+<P>
+The field <i>rowbytes</i> is the number of bits rounded up to the 
+nearest number of bytes that can store a full row of pixels.  This 
+field is so far only used by the wX.c code because only the WriteX() 
+function handles writing images with a pixel row size not divisible by 
+8 bits.  
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

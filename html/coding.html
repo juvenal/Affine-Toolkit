@@ -1,0 +1,719 @@
+<!--
+/* $RCSfile: coding.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  coding.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H1><CENTER>Developing Tools Using the Affine Toolkit</CENTER></H1>
+<P>
+The Affine Toolkit includes libraries for reading and writing RIB files.  
+The reading and writing functions are packaged together into a single library 
+called libributil.a.  The functions are also packaged separately into the 
+libraries libribhash.a, libribrdr.a and libribwrtr.a.  The libributil.a 
+library is designed for tools that filter through RIB files 
+making alterations to the data.  There are some optimizations that 
+libributil.a uses for tools that act as RIB filters such as sharing the 
+hash table between the reading and writing functions.  
+</P>
+<P>
+If a tool only reads or only writes RIB data then it should be linked to 
+libribhash.a and libribrdr.a for just reading or 
+libsribhash.a (notice extra 's' in libsribhash) and libribwrtr.a
+for just writing.  The library libributil.a could be used, but then half of
+its compiled code would be unused.  In the subdirectory affine/sribw/ the 
+code for a Simple RIB Writer (SRibW) is provided.  This code builds a 
+library called libsribw.a 
+that can act as a replacement for the library set libribhash.a and 
+libribwrtr.a, but was really intended to be a reference on the RenderMan 
+Standard and PRMan's recent extentions.
+</P>
+<P>
+Regardless if your tool just reads RIB files, writes RIB files or both; 
+you will need to deal with the RenderMan Interface functions.  This is a 
+set of over 100 different function calls as of version 3.7 of Pixar's 
+toolkit.  It is assumed that you atleast have the 
+<EM>RenderMan Specification: Version 3.1</EM> and/or the book 
+<EM>The RenderMan Companion</EM>.  Refer to the FAQ in 
+<EM>comp.graphics.rendering.renderman</EM> for where to find these references.
+</P>
+<P>
+The following sections describe the main functions needed to read and 
+write RIBs.  But for those who must get up and running right now this 
+instant, refer to the next section and follow these guidlines:
+<UL>
+<LI>
+Refer to affine/ributil/typerib.c for an example of a complete program 
+that reads and writes RIB files.
+</LI>
+<LI>
+Link to affine/libributil.a (the math library may also be needed).  
+This will handle reading and writing RIB files and includes all the Ri 
+calls.  
+</LI>
+<LI>
+If you have your own set of RI calls that should be called during the 
+reading of a RIB file or stream, link to affine/libribhash.a and 
+affine/libribrdr.a.  These libraries give you the ability to read RIBs and 
+with the example code given below your Ri calls will be called as the RIB data 
+is read.  The code from affine/ributil/typerib.c could also be used as a 
+starting point.
+</LI>
+<LI>
+If you want to implement only one Ri call differently or alter the data 
+before it is printed, you will need to "hook out" the particular Ri 
+function call you want from a table named 
+<A HREF="./ritable.html#gRibRITable">gRibRITable[]</A> shown in the first 
+example below or in the typerib program.  
+The process of hooking out a Ri call is described below in the section 
+<A HREF="#writingRIBfilters">Writing A RIB Filter</A>.
+</LI>
+</UL>
+
+</P>
+<P>
+<A NAME="RealQuickOverview"></A>
+<H2>A Real Quick Overview</H2>
+<P>
+The following excerpt of code will read a RIB file called "my.rib" and 
+immediately print it out in ASCII form:
+</P>
+<PRE>
+      #include &lt;ributil.h&gt
+
+      main()
+      {
+         RIB_HANDLE  rib; 
+
+         rib = <A HREF="./ribcalls.html#RibOpen">RibOpen</A>( "my.rib", <A HREF="./ritable.html#gRibRITable">gRibRITable</A> /* Table included in libraries. */ );
+         <A HREF="./ribcalls.html#RibRead">RibRead</A>(rib);
+         <A HREF="./ribcalls.html#RibClose">RibClose</A>(rib);
+      }
+</PRE>
+<P>
+Linking to libributil.a (-lm may also be needed) provides all the Ri calls 
+described in the <EM>RenderMan Companion</EM> and the additions given in 
+versions 3.6 and 3.7 of Pixar's Toolkit.  
+The RibUtil library also provides the calls Ribopen(), RibRead(), RibClose() 
+and the table listing all the standard Ri calls 
+<A HREF="./ritable.html#gRibRITable">gRibRITable[]</A>.  Refer to 
+affine/ributil/typerib.c for source code to typerib, which is the Affine 
+Toolkit's version of Pixar's catrib utility.  The typerib code has a few extra 
+lines to specify the output filename as well, but it's a good place to start 
+when writing a RIB utility.
+</P>
+<P>
+It is also possible to link the above code with just the RIB Reader code
+and your own client library.  To use your own client library do not link
+with libributil.a and instead use the libraries libribhash.a, 
+libribrdr.a and your client library.  This leads to some interesting
+combinations such as linking the RIB Reader code with popular libraries
+you might be licensed for such as librib.a, libribout.a or libprman.a.  
+</P>
+<H3>But what was the gRibRITable[] for?</H3>
+<P>
+The table <A HREF="./ritable.html#gRibRITable">gRibRITable[]</A>
+ used in the RibOpen() call shown above is a table 
+of function pointers that identify a set of RenderMan Interface (RI) functions.
+When reading RIB data the Rib Reader library needs a set of RI calls to 
+forward the parsed data for processing.  The libraries such as Pixar's 
+librib.a, BMRT's libribout.a, or the Affine Toolkit's libsribw.a provide a 
+set of RI calls that could be used if the desired action is to simply print 
+the parsed data.  Other libraries with different purposes could be 
+that
+calfunctions having the standard
+RenderMan Interface names.  Inshort all the functions start with the 
+prefix "Ri".  But
+as a programmer you may wish to subclass Ri functions.  You may also wish 
+to use your own 
+set of Ri calls.  Maybe even switch the whole set dynamically.  To allow 
+multiple sets of 
+Ri-like calls to all be linked together into the same
+program, coresponding functions from each set of Ri-like calls would need 
+different names
+which can be simply done by using different prefixes to
+distinguish them during linking.  To identify a set of functions as Ri-like 
+calls that
+the Affine libraries can call, the functions are placed into a table.
+</P>
+<P>
+The Affine Toolkit was designed for filtering RIBs and being used in plugins 
+to import and
+export RIBs.  Such tasks as filtering in a RIB file requires the 
+abilty to subclass the Ri calls.  The 
+<A HREF="./ritable.html#gRibRITable">gRibRITable[]</A> lists all the 
+Ri calls using the standard prefix "Ri" for each call.  But for those 
+needing to subclass Ri calls, they could choose to either define their 
+own table or "hook out" one or more Ri calls from
+the table given to Ribopen().  A program may also need more than one 
+version of a Ri call such
+as two versions of RiNupatch(), one for the original 3.1 version of 
+RenderMan and one for 
+the new version introduced in PRMan 3.6.  Using a table that contains 
+pointers to all the 
+needed Ri calls allows a programmer to avoid duplicate names and allows 
+for subclassing and
+other advanced features.  For example, the toolkit's libraries do not 
+refer to a Nupatch call
+by the name RiNupatch, but instead to corresponding function pointer 
+given in the table to Ribopen().
+</P>
+<H3>Specifying an Output Filename</H3>
+<P>
+To specify the output filename in the above example a call to RibBegin() 
+is needed after 
+RibOpen().  In the
+RenderMan Interface the output filename is specified with 
+<b>RiBegin( (char*)filename )</b>.  The equivalent version in the toolkit, 
+is <b>RibBegin( (RIB_HANDLE)rib, (char*)filename )</b> (notice the prefix 
+is "Rib" not "Ri") as shown in the following code:
+</P>
+<PRE>
+      #include &lt;ributil.h&gt
+
+      main()
+      {
+         RIB_HANDLE  rib; 
+
+         rib = RibOpen( "old.rib", gRibRITable );
+         RibBegin( rib, "new.rib" );
+         RibRead(rib);
+         RibClose(rib);
+      }
+</PRE>
+<P>
+<H3>But what's this RibBegin() function?  Why not just RiBegin()?</H3>
+
+In the above example you could actually get away with using the standard 
+RiBegin() call, but that's because the table gRibRITable[] which lists the
+standard RenderMan Interface calls is being used.  This table lists all the 
+Ri-prefixed calls including RiBegin().  The function RibBegin() calls the 
+corresponding Begin call registered in the table given to Ribopen().  
+If the standard RiBegin function were called in the above example, the 
+only difference is that the function would be called directly and the 
+ability to subclass functions would be by-passed.  Also RibBegin() 
+prevents multiple Begin calls going down the subclass chain, which is 
+handy if your chaining together several libraries.
+</P>
+<P>
+Sometimes a program may not need to print out a RIB file and will not 
+include the standard Ri calls.  So a function named RiBegin won't be 
+available.  Instead such programs will have used someone else's library 
+of Ri-like calls that uses a different prefix than "Ri".  For example, the
+RIB No-Operation library has all its functions prefixed with "RiNop" 
+(named after the assembly function Nop).  This allows the RibNop library 
+to be linked alongside libribwrtr.a or Pixar's librib.a or BMRT's 
+libribout.a without any name conflicts.  
+</P>
+<P>
+Inshort when using the functions RibOpen(), RibRead() and RibClose(), 
+RibBegin() should be used not the standard RiBegin().  RibBegin() 
+will use the RI table given to RibOpen() and prevent
+multiple calls to the many Begin functions that could be chained 
+together in a subclassing scheme.
+</P>
+<A NAME="writingRIBfilters"></A>
+<H2>Writing A RIB Filter</H2>
+<P>
+When working with RIBs, you will eventually find yourself wanting to alter 
+a RIB file's contents by adding certain RIB calls, removing certain RIB calls,
+or changing the data given to certain shaders.  Even with the best tools,
+this is a typical thing done in many animation houses and leads to the many 
+Tcl and Perl scripts folks have written over the years.  
+But if you'd like to write a fast program to distribute to others as a 
+stand alone tool, the Affine Toolkit provides a versatile way of chaining 
+together libraries and creating RIB filters.  
+</P>
+<P>
+The way you write a RIB 
+filter depends on how many RenderMan Interface functions you need to 
+subclass.  You could take a predefined table of RI calls such as 
+gRibRITable[] and "hook out" one or two functions.  Or you could define 
+your own table of RI-like calls that receive the RIB data and forward 
+an altered version onto the standard RI calls for output.
+</P>
+<P>
+The RIB Reader code handles the reading of a RIB file and the packaging of
+the data into the format needed to make Ri function calls according to the
+<i>RenderMan Specifcation</i>.  To connect the RIB Reader code with a set
+of Ri calls that receive the packaged data, the receiving Ri calls must be
+listed in a table of the form shown in 
+<A HREF="./ritable.html#gRibRITable">gRibRITable[]</A>.
+</P>
+<H3>Commonly Used Functions</H3>
+<P>
+The following functions are commonly used in writing a RIB filter:
+<UL>
+<LI><A HREF="./ribcalls.html#RibOpen">RibOpen</A>()
+ -- Prepare to read a RIB file.</LI>
+<LI><A HREF="./ribcalls.html#RibRead">RibRead</A>()
+ -- Read a RIB file.</LI>
+<LI><A HREF="./ribcalls.html#RibClose">RibClose</A>()
+ -- Free resources and close RIB file.</LI>
+<LI><A HREF="./ribcalls.html#RibBegin">RibBegin</A>()
+ -- Allow an output filename to be given.</LI>
+<LI><A HREF="./ribcalls.html#RibOption">RibOption</A>()
+ -- Set options for the output file.</LI>
+<LI><A HREF="./ribcalls.html#RibGetUserParameters">RibGetUserParameters</A>()
+ -- Sort through a parameter list for certain token names.</LI>
+<LI><A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>()
+ -- Tell the RIB Reader not to free up data given to a Ri call.</LI>
+<LI><A HREF="./ribcalls.html#RibMalloc">RibMalloc</A>()
+ -- Allocate a memory block.</LI>
+<LI><A HREF="./ribcalls.html#RibFree">RibFree</A>()
+ -- Deallocate a memory block.</LI>
+<LI><A HREF="./ribcalls.html#RibFreeVectorData">RibFreeVectorData</A>()
+ -- Deallocate data in the parameter list of token/param pairs.</LI>
+<LI><A HREF="./ribcalls.html#RibQueryKeepData">RibQueryKeepData</A>()
+ -- Returns nonzero value if pointers given in present Ri call point
+to memory areas that should not be freed.</LI>
+</UL>
+</P>
+<H3>Hooking Out A Function</H3>
+<P>
+If you have a small set of RI calls you wish to subclass, the method to use 
+is to hook out the functions in the RI Table.  This requires you to have a 
+Ri-like function for each function you wish to subclass.  For example you 
+could define a function called MyRiSphere() function as shown below:
+</P>
+<PRE>
+      #define  _RIPRIV_FUNC_TYPES 
+      #include &lt;ributil.h&gt
+
+
+      RtVoid MyRiSphere( RtFloat radius, RtFloat zmin, RtFloat zmax, 
+      		 RtFloat thetamax,
+      		 RtInt n, RtToken tokens[], RtPointer parms[] )
+      { 
+         ((PRiSphereV)*oldRiSphere)( radius, zmin, zmax, thetamax, n, tokens, parms );
+      }
+</PRE>
+<P>
+Once hooked into a table given to Ribopen() using a technique shown below, 
+the above function would simply receive all incoming Sphere statements in 
+a RIB file being read and pass the data onto the original receiver of the 
+data specified by the function pointer old RiSphere.
+</P>
+<P>
+Ok, the action taken by MyRiSphere() is not very exicting, but taken with 
+the example given below, you have all the wiring needed to sublcass a 
+single Ri function listed in the gRibRITable[].
+</P>
+<PRE>
+      #define  _RIPRIV_FUNC_TYPES 
+      #include &lt;ributil.h&gt
+
+      
+      /* New sphere Proto-type. */
+      RtVoid MyRiSphere( RtFloat radius, RtFloat zmin, RtFloat zmax, 
+      		 RtFloat thetamax,
+      		 RtInt n, RtToken tokens[], RtPointer parms[] );
+
+      /* New sphere function. */
+      RtVoid MyRiSphere( RtFloat radius, RtFloat zmin, RtFloat zmax, 
+      		 RtFloat thetamax,
+      		 RtInt n, RtToken tokens[], RtPointer parms[] )
+      { 
+         ((PRiSphereV)*oldRiSphere)( radius, zmin, zmax, thetamax, n, tokens, parms );
+      }
+
+
+      PRIB_RIPROC  oldRiSphere = NULL;
+
+      .
+      .
+      .
+      rib = <A HREF="./ribcalls.html#RibOpen">RibOpen</A>( "old.rib", gRibRITable );
+
+      oldRiSphere = gRibRITable[kRIB_SPHERE];
+      gRibRITable[kRIB_SPHERE] = MyRiSphere;
+
+      <A HREF="./ribcalls.html#RibRead">RibRead</A>(rib);
+      <A HREF="./ribcalls.html#RibClose">RibClose</A>(rib);
+      .
+      .
+      .
+
+</PRE>
+<P>
+In the above code, the definition _RIPRIV_FUNC_TYPES is a signal that 
+a set of typedefs defined in affine/include/riprivf.h 
+should be used.  Unless a pointer to a Ri call is refered to, the typedefs
+in affine/include/riprivf.h are not needed.  The typedefs include 
+PRiSphereV which is used in the 
+code above for casting.  The next line loads in all the Affine Toolkit's 
+basic typedefs and proto-types.  The code that assigns a value to the 
+pointer oldRiSphere is where the subclassing begins.  The pointer to the 
+original Sphere function is saved in oldRiSphere, and in the following 
+line it is replaced with MyRiSphere.  If MyRiSphere did not need to call
+the orignal Sphere function, there would be no reason to save a pointer 
+to it and the pointer oldRiSphere could be deleted from the above code.
+</P>
+
+
+
+<H3>Hooking Out All the Functions</H3>
+
+<P>
+If your tool is replacing all the Ri calls, you might consider defining 
+your own Ri table.  If you refer to affine/ributil/ribnop.c, you'll see an 
+example where a library needed to replace all the functions with 
+functions that took the incoming data and simply returned after doing 
+nothing with it.  This library is actually quite useful, if you wanted 
+only the NuPatch surfaces in a RIB file, your utility would just give 
+RibOpen() the table gRibNopRITable[] from the RibNop library and subclass 
+the NuPatch call.
+</P>
+<P>
+To write your own table, take the code for the table gRibNopRITable[] 
+and cut-and-paste.  Then of course do a global search-and-replace on the 
+prefix "RiNop" used in the table.  You could also cut-and-paste 
+the functions as stubs to start your own code.  Look at the different 
+libraries to find code that gives you a better starting place.
+</P>
+<A NAME="MoreAdvancedSubclassing"></A>
+<H2>More Advanced Subclassing</H2>
+<P>
+The above examples show how to hook into a table of Ri calls, but the 
+subclassing function only forwarded on the given data.  This section 
+describes the issues involved in changing the data and the format 
+the data is being presented to your code.
+</P>
+
+
+<A NAME="MemoryAllocations"></A>
+<H3>Memory Allocations</H3>
+
+<P>
+When subclassing a funtion you typically want to replace or alter data.  
+You can either rework the data given to you in its original block of 
+memory or you can create a new block of memory and then free the 
+original memory block.  The general rule in the Affine Toolkit is 
+that every pointer given in a Ri call can be freed with RibFree().  
+The only exceptions are the pointers for the vector data, normally 
+called tokens[] and parms[].  All the pointers given in tokens[] 
+and parms[] can be freed by your subclassing functions, but not 
+the pointers tokens and parms themselves.  
+</P>
+<P>
+Note that there are three more exceptions to the rule that all pointers
+given to a Ri call can be freed: 1) the string pointer "type" given to 
+kRIB_ARCHIVERECORD functions, 2) the string pointer "name" given to
+kRIB_DECLARE functions, and 3) the arrays of floats "ubasis" and "vbasis"
+given to kRIB_BASIS functions.  The first two can not be given to RibFree()
+and the third needs to be given to RibFreeBasisMatrix() if any freeing of
+either basis matrix is needed.  Extra code could be added to avoid the first
+two exceptions, but it seems rather wasteful to make extra string copies.
+Simply copying the basis matrices would remove a special meaning assigned
+the RI_ constants used for the basis matrices.  It is typical to check for 
+the RI_ constants by looking for their addresses.  A copy of matrix would
+defeat such checks for standard basis matrices.
+</P>
+<P>
+By default the RIB Reader will free all blocks of memory it gives 
+to Ri calls.  This behavior could be the wrong action to take if your 
+code relies on the arrays of positional data and other blocks of 
+memory to stay resident.  If your subclassing function does not 
+want a piece of data to be freed, the following call must be 
+made before the subclassing function returns:
+</P>
+<PRE>
+      <A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>( rib ); /* The value rib is a RIB_HANDLE returned by RibOpen(). */
+</PRE>
+The above call sets a flag that prevents the data from being freed, 
+but it also means that your subclassing function must call RibFree() 
+for all the data it doesn't plan on using.  All the pointers to 
+strings and arrays given in tokens[] and parms[] must also be freed
+if no longer needed.  A handy function for freeing the vector data 
+is shown below:
+<PRE>
+      <A HREF="./ribcalls.html#RibFreeVectorData">RibFreeVectorData</A>( rib, n, tokens, parms );
+</PRE>
+<P>
+The above function frees all the data given by pointers in the arrays 
+<i>tokens[]</i> and <i>parms[]</i>.  The value <i>n</i> indicates the 
+length of both arrays.  
+</P>
+<P>
+Note:  For those who hate the fact that C and C++ programs spend
+many CPU cycles in malloc(), some tests were run where a caching 
+scheme was used for all the RIB data and only one malloc() call 
+was made at the very beginning at Ribopen().  Only with a very 
+convoluted test case that hit the Ri calls 100,000 times was 
+a difference of 1 second out of 28 seconds shaved off the parsing 
+time.  Since the code to support this scheme looked horrible, 
+I gave up on it and tar-ed the code.  The performance gain didn't 
+seem worth it.
+</P>
+<P>
+Refer to <A HREF="./memory.html">Rib Memory Functions</A> 
+for more detail on the memory handling functions.
+</P>
+
+
+
+<A NAME="SortingThroughTheData"></A>
+<H3>Sorting Through the Data</H3>
+
+<P>
+Many subclassing functions just need access to the parameter list for
+such data as the "P" or the "Pw" arrays.  A function called 
+<A HREF="./ribcalls.html#RibGetUserParameters">RibGetUserParameters</A>()
+is designed for sorting through the vector format of a parameter list
+and return pointers to the arrays that are of interest.  
+The function uses a table created by a utility called 
+<A HREF="./tokentbl.html">tokentbl</A>,
+which is included in the Affine Toolkit.  The utility takes a file 
+listing each string token on a separate line such as file ppw.asc 
+shown below:
+</P>
+<PRE>
+                               P
+                               Pw
+</PRE>
+<P>
+Not much of a file, but if you want just the positional data given 
+to a NuPatch, tokentbl will create a quick little parsing table 
+from the above data and the command "tokentbl -s ppw.asc Ppw":
+</P>
+<PRE>
+                              char Ppw[] = {
+                                  0,  1 , 'P',
+                                  2,  2 ,'\0',      0,
+                                  0,  3 ,'w','\0',  1
+                              };
+</PRE>
+<P>
+An example of how to use this type of table is given below.  The 
+function RibGetUserParameters() takes a pointer to an array that 
+will be returned with pointers to the parameter data identified 
+by the tokens in the table created by tokentbl.  An item in the 
+array is NULL for no data of that name was found ("P" or "Pw" as 
+an example) or it equals the pointer given in parms[].
+</P>
+<H3>An Example Function</H3>
+<P>
+The following function called MyRiNuPatchV() finds the Pw data 
+in the array parms[] and outputs a simple hull for the surface: 
+</P>
+<PRE>
+enum {
+   PPWTBL_P,
+   PPWTBL_PW,
+   PPWTBL_LAST
+};
+
+/* 
+ * The following table was created originally with the following command:
+ *
+ *            tokentbl -s ppw.asc Ppw
+ */
+char Ppw[] = {
+    0,  1 , 'P',
+    2,  2 ,'\0',      PPWTBL_P,
+    0,  3 ,'w','\0',  PPWTBL_PW
+};
+
+
+RtVoid MyRiNuPatchV( RtInt nu, RtInt uorder, RtFloat uknot[], 
+         RtFloat umin, RtFloat umax, 
+         RtInt nv, RtInt vorder, RtFloat vknot[],
+         RtFloat vmin, RtFloat vmax,
+         RtInt n, RtToken tokens[], RtPointer parms[] )
+{
+   int  i,j;
+   RtFloat  *mesh,*p,*pp, *pw;
+   RtPointer  tokensfound[PPWTBL_LAST];
+
+
+   <A HREF="./ribcalls.html#RibGetUserParameters">RibGetUserParameters</A>( Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound );
+   if ( tokensfound[PPWTBL_PW] )
+   {
+      pw = (RtFloat*)tokensfound[PPWTBL_PW];
+   }
+   else
+   {
+      return;
+   }
+
+   p = mesh = (RtFloat*)_RibMalloc( sizeof(RtPoint)*nu*nv );
+   pp = pw;
+   for (i=0;i &lt nv;i++)
+   {
+      for (j=0;j &lt nu;j++)
+      {
+         p[0] = pp[0]/pp[3];
+         p[1] = pp[1]/pp[3];
+         p[2] = pp[2]/pp[3];
+         p+=3;
+         pp+=4;
+      }
+   }
+   RiPatchMesh( "bilinear", 
+         nu, "nonperiodic",
+         nv, "nonperiodic",
+         "P", mesh, RI_NULL );      
+}
+</PRE>
+
+
+<A NAME="AlteringDeclarations"></A>
+<H2>Altering A Declaration</H2>
+<P>
+An RiDeclare-like function can hook the kRIB_DECLARE position of a 
+Ri Table, but by the time control is given to this function 
+RibDeclare() has already been called and an entry for the variable
+being declared has been added to the hash table.  If you wish to
+alter the declaration use 
+<A HREF="./ribcalls.html#RibFindMatch">RibFindMatch</A>()
+to find the item in the hash table and alter the given HASHATOM structure.
+</P>
+<P>
+Be aware though that altering a variable's declaration means any parameter 
+list in a following statement that refers to the variable will be read based 
+on the modified declaration.  Inshort, unless a RIB file is incorrect in the 
+manner in which it declares variables, syntax errors may result if a 
+declaration is changed from a RiDeclare-like function hooked into a Ri table.
+</P>
+<P>
+If a RIB filter is altering how a RIB file declares its variables, the RIB 
+filter should probably not link to libributil.a.  Instead libsribhash.a, 
+libribrdr.a and libribwrtr.a should be linked into the program.  Linking 
+the libraries separately causes two hash tables to be used.  One table is 
+for handling the input RIB and the other handles the output RIB.  
+</P>
+<P>
+In RiDeclare a parameter called name points to a string that is also pointed to
+by the hash table.  When hooking into a Ri Table's chain of RiDeclare calls
+do not free name.  Altering declarations is rare, so the added CPU cycles of 
+creating an extra copy of name seemed wasteful.
+</P>
+
+
+<A NAME="AlteringHowRIBStatementsAreRead"></A>
+<H2>Altering How RIB Statements Are Read</H2>
+<P>
+Once a RIB statement has been identified by the statement name (for example
+Sphere, Torus, NuPatch, AttributeBegin, and Rotate to list a few) a
+corresponding function in a table called gRibReadTable[] is called.  
+The table gRibReadTable[] is a global value that lists functions that
+handle reading in a RIB statement after its identifying token and calling
+a corresponding function in the RIB file's Ri Table.  Functions such as
+<A HREF="./ribcalls.html#RibReadVer35Option">RibReadVer35Option</A>() 
+alter the gRibReadTable[] table to change how the RIB Reader handles
+RIB statements.  Once altered all subsequently opened RIB files are affected. 
+<A HREF="./ribcalls.html#RibReadVer35Option">RibReadVer35Option</A>() 
+replaces the pointer gRibReadTable[kRIB_NUPATCH] with an internal function 
+called RibReadVer35NuPatchV().  A function 
+<A HREF="./ribcalls.html#RibReadVer36Option">RibReadVer36Option</A>()
+undoes this action.
+</P>
+<P>
+Altering the table of reading functions gRibReadTable[] allows the RIB Reader
+to handle nonstandard formated RIB statements.  The 
+<A HREF="./ribcalls.html#RibReadVer35Option">RibReadVer35Option</A>() is an
+example where such a feature was needed.  
+</P>
+<A NAME="AddingNewandNonstandardRIBStatements"></A>
+<H2>Adding New and Nonstandard RIB Statements</H2>
+<P>
+Adding a new or nonstandard RIB statement is a little more involved than 
+just altering
+how a recognized RIB statement should be read.  Adding new RIB 
+statements involves changes to every table that uses the kRIB_* offset values.
+When PRMan 3.6 introduced RiReadArchive() and RiReadArchiveV() several files
+were changed:
+
+<UL>
+<LI>
+A new kRIB_* value kRIB_READARCHIVE was added to the enum list in ribrdr.h.  
+</LI>
+<LI>
+The table gRibRITable[] in affine/readrib/ritable.c needed RiReadArchiveV() 
+added.
+</LI>
+<LI>
+The table gRibReadTable[] in affine/readrib/ribfunc.c needed 
+RibReadReadArchiveV() added plus an implementation of RibReadReadArchiveV(). 
+</LI>
+<LI> 
+The file affine/readrib/ribcalls.asc had the string "ReadArchive" added and 
+the modified ribcalls.asc file was used with the tokentbl tool to produce a 
+new set of tables in affine/readrib/ribtbl.c which are used by RibRead() in 
+affine/readrib/readrib.c.  Refer to the description section of affine/readrib/ribtbl.c for how the tokentbl tool needs to used.  
+</LI>
+<LI>
+A table in affine/ribhash/cparams.c also needed an additional entry.
+</LI>
+</UL>
+</P>
+<P>
+Once the above changes were made, all the libraries such as RibNop needed
+to be altered to take in account the new enumerated list of kRIB_* values
+that now included a kRIB_READARCHIVE.  Depending on what you are adding
+in the way of a new Ri call, this last step could have been avoided by
+adding the new kRIB_ value to the very end of the enumerated list.  All
+the libraries in the Affine Toolkit would simply not know about the new
+call and only your code that hooks out this last index into gRibRITable[]
+would be called.  To do this would also require some understanding of how
+the tokentbl tool creates tables from the affine/readrib/ribcalls.asc file.
+The tokentbl tool creates hardwired values instead of using kRIB_* values.
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

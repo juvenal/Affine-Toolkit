@@ -1,0 +1,3284 @@
+<!--
+/* $RCSfile: ribcalls.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  ribcalls.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ *    History:
+ *       06-01-99  Added to RibQueryClassType() description and started
+ *                 long missing history section.
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>
+Copyright (c) 1996, 1997, 1998, 1999 Thomas E. Burge. All rights reserved.
+</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#ffffff"></FONT>
+<H1><CENTER>Functions For Reading RIB Files</CENTER></H1>
+<P>
+<CENTER>(Last Updated 6-1-99)</CENTER>
+</P>
+<P>
+The functions listed here provide a set of tools for reading RIB and RIB-like
+files.  There is only a small set of functions that a person using
+the Affine Toolkit needs to become familiar with.  This small set of 
+functions rely on the remaining set of functions shown in the alphabetical
+list below.  To help skip over some
+of the lower level functions refer to the Quick Reference List below to get
+some pointers to the most commonly used functions.
+</P>
+
+<H2>Quick Reference List to Commonly Used Rib Functions</H2>
+<UL>
+<LI><A HREF="./ribcalls.html#RibOpen">RibOpen</A>()
+ -- Prepare to read a RIB file.</LI>
+<LI><A HREF="./ribcalls.html#RibRead">RibRead</A>()
+ -- Read a RIB file.</LI>
+<LI><A HREF="./ribcalls.html#RibClose">RibClose</A>()
+ -- Free resources and close RIB file.</LI>
+<LI><A HREF="./ribcalls.html#RibBegin">RibBegin</A>()
+ -- Allow an output filename to be given.</LI>
+<LI><A HREF="./ribcalls.html#RibOption">RibOption</A>()
+ -- Set options for the output file.</LI>
+<LI><A HREF="./ribcalls.html#RibQueryClassType">RibQueryClassType</A>()
+ -- Returns the class and type flags for a given token name declare in
+the hash table.</LI>
+<LI><A HREF="./ribcalls.html#RibGetUserParameters">RibGetUserParameters</A>()
+ -- Sort through a vector form of a parameter list for certain token 
+names.</LI>
+<LI><A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>()
+ -- Tells the RIB Reader not to free up data given to a RI call.</LI>
+<LI><A HREF="./ribcalls.html#RibMalloc">RibMalloc</A>()
+ -- Allocate a memory block.</LI>
+<LI><A HREF="./ribcalls.html#RibFree">RibFree</A>()
+ -- Deallocate a memory block.</LI>
+<LI><A HREF="./ribcalls.html#RibFreeVectorData">RibFreeVectorData</A>()
+ -- Deallocate data in the parameter list of token/param pairs.</LI>
+<LI><A HREF="./ribcalls.html#RibQueryKeepData">RibQueryKeepData</A>()
+ -- Returns nonzero value if pointers given in present Ri call point
+to memory areas that should not be freed.</LI>
+<LI><A HREF="./ribcalls.html#RibSetRITable">RibSetRITable</A>()
+ -- Associates a table of Ri calls to a RIB handle.</LI>
+</UL>
+
+
+<H2>Alphabetical Listing of Rib Functions</H2>
+
+
+<A NAME="RibAddItem"></A>
+<dl><dt><PRE>
+PRIB_HASHATOM <b>RibAddItem</b>( RIB_HASHHND hash, RIB_UINT32 type, ... )
+</PRE>
+<dd>
+<P>
+Adds an item to the hash table <i>hash</i> given the item's <i>type</i> 
+and data.  The data is given in a variable argument list in a format 
+dependent on the value <i>type</i>. 
+</P>
+<P>
+Refer to <A HREF="./hash.html#HashItemTypes">Hash Item Types</A> 
+for the parameters that are used for the "..." in RibAddItem().
+</P>
+<P>
+To get a hash table handle from a RIB handle refer to 
+<A HREF="./ribcalls.html#RibGetHashHandle">RibGetHashHandle</A>().
+</P>
+<P>
+A hash atom can be one of the following types: 
+<PRE>
+     kRIB_HASH_RIREQUESTCODE
+     kRIB_HASH_LIGHTHANDLE
+     kRIB_HASH_OBJECTHANDLE
+     kRIB_HASH_STRINGTOKEN
+     kRIB_HASH_STRING
+     kRIB_HASH_VARIABLE
+     kRIB_HASH_COORDSYS
+     kRIB_HASH_USER
+</PRE>
+</P>
+<P>
+Values assigned to <i>type</i> that are from kRIB_HASH_USER upto 
+kRIB_HASH_TYPEMASK & (kRIB_HASH_USER + n) inclusively can be used
+to store data in a format specific to the tool using the hash library.
+Refer to 
+<A HREF="./hash.html#UserHashItemTypes">User Hash Item Types</A> 
+for placing user data into a hash table.
+</P>
+<P>
+Two flags kRIB_HASH_FREEDATA and kRIB_HASH_FREEEXTDATA can be ORed
+into the value given to <i>type</i> to indicate to 
+<A HREF=./ribcalls.html#RibDestroyHashTable>RibDestroyHashTable</A>()
+what data can be freed.  By default the data referred to by a hash
+item is not freed without the appropriate flags set.
+</P>
+<P>
+The pointers given to RibAddItem() are used in the hash table 
+and can not be freed until the item is removed from the hash 
+table or the hash table is destroyed with 
+<A HREF=./ribcalls.html#RibDestroyHashTable>RibDestroyHashTable</A>().  
+</P>
+</dl>
+
+
+<A NAME="RibBegin"></A>
+<dl><dt><PRE>
+int <b>RibBegin</b>( RIB_HANDLE rib, RtToken name )
+</PRE>
+<dd>
+<P>
+Note that RibBegin() has the Prefix <b><i>Rib</i></b>, not simply 
+<b><i>Ri</i></b>.
+</P>
+<P>
+The RenderMan Interface has a function RiBegin() that takes a filename 
+indicating where the output is to be written.  If the value is RI_NULL, then 
+standard output is used.  
+</P>
+<P>
+To allow the output filename to be specified, the RIB Reader library
+provides RibBegin() to allow a RiBegin-like function listed in the RI table
+at position kRIB_BEGIN to be called with the parameter <i>name</i>.  
+Once RibBegin() has been called the string <i>name</i> can be freed.
+</P>
+<P>
+To prevent multiple RiBegin() calls reaching the output 
+library that hooks out the ritable, use RibBegin() if an output 
+file must be specified.  
+</P>
+<P>
+RibBegin() does not have to be called unless an output filename
+needs to be given.  <A HREF=./ribcalls.html#RibRead>RibRead</A>()
+will call RibBegin() automatically.  A flag is set
+that prevents multiple Begin/End calls reaching the output library.  
+If you call RibBegin() a matching 
+<A HREF=./ribcalls.html#RibEnd>RibEnd</A>() call is optional because
+<A HREF=./ribcalls.html#RibClose>RibClose</A>() makes a call
+to RibEnd().  
+<A HREF=./ribcalls.html#RibEnd>RibEnd</A>() is really provided to
+allow the source code to have matching Begin/End calls.  Although
+it can be used to terminate the output of a RIB file before 
+<A HREF=./ribcalls.html#RibRead>RibRead</A>() has completed reading
+the input RIB file or stream.
+</P>
+<P>
+RibBegin() sets a status flag called kRIB_STATUS_BEGUN after the 
+RI Table's kRIB_BEGIN function is called.
+</P>
+<P>
+Refer to 
+<A HREF=./ritable.html>Functions For Reading RIB Files</A>
+for a description of what RI Tables are and how they provide a mechanism
+for subclassing RI functions.
+</P>
+<P>
+Refer to <A HREF=./coding.html#RealQuickOverview>A Real Quick Overview</A>
+for examples using RibBegin().
+</P>
+<P>
+Also refer to <A HREF=./ribcalls.html#RibEnd>RibEnd</A>().
+</P>
+</dl>
+
+
+<A NAME="RibBufferRead"></A>
+<dl><dt><PRE>
+int <b>RibBufferRead</b>( RIB_HANDLE rib, char *buffer, unsigned int size )
+</PRE>
+<dd>
+<P>
+Acts like fread() except that the number of bytes read is kept track of for
+<A HREF="./ribcalls.html#RibGetByteOffset">RibGetByteOffset</A>().  The
+number of lines ('\n' characters) is not accounted for.
+</P>
+</dl>
+
+
+<A NAME="RibClearError"></A>
+<dl><dt><PRE>
+int <b>RibClearError</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Clears the last error encountered.  
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetError">RibGetError</A>() and
+<A HREF="./ribcalls.html#RibSetError">RibSetError</A>().
+</P>
+</dl>
+
+
+<A NAME="RibClose"></A>
+<dl><dt><PRE>
+int <b>RibClose</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Closes the file represented by <i>rib</i> and frees resources such as a
+hash table and any buffers used by <i>rib</i>.  
+The RIB handle <i>rib</i> is no longer a valid handle after RibClose() 
+is called.  RibClose also calls <A HREF=./ribcalls.html#RibEnd>RibEnd</A>().
+</P>
+<P>
+If the hash table associated with <i>rib</i> was created with 
+<A HREF="./ribcalls.html#RibCreateHashTable">RibCreateHashTable</A>() 
+and the RIB file was opened with 
+<A HREF="./ribcalls.html#RibOpenWithHashTable">RibOpenWithHashTable</A>(),
+the hash table is treated as an external resource that needs to be freed 
+separately from closing <i>rib</i>.  To free a hash table use  
+<A HREF="./ribcalls.html#RibDestroyHashTable">RibDestroyHashTable</A>().
+</P>
+<P>
+If <i>rib</i> was opened with the function 
+<A HREF="./ribcalls.html#RibOpenSubfile">RibOpenSubfile</A>()
+then any tables and buffers used by the parent are left alone and are 
+not freed.
+</P>
+<P>Refer to <A HREF=./coding.html#RealQuickOverview>A Real Quick Overview</A>
+for examples using RibClose().
+</P>
+</dl>
+
+
+<A NAME="RibCloseFile"></A>
+<dl><dt><PRE>
+int <b>RibCloseFile</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Closes the file represented by <i>rib</i> and does not free any buffers or
+tables.  This function allows a tool to fclose() a file without loosing any
+data such as the data in the RIB's associated hash table.  The RIB handle 
+<i>rib</i> is still valid and can be used in subsequent Rib calls.
+</P>
+</dl>
+
+
+<A NAME="RibCacheVector"></A>
+<dl><dt><PRE>
+int <b>RibCacheVector</b>( RIB_HANDLE rib, 
+                  RtInt n, RtToken **paTokens, RtPointer **paParams )
+</PRE>
+<dd>
+<P>
+This function is used by 
+<A HREF="./ribcalls.html#RibReadParameterList">RibReadParameterList</A>()
+in affine/readrib/paraml.c.  Most tools should not need to call 
+this function directly. 
+</P>
+<P>
+RibCacheVector() increases the size of four arrays associated with 
+each RIB handle so that each can hold a minimum of <i>nparams</i> 
+items of data.  The arrays are used for reading of token/parameter 
+pairs that form the parameter lists of RIB statements.  Two of
+the arrays are used to separately store the token names and a pointer
+to the parameter data associated with each token name.  The other
+two of the four arrays provide information about each token/parameter 
+pair: the type of data the token name represents and the number of 
+items of the token type the parameter data holds.    
+</P>
+<P>
+The four arrays together are referred to as the <i>vector cache</i> 
+in the Affine Toolkit source code.  The name <i>vector cache</i> 
+is from the token/parameter arrays used in the vector form of the 
+RI calls.  
+Once 
+<A HREF="./ribcalls.html#RibReadParameterList">RibReadParameterList</A>()
+has read a RIB statement's parameter list, data is stored in four arrays storing
+the token names, parameter data arrays, the type of each parameter data 
+array, and the number of items in each parameter data array. 
+</P>
+<P>
+Initially when a RIB handle is created the four arrays (tokencache, 
+paramcache, typecache, and ncache) are each given the size of   
+kRIB_VECTORCACHEINCR (about 30) values.  This size is normally large
+enough for most RIB statement's parameter list, but if needed these
+arrays can be grown by increments of kRIB_VECTORCACHEINCR.  
+</P>
+<P>
+RibCacheVector() is the function used to check if the vector cache 
+needs to be grown.  The value <i>nparams</i> indicates the number
+of additional token/parameter pairs that are going to be added.  
+Typically the token/parameter pairs are read-in one at a time and
+RibCacheVector() is called with <i>nparams</i> equal to one to indicate 
+one more item is being added to the vector cache.  
+</P>
+<P>
+<A HREF="./ribcalls.html#RibGetVectorCacheInfo">RibGetVectorCacheInfo</A>()
+is used to access the types and sizes of the token/parameter pairs.  It
+also returns the number of vertices found in the 
+&quotP&quot, &quotPw&quot, or &quotPz&quot arrays
+if present.  
+<A HREF="./ribcalls.html#RibGetVectorCacheInfo">RibGetVectorCacheInfo</A>()
+and RibCacheVector() were designed for functions doing the actual reading
+of a RIB statement.  Information such as the number of vertices found in
+a given positional array (&quotP&quot, &quotPw&quot, or &quotPz&quot) is
+stored in an internal array <i>ncache</i> for parsing such things as a 
+Polygon statement.
+</P>
+</dl>
+
+
+<A NAME="RibCopyVectorCache"></A>
+<dl><dt><PRE>
+int <b>RibCopyVectorCache</b>( RIB_HANDLE rib, 
+                      RtInt n, RtToken **paTokens, RtPointer **paParams )
+</PRE>
+<dd>
+<P>
+Makes a copy of n items from the start of a RIB statement's 
+token/parameter pairs based on the vector cache.  The token names 
+and parameter data are copied into two newly malloc'ed blocks of 
+memory that can be used in the vector form of an RI call.  
+RibCopyVectorCache() assumes that it is being called from a RI-like 
+function hooked into <i>rib</i>'s associated RI table.
+</P>
+</dl>
+
+
+<A NAME="RibCreateBuffer"></A>
+<dl><dt><PRE>
+PRIB_BUFFER <b>RibCreateBuffer</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+The RIB Reader library uses a linked list of 255 character long
+buffers to handle reading strings and arrays of unknown length.
+During 
+<A HREF="./ribcalls.html#RibOpen">RibOpen</A>() and
+<A HREF="./ribcalls.html#RibOpenWithHashTable">RibOpenWithHashTable</A>(), 
+RibCreateBuffer() is called to setup a structure (RIB_BUFFER) 
+that keeps track of the linked list of 255 character 
+buffers (RIB_BUFFERITEM).
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibDestroyBuffer">RibDestroyBuffer</A>().
+</P>
+</dl>
+
+
+<A NAME="RibCreateFloatArrayFromBuffer"></A>
+<dl><dt><PRE>
+RtFloat *<b>RibCreateFloatArrayFromBuffer</b>( RIB_HANDLE rib, RIB_UINT32 options )
+</PRE>
+<dd>
+<P>
+If 
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>() was called
+to save characters retrieved by 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() into a buffer and
+a set of IEEE 32-bit floats has been read, RibCreateFloatArrayFromBuffer()
+will malloc a block of memory for the array, copy the contents of
+the <i>rib</i>'s buffer into the malloc'ed memory block and return a pointer
+to it.  
+</P>
+<P>
+The data in the buffer is not removed and anymore characters read by 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() will be appended
+to the contents of the buffer until 
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>() or
+<A HREF="./ribcalls.html#RibResetBuffer">RibResetBuffer</A>() is called.
+</P>
+</dl>
+
+
+<A NAME="RibCreateHashTable"></A>
+<dl><dt><PRE>
+RIB_HASHHND <b>RibCreateHashTable</b>( int size )
+</PRE>
+<dd>
+<P>
+Creates a double hash table of length <i>size</i> and width 
+kRIB_HASH_SECONDSIZE.
+To find an element in the hash table two hash functions are used.  The first
+reduces the search to row position inclusively between 0 and <i>size</i>-1.  
+The second hash function narrows the search further to a column position 
+inclusively between 0 and kRIB_HASH_SECONDSIZE-1.
+</P>
+<P>
+By default 
+<A HREF="./ribcalls.html#RibOpen">RibOpen</A>()
+calls RibCreateHashTable() with size kRIB_HASH_TABLESIZE.  The value 
+<i>size</i> should be a prime number, so the hashing functions can work
+efficiently.
+</P>
+</dl>
+
+
+<A NAME="RibCreateIntegerArrayFromBuffer"></A>
+<dl><dt><PRE>
+RtInt *<b>RibCreateIntegerArrayFromBuffer</b>( RIB_HANDLE rib, RIB_UINT32 options )
+</PRE>
+<dd>
+<P>
+If 
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>() was called
+to save characters retrieved by 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() into a buffer and
+a set of 32-bit integers has been read, RibCreateIntegerArrayFromBuffer()
+will malloc a block of memory for the array, copy the contents of
+the <i>rib</i>'s buffer into the malloc'ed memory block and return a pointer
+to it.  
+</P>
+<P>
+The data in the buffer is not removed and anymore characters read by 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() will be appended
+to the contents of the buffer until 
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>() or
+<A HREF="./ribcalls.html#RibResetBuffer">RibResetBuffer</A>() is called.
+</P>
+</dl>
+
+
+<A NAME="RibCreateStringFromBuffer"></A>
+<dl><dt><PRE>
+char *<b>RibCreateStringFromBuffer</b>( RIB_HANDLE rib, RIB_UINT32 options )
+</PRE>
+<dd>
+<P>
+If 
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>() was called
+to save characters retrieved by 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() into a buffer and
+a set of ASCII characters has been read, RibCreateStringFromBuffer()
+will malloc a block of memory for the array, copy the contents of
+the <i>rib</i>'s buffer into the malloc'ed memory block and return a pointer
+to it.  
+</P>
+<P>
+Binary characters are replaced with an ASCII representation such as '\n' or
+an ASCII octal value '\000'.
+</P>
+<P>
+The data in the buffer is not removed and anymore characters read by 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() will be appended
+to the contents of the buffer until 
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>() or
+<A HREF="./ribcalls.html#RibResetBuffer">RibResetBuffer</A>() is called.
+</P>
+</dl>
+
+
+<A NAME="RibCreateStringsFromBuffer"></A>
+<dl><dt><PRE>
+int <b>RibCreateStringsFromBuffer</b>( RIB_HANDLE rib, RtInt n, RtString **r )
+</PRE>
+<dd>
+<P>
+Parameter lists can have arrays of strings for tokens defined 
+as varying or vertex strings.  Once the entire array of <i>n</i>
+strings has been read into <i>rib</i>'s buffer, 
+RibCreateStringsFromBuffer() creates a block of memory large enough
+for <i>n</i> pointers and the <i>n</i> NULL terminated strings.  The
+pointers to the beginning of the strings.  
+</P>
+<P>
+One memory block is used for the array of pointers and the character 
+strings so that a function listed in the RI table receives this data
+it can free it the same way all other arrays are freed by making
+a single call to RibFree() with the pointer to the array.
+</P>
+</dl>
+
+
+<A NAME="RibDeclare"></A>
+<dl><dt><PRE>
+PRIB_HASHATOM <b>RibDeclare</b>( RIB_HANDLE rib, char *name, char *declaration )
+</PRE>
+<dd>
+<P>
+Associates the RIB file or stream <i>rib</i> with a type declaration 
+for the variable or attribute name <i>name</i>.  Subsequent statements 
+that are read from <i>rib</i> will be able to handle parameter lists using
+<i>name</i>.  Refer to the <i>RI Specification</I> regarding RiDeclare().
+</P>
+<P>
+RibDeclare() adds <i>name</i> to a hash table associated with <i>rib</i>.  
+The string pointed to by <i>name</i> is freed when 
+its entry in the hash table is removed by 
+<A HREF="./ribcalls.html#RibRemoveItem">RibRemoveItem</A>()
+or destroyed when
+<A HREF="./ribcalls.html#RibClose">RibClose</A>() or
+<A HREF=./ribcalls.html#RibDestroyHashTable>RibDestroyHashTable</A>() is
+called.  
+</P>
+<P>
+<A HREF="./ribcalls.html#RibClose">RibClose</A>() happens to simply call
+<A HREF=./ribcalls.html#RibDestroyHashTable>RibDestroyHashTable</A>() if
+the status flag kRIB_STATUS_EXTERNHASHTBL is not set.  Refer to 
+<A HREF=./ribcalls.html#RibOpenWithHashTable>RibOpenWithHashTable</A>() 
+regarding the status flag kRIB_STATUS_EXTERNHASHTBL.
+</P>
+<P>
+Because <i>name</i> is added to a hash table as a pointer to a string, 
+RibDeclare() assumes that <i>name</i> was a malloced piece of data that 
+is freeable.
+</P>
+<P>
+The library libribhash.a calls 
+<A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>() directly not 
+RibDeclare().  RibDeclare() is provided for the libraries libribrdr.a,
+libribwrtr.a and libributil.a to use.  Utilities can also use RibDeclare()
+to extend the standard set of attribute and variables names that may appear
+in a parameter list.
+</P>
+</dl>
+
+
+<A NAME="RibDefaultArchiveRecordHandler"></A>
+<dl><dt><PRE>
+int <b>RibDefaultArchiveRecordHandler</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+Handles reading a hint or comment after a '#' has already been read.  
+By default
+<A HREF="./ribcalls.html#RibReadArchiveRecord">RibReadArchiveRecord</A>()
+is called to read the input until a '\n' is encountered, it then calls
+<A HREF="./ribcalls.html#RibCreateStringFromBuffer">RibCreateStringFromBuffer</A>()
+to create a memory block to store the entire hint or comment, and 
+then the function at the kRIB_ARCHIVERECORD position of <i>rib</i>'s Ri 
+table is called with "comment" or
+"structure" to identify if one or two '#' charcters prefixed the line of data.
+</P>
+<P>
+The default behavior of RibDefaultArchiveRecordHandler() can be altered with
+<A HREF="./ribcalls.html#RibSetHintTable">RibSetHintTable</A>().  If 
+RibSetHintTable() is used to associate a hint table to <i>rib</i>, 
+RibDefaultArchiveRecordHandler() will identify standard hints and call the
+appropriate hint function.  
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibGetHintTableSize">RibGetHintTableSize</A>()
+and 
+<A HREF="./ribcalls.html#RibGetHintTable">RibGetHintTable</A>().  
+By default a RIB handle has no hint table and RibGetHintTable() will 
+return NULL. 
+</P>
+</dl>
+
+
+<A NAME="RibDefaultErrorHandler"></A>
+<dl><dt><PRE>
+int <b>RibDefaultErrorHandler</b>( RIB_HANDLE rib, 
+                           int code, int severity, 
+                           PRIB_ERROR error )
+</PRE>
+<dd>
+<P>
+Prints the standard error message indicated by the 
+<i>RenderMan Specification</i> using the values <i>code</i> and 
+<i>severity</i>.
+If the status flag kRIB_OPTION_ERRMSG_VERBOSE is set, a more verbose error 
+message follows based on data given in <i>error</i>.  By default the
+flag kRIB_OPTION_ERRMSG_VERBOSE is set when <i>rib</i> is opened.
+<A HREF="./ribcalls.html#RibSetOptions">RibSetOptions</A>() can be used
+to turn the verbose flag off.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibSetErrorHandler">RibSetErrorHandler</A>()
+and
+<A HREF="./ribcalls.html#RibGetErrorHandler">RibGetErrorHandler</A>().
+</P>
+</dl>
+
+
+<A NAME="RibDefaultHintHandler"></A>
+<dl><dt><PRE>
+int <b>RibDefaultHintHandler</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Used as a basic function in hint tables assigned to RIB handles.  The preceding
+'##' should have already been read and the hint name should be in <i>rib</i>'s
+buffer.  
+</P>
+<P>
+RibDefaultHintHandler() reads the input until a '\n' is encountered, calls
+<A HREF="./ribcalls.html#RibCreateStringFromBuffer">RibCreateStringFromBuffer</A>()
+to create a memory block to store the entire hint, and calls the function at
+the kRIB_ARCHIVERECORD position of the archive table is called with "structure"
+as the first parameter.  Once the RI Table function returns, RibDefaultHintHandler()
+checks for the kRIB_STATUS_KEEPDATA flag and if not there frees the string that
+has the hint statement.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetHintTableSize">RibGetHintTableSize</A>(), 
+<A HREF="./ribcalls.html#RibGetHintTable">RibGetHintTable</A>() and
+<A HREF="./ribcalls.html#RibSetHintTable">RibSetHintTable</A>().
+</P>
+</dl>
+
+
+<A NAME="RibDestroyBuffer"></A>
+<dl><dt><PRE>
+int <b>RibDestroyBuffer</b>( PRIB_BUFFER pbuf )
+</PRE>
+<dd>
+Used by <A HREF="./ribcalls.html#RibClose">RibClose</A>() to destroy an internal
+structure used to read long strings and arrays of unknown length.
+</dl>
+
+
+<A NAME="RibDestroyHashTable"></A>
+<dl><dt><PRE>
+int <b>RibDestroyHashTable</b>( RIB_HASHHND hash )
+</PRE>
+<dd>
+<P>
+Frees all data listed in the hash table <i>hash</i> and then
+the arrays used to store the hash table itself.  Once complete,
+<i>hash</i> is no longer a valid handle.  
+</P>
+</dl>
+
+
+<A NAME="RibDestroyHashTableKeepData"></A>
+<dl><dt><PRE>
+int <b>RibDestroyHashTableKeepData</b>( RIB_HASHHND hash )
+</PRE>
+<dd>
+<P>
+Destroys the hash table and the hash atoms listed in the
+hash table, but the data pointed to by each atom is left untouched.
+</P>
+</dl>
+
+
+<A NAME="RibEnd"></A>
+<dl><dt><PRE>
+int <b>RibEnd</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Note that RibEnd() has the Prefix <b><i>Rib</i></b>, not simply 
+<b><i>Ri</i></b>.
+</P>
+<P>
+RibEnd() sets a status flag called kRIB_STATUS_ENDED after the 
+RI Table's kRIB_END function is called.  The flag prevents 
+RibEnd() from calling the RI Table's kRIB_END call again.
+</P>
+<P>
+RibEnd() can be used to cleanly terminate the reading of a RIB 
+file <i>rib</i> before the RIB file has been entirely read.  Using
+RibEnd() in this manner requires that it be called from a RI
+function hooked in <i>rib</i>'s RI Table.  Once
+RibEnd() sets the status flag kRIB_STATUS_ENDED, RibRead() will
+return control to the tool that called it instead of reading the 
+next available RIB statement.
+</P>
+<P>
+Refer to <A HREF=./ribcalls.html#RibBegin>RibBegin</A>().
+RibEnd() can be called from a tool using the RIB Reader
+library without having called a matching RibBegin().  
+<A HREF=./ribcalls.html#RibRead>RibRead</A>()
+will call RibBegin() and 
+<A HREF=./ribcalls.html#RibClose>RibClose</A>() 
+makes a call to RibEnd().  Special status flags kRIB_STATUS_BEGUN
+and kRIB_STATUS_ENDED prevent begin and end functions listed
+in the RI Table from getting multiple calls.  
+</P>
+</dl>
+
+
+<A NAME="RibErrorNumberOfValues"></A>
+<dl><dt><PRE>
+int <b>RibErrorNumberOfValues</b>( RIB_HANDLE hrib, RtToken parameterID, 
+			   RtInt expected_nitems, RtInt received_nitems )
+</PRE>
+<dd>
+<P>
+Reports an error where a token/parameter pair has an array of data
+of the wrong length.  The token that identifies the token/parameter
+pair is <i>parameterID</i>.  The values <i>expected_nitems</i> and 
+<i>received_nitems</i> gives the number of expected and actual items
+respectively.  Each item can be made up of any number of floats, integers
+or strings.  For example a matrix involves 16 floats.  Error messages 
+measure in the number of floats, integers and strings and not the
+number of matrices or colors.  RibErrorNumberOfValues() converts 
+<i>expected_nitems</i> and <i>received_nitems</i> into values
+compatible with the phrasing of the error messages by 
+finding the type associated with the <i>parameterID</i> in 
+declarations stored in <i>rib</i>'s hash table.  
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibSetError">RibSetError</A>().
+</P>
+</dl>
+
+
+<A NAME="RibFindMatch"></A>
+<dl><dt><PRE>
+PRIB_HASHATOM <b>RibFindMatch</b>( RIB_HASHHND hash, RIB_UINT32 type, int code, void *data )
+</PRE>
+<dd>
+<P>
+Used to retrieve an item that has been added to a hash table <i>hash</i>.
+A type using one of the following constants is required:
+<PRE>
+   enum {
+      kRIB_HASH_UNKNOWN,
+      kRIB_HASH_RIREQUESTCODE,
+      kRIB_HASH_LIGHTHANDLE,
+      kRIB_HASH_OBJECTHANDLE,
+      kRIB_HASH_STRINGTOKEN,
+      kRIB_HASH_STRING,
+      kRIB_HASH_VARIABLE,
+      kRIB_HASH_COORDSYS,
+      kRIB_HASH_LAST,
+      kRIB_HASH_USER = 1024
+   };
+</PRE>
+Values of kRIB_HASH_USER and greater only have meaning for a tool using
+the hash table library.  When searching RibFindMatch() uses the value
+<i>code</i> as a hash value and unique ID along with <i>type</i> only if
+<i>data</i> is NULL.  If <i>data</i> points to a string, the hash library
+will use the string to create a hash value and use strcmp() to find a match
+after a possible matching item's <i>type</i> matched.
+</P>
+<P>
+Light and object handles are identified by a code value that represents their
+sequence number.  Variables and coordinate systems are identified 
+by their string names.  Strings and RI requests are identified by the code 
+given in the RIB file's binary encoding.  
+</P>
+</dl>
+
+
+<A NAME="RibFindNextMatch"></A>
+<dl><dt><PRE>
+PRIB_HASHATOM <b>RibFindNextMatch</b>( RIB_HASHHND hash, PRIB_HASHATOM atom )
+</PRE>
+<dd>
+<P>
+To allow for application specific user items in the hash table that have
+a type of kRIB_HASH_USER or greater, the hash table library allows for 
+multiple user items to have matching types and codes.  Each hash item
+has an extended field that can be given a pointer to the data making the
+hash item unique.  A tool making use
+of this ability calls 
+<A HREF="./ribcalls.html#RibFindMatch">RibFindMatch</A>() first, determines
+if there actually is a match given by looking at the extended data and if
+there is no match continues the search with RibFindNextMatch().
+</P>
+</dl>
+
+
+<A NAME="RibFree"></A>
+<dl><dt><PRE>
+void <b>RibFree</b>( void *p )
+</PRE>
+<dd>
+<P>
+Frees a memory block pointed to by <i>p</i>.  This allows a central
+place for altering how the memory is freed.  The Affine Toolkit source code
+uses a macro _RibFree() defined in affine/include/ribhash.h instead of
+calling RibFree() directly.  This macro is used so that if a flag 
+RIB_MEMORY_TESTS is defined, the macro will call special compiled version 
+of RibFree() that keeps track of memory leaks.  
+</P>
+<P>
+If the Affine libraries are compiled with RIB_MEMORY_TESTS not defined, the
+macro _RibFree() is simply replaced with free().  This is to avoid the
+extra function call involved in calling RibFree() which without the memory
+tests simply calls free().
+</P>
+<P>
+Refer to <A HREF="./memory.html">Rib Memory Functions</A> 
+for more detail on the memory handling functions.
+</P>
+<P>
+Refer to <A HREF="./coding.html#MemoryAllocations">Memory Allocations</A> 
+in the section 
+<A HREF="./coding.html#MoreAdvancedSubclassing">More Advanced Subclassing</A>
+for how pointers to memory are handled in Ri-like calls called from the
+RIB Reader Library.
+</P>
+</dl>
+
+
+<A NAME="RibFreeBasisMatrix"></A>
+<dl><dt><PRE>
+void <b>RibFreeBasisMatrix</b>( void *p )
+</PRE>
+<dd>
+<P>
+Frees a memory block pointed to by <i>p</i>.  A
+check is done to see if the memory is one of the RI_ constants
+which can not be freed.  If an RI_ constant such RiPowerBasis is
+given, RibFreeBasisMatrix() simply returns without error.
+</P>
+<P>
+Refer to <A HREF="./memory.html">Rib Memory Functions</A> 
+for more detail on the memory handling functions.
+</P>
+<P>
+Refer to <A HREF="./coding.html#MemoryAllocations">Memory Allocations</A> 
+in the section 
+<A HREF="./coding.html#MoreAdvancedSubclassing">More Advanced Subclassing</A>
+for how pointers to memory are handled in Ri-like calls called from the
+RIB Reader Library.
+</P>
+</dl>
+
+
+<A NAME="RibFreeVectorCache"></A>
+<dl><dt><PRE>
+int <b>RibFreeVectorCache</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Internal call used to free a set of arrays that store pointers for
+token/parameter pairs, number of elements found and type of the 
+parameter data.  
+</P>
+</dl>
+
+
+<A NAME="RibFreeVectorData"></A>
+<dl><dt><PRE>
+int <b>RibFreeVectorData</b>( RIB_HANDLE hrib, 
+                     RtInt nparms, RtToken *tokens, RtPointer *parms )
+</PRE>
+<dd>
+<P>
+RibFreeVectorData() frees <i>nparms</i> of strings used by the 
+array <i>tokens</i> and <i>nparms</i> data arrays pointed to by
+the array <i>parms</i>.  
+</P>
+</dl>
+
+
+<A NAME="RibGetArcRecHandler"></A>
+<dl><dt><PRE>
+PRIB_HINTTABLE <b>RibGetArcRecHandler</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the function pointer to the archieve record handler
+registered with <i>rib</i> by the function 
+<A HREF="./ribcalls.html#RibSetArchiveRecordHandler">RibSetArchiveRecordHandler</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetBufferItem"></A>
+<dl><dt><PRE>
+PRIB_BUFFERITEM <b>RibGetBufferItem</b>( PRIB_BUFFER pBuffer )
+</PRE>
+<dd>
+<P>
+This function is used by functions in affine/readrib/streamio.c.  
+Most tools should not need to call this function directly. 
+</P>
+<P>
+Returns an available RIB_BUFFERITEM structure or creates a new one.
+</P>
+</dl>
+
+
+<A NAME="RibGetBufferLength"></A>
+<dl><dt><PRE>
+unsigned int <b>RibGetBufferLength</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the number of bytes stored in <i>rib</i>'s buffer.  
+This function is used when an array has been read into the
+buffer and a contiguous block of memory needs to be created
+to copy the array into.
+</P>
+</dl>
+
+
+<A NAME="RibGetByteOffset"></A>
+<dl><dt><PRE>
+unsigned long int <b>RibGetByteOffset</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the presnt position in the file or number of bytes
+read from the input stream.
+</P>
+</dl>
+
+
+<A NAME="RibGetChar"></A>
+<dl><dt><PRE>
+int <b>RibGetChar</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the next character in a file or stream.
+</P>
+</dl>
+
+
+<A NAME="RibGetConflictingHashAtom"></A>
+<dl><dt><PRE>
+PRIB_HASHATOM <b>RibGetConflictingHashAtom</b>( RIB_HASHHND hash )
+</PRE>
+<dd>
+<P>
+If a 
+<A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>() returns NULL, 
+an existing item matching in the hash table <i>hash</i> matches 
+the item being added.  RibGetConflictingHashAtom() returns a non-NULL
+pointer if an existing item did in fact conflict with an item being
+added to a hash table.
+</P>
+<P>
+Normally the already existing hash item is then altered to match the
+data the new item would have provided in the hash table.  
+</P>
+<P>
+To alter an existing hash table's item, refer to the functions
+<A HREF="./ribcalls.html#RibSetDefinedLightHandle"></A>RibSetDefinedLightHandle(),
+<A HREF="./ribcalls.html#RibSetDefinedObjectHandle"></A>RibSetDefinedObjectHandle(),
+<A HREF="./ribcalls.html#RibSetDefinedString"></A>RibSetDefinedString(),
+<A HREF="./ribcalls.html#RibSetDefinedRIRequest"></A>RibSetDefinedRIRequest().
+<A HREF="./ribcalls.html#RibSetHashExtendedData"></A>RibSetHashExtendedData(), and
+<A HREF="./ribcalls.html#RibSetStringAtom"></A>RibSetStringAtom().
+</P>
+<P>
+To access data in a hash table's item, use 
+<A HREF="./ribcalls.html#RibGetDefinedLightHandle"></A>RibGetDefinedLightHandle(),
+<A HREF="./ribcalls.html#RibGetDefinedObjectHandle"></A>RibGetDefinedObjectHandle(),
+<A HREF="./ribcalls.html#RibGetDefinedString"></A>RibGetDefinedString(),
+<A HREF="./ribcalls.html#RibGetDefinedRIRequest"></A>RibGetDefinedRIRequest().
+<A HREF="./ribcalls.html#RibGetHashExtendedData"></A>RibGetHashExtendedData(), and
+<A HREF="./ribcalls.html#RibGetStringAtom"></A>RibGetStringAtom().
+</P>
+</dl>
+
+
+<A NAME="RibGetDefinedRIRequest"></A>
+<dl><dt><PRE>
+int <b>RibGetDefinedRIRequest</b>( PRIB_HASHATOM a )
+</PRE>
+<dd>
+<P>
+The RIB binary format includes statements that associate a
+number to a given RIB statement name.  The number
+is a part of an abbreviated form of the RIB statement name.  If an
+hash table atom represents the association of a number to a
+RIB statement name, the number can be retrieved using 
+RibGetDefinedRIRequest().  The atom can be found by calling
+<A HREF="./ribcalls.html#RibFindMatch"></A>RibFindMatch() given
+type kRIB_HASH_RIREQUESTCODE and the RIB statement name as a
+string.
+</P>
+</dl>
+
+
+<A NAME="RibGetDefinedLightHandle"></A>
+<dl><dt><PRE>
+RtLightHandle <b>RibGetDefinedLightHandle</b>( PRIB_HASHATOM atom )
+</PRE>
+<dd>
+<P>
+Light sources are given ID numbers in a RIB file or stream.  These
+ID numbers are called sequence numbers because they normally enumerate
+the light sources from 1 to n.  The RenderMan Interface C bindings 
+gives each light source a LightHandle to identify each light source.
+To show the association between a seuence number and its
+light source handle, the hash table stores atoms that can be found
+given the sequence number.  RibGetDefinedLightHandle() returns
+the light source handle once the hash atom is found.
+</P>
+<P>
+The correct atom can be found by calling
+<A HREF="./ribcalls.html#RibFindMatch"></A>RibFindMatch() given
+type kRIB_HASH_LIGHTHANDLE and the sequence number.
+</P>
+</dl>
+
+
+<A NAME="RibGetDefinedObjectHandle"></A>
+<dl><dt><PRE>
+RtObjectHandle <b>RibGetDefinedObjectHandle</b>( PRIB_HASHATOM atom )
+</PRE>
+<dd>
+<P>
+Objects are given ID numbers in a RIB file or stream.  These
+ID numbers are called sequence numbers because they normally enumerate
+the objects from 1 to n.  The RenderMan Interface C bindings 
+gives each object an ObjectHandle to identify each object.
+To show the association between a seuence number and its
+object handle, the hash table stores atoms that can be found
+given the sequence number.  RibGetDefinedObjectHandle() returns
+the light source handle once the hash atom is found.
+</P>
+<P>
+The correct atom can be found by calling
+<A HREF="./ribcalls.html#RibFindMatch"></A>RibFindMatch() given
+type kRIB_HASH_OBJECTHANDLE and the sequence number.
+</P>
+</dl>
+
+
+<A NAME="RibGetDefinedString"></A>
+<dl><dt><PRE>
+char *<b>RibGetDefinedString</b>( PRIB_HASHATOM atom )
+</PRE>
+<dd>
+The RIB binary format allows strings to be referred to 
+with a simple ID number once that ID number has been
+assigned in a RIB statement to the given string. 
+To show the association between a strings ID number and its
+NULL terminated string of characters, the hash table stores 
+atoms that can be found given the ID number.  
+RibGetDefinedString() returns a NULL terminated string 
+once the hash atom is found.
+</P>
+<P>
+The correct atom can be found by calling
+<A HREF="./ribcalls.html#RibFindMatch"></A>RibFindMatch() given
+type kRIB_HASH_STRING and the ID number.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibSetDefinedString">RibSetDefinedString</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetError"></A>
+<dl><dt><PRE>
+PRIB_ERROR <b>RibGetError</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns a pointer to RIB_ERROR structure that describes the 
+last error set.  This pointer points to a memory block included
+in a larger structure that is freed when <i>rib</i> is closed.
+</P>
+<P>
+Do not free the returned pointer.  
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibSetError">RibSetError</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetErrorHandler"></A>
+<dl><dt><PRE>
+PRIB_ERRORFILTERPROC <b>RibGetErrorHandler</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns a function pointer of the presently set error handler.  
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibSetErrorHandler">RibSetErrorHandler</A>()
+and
+<A HREF="./ribcalls.html#RibDefaultErrorHandler">RibDefaultErrorHandler</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetErrorMsg"></A>
+<dl><dt><PRE>
+char *<b>RibGetErrorMsg</b>( int code )
+</PRE>
+<dd>
+<P>
+Returns the RenderMan Standard error message for the following codes:
+<PRE>
+#define RIE_NOERROR       ((RtInt)0)
+#define RIE_NOMEM         ((RtInt)1)  
+#define RIE_SYSTEM        ((RtInt)2)  
+#define RIE_NOFILE        ((RtInt)3)  
+#define RIE_BADFILE       ((RtInt)4)  
+#define RIE_VERSION       ((RtInt)5)  
+
+#define RIE_INCAPABLE     ((RtInt)11)  
+#define RIE_UNIMPLEMENT   ((RtInt)12)  
+#define RIE_LIMIT         ((RtInt)13)  
+#define RIE_BUG           ((RtInt)14)  
+
+#define RIE_NOTSTARTED    ((RtInt)23)  
+#define RIE_NESTING       ((RtInt)24)  
+#define RIE_NOTOPTIONS    ((RtInt)25)  
+#define RIE_NOTATTRIBS    ((RtInt)26)  
+#define RIE_NOTPRIMS      ((RtInt)27)  
+#define RIE_ILLSTATE      ((RtInt)28)  
+#define RIE_BADMOTION     ((RtInt)29)  
+#define RIE_BADSOLID      ((RtInt)30)  
+
+#define RIE_BADTOKEN      ((RtInt)41)  
+#define RIE_RANGE         ((RtInt)42)  
+#define RIE_CONSISTENCY   ((RtInt)43)  
+#define RIE_BADHANDLE     ((RtInt)44)  
+#define RIE_NOSHADER      ((RtInt)45)  
+#define RIE_MISSINGDATA   ((RtInt)46)  
+#define RIE_SYNTAX        ((RtInt)47)
+
+#define RIE_MATH          ((RtInt)61)    
+
+#define RIE_INFO          ((RtInt)0)  
+#define RIE_WARNING       ((RtInt)1)  
+#define RIE_ERROR         ((RtInt)2)  
+#define RIE_SEVERE        ((RtInt)3)  
+</PRE>
+</P>
+</dl>
+
+
+<A NAME="RibGetFileName"></A>
+<dl><dt><PRE>
+unsigned int <b>RibGetFileName</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the filename given to 
+<A HREF="./ribcalls.html#RibOpen">RibOpen</A>(), 
+<A HREF="./ribcalls.html#RibOpenWithHashTable">RibOpenWithHashTable</A>(),
+or <A HREF="./ribcalls.html#RibOpenSubfile">RibOpenSubfile</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetHashExtendedData"></A>
+<dl><dt><PRE>
+void* <b>RibGetHashExtendedData</b>( PRIB_HASHATOM atom )
+</PRE>
+<dd>
+<P>
+Returns the extended data field of <i>atom</i>.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibGetConflictingHashAtom">RibGetConflictingHashAtom</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetHashHandle"></A>
+<dl><dt><PRE>
+RIB_HASHHND <b>RibGetHashHandle</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the handle of <i>rib</i>'s hash table.
+</P>
+</dl>
+
+
+<A NAME="RibGetHintTable"></A>
+<dl><dt><PRE>
+PRIB_HINTTABLE <b>RibGetHintTable</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns a pointer to a table of function pointers that
+handle the RenderMan standard hints.  The table has the 
+following order and default values:
+<PRE>
+PRIB_ARCRECFILTERPROC gRibHintTable[] = {
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##CameraOrientation */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##CapabilitiesNeeded */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##CreationDate */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Creator */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##For */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Frames */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Include */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##RenderMan */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Scene */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Shaders */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler /* ##Textures */
+};
+</PRE>
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibGetHintTableSize">RibGetHintTableSize</A>()
+and 
+<A HREF="./ribcalls.html#RibSetHintTable">RibSetHintTable</A>().  By default
+a RIB handle has no hint table and RibGetHintTable() will return NULL. 
+</P>
+<P>
+Also refer to 
+<A HREF="./ribcalls.html#RibDefaultHintHandler">RibDefaultHintHandler</A>()
+for an example of a hint handler function.
+</P>
+</dl>
+
+
+<A NAME="RibGetHintTableSize"></A>
+<dl><dt><PRE>
+int <b>RibGetHintTableSize</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns size in bytes of a table of function pointers
+to handle all the supported hints.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetHintTable">RibGetHintTable</A>() and
+<A HREF="./ribcalls.html#RibSetHintTable">RibSetHintTable</A>()
+</P>
+<P>
+Also refer to <A HREF="./ribcalls.html#RibDefaultHintHandler">RibDefaultHintHandler</A>()
+for an example hint handling function used in a hint table.
+</P>
+</dl>
+
+
+<A NAME="RibGetLastChar"></A>
+<dl><dt><PRE>
+int <b>RibGetLastChar</b>( RIB_HANDLE hrib )
+</PRE>
+<dd>
+<P>
+Returns the last character read by 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetLastErrorCode"></A>
+<dl><dt><PRE>
+int <b>RibGetLastErrorCode</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the last error code set by 
+<A HREF="./ribcalls.html#RibSetError">RibSetError</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetLastErrorSeverity"></A>
+<dl><dt><PRE>
+int <b>RibGetLastErrorSeverity</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the level of severity for the last error code set by 
+<A HREF="./ribcalls.html#RibSetError">RibSetError</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetLastNUniform"></A>
+<dl><dt><PRE>
+int <b>RibGetLastNUniform</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns a the number of uniform parameters that
+the RIB Reader library calculated for a given Ri call.  This function
+should only be called from a Ri-like function hooked into the Ri table of 
+<i>rib</i>.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibSetLastNUniform">RibSetLastNUniform</A>()
+</P>
+</dl>
+
+
+<A NAME="RibGetLastNVarying"></A>
+<dl><dt><PRE>
+int <b>RibGetLastNVarying</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns a the number of varying parameters that
+the RIB Reader library calculated for a given Ri call.  This function
+should only be called from a Ri-like function hooked into the Ri table of 
+<i>rib</i>.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibSetLastNVarying">RibSetLastNVarying</A>()
+</P>
+</dl>
+
+
+<A NAME="RibGetLastNVertex"></A>
+<dl><dt><PRE>
+int <b>RibGetLastNVertex</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns a the number of vertex parameters that
+the RIB Reader library calculated for a given Ri call.  This function
+should only be called from a Ri-like function hooked into the Ri table of 
+<i>rib</i>.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibSetLastNVertex">RibSetLastNVertex</A>()
+</P>
+</dl>
+
+
+<A NAME="RibGetLastSequence"></A>
+<dl><dt><PRE>
+int <b>RibGetLastSequence</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+To get the last read sequence number, use RibGetLastSequence().  
+RibGetLastSequence() is typically called from a RI function that was listed in 
+the RI table associated with a RIB handle or a RI call that has hooked
+into the calling chain that starts at a given RI table.
+</P>
+<P>
+There is a sequence number when reading a RIB binding.  The
+sequence number is not there when calling such calls as RiLightSource()
+as shown below:
+<PRE>
+     ##RenderMan RIB
+     version 3.03
+     LightSource "ambientlight" 1 
+</PRE>
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibSetLastSequence">RibSetLastSequence</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetLineCount"></A>
+<dl><dt><PRE>
+unsigned int <b>RibGetLineCount</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the number of '\n' characters that have been encounted so far.  
+This value
+may not be very helpful if the input is a binary encoded RIB file.  To
+query whether any binary characters were encountered use 
+<A HREF="./ribcalls.html#RibGetStatus">RibGetStatus</A>() and check for
+the status flag kRIB_STATUS_ENCODEDDATA.
+</P>
+</dl>
+
+
+<A NAME="RibGetNColorSamples"></A>
+<dl><dt><PRE>
+int <b>RibGetNColorSamples</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the number of color channels set by 
+<A HREF="./ribcalls.html#RibSetNColorSamples">RibSetNColorSamples</A>().  
+When a RIB handle is created the default number of channels is 3.
+This value affects how Color statements are read and the size of RtColor
+structures.
+</P>
+</dl>
+
+
+<A NAME="RibGetOptions"></A>
+<dl><dt><PRE>
+RIB_UINT32 <b>RibGetOptions</b>( RIB_HANDLE hrib )
+</PRE>
+<dd>
+<P>
+Returns the option flags set for a given RIB handle.  The possible
+option flags are kRIB_OPTION_READ_SUBFILES and kRIB_OPTION_ERRMSG_VERBOSE.
+</P>
+<P>
+The option flag kRIB_OPTION_READ_SUBFILES makes the RIB Reader Library open 
+subfiles referenced by ReadArchive calls.  
+</P>
+<P>
+The option flag kRIB_OPTION_ERRMSG_VERBOSE makes the RIB Reader Library 
+print a longer error message along with the rather undescriptive 
+RenderMan Standard error message.  
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibSetOptions">RibSetOptions</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetParameterTypeInfo"></A>
+<dl><dt><PRE>
+PRIB_RITABLE <b>RibGetParameterTypeInfo</b>( RIB_HANDLE rib, 
+			    int *uniform, int *varying, int *vertex )
+</PRE>
+<dd>
+<P>
+Returns a the number of uniform, varying and vertex parameters that
+the RIB Reader library calculated for a given Ri call.  This function
+should only be called from a Ri-like function hooked into the Ri table of 
+<i>rib</i>.
+</P>
+<P>
+Refer to macros
+<A HREF="./ribcalls.html#RibGetLastNUniform">RibGetLastNUniform</A>(),
+<A HREF="./ribcalls.html#RibGetLastNVarying">RibGetLastNVarying</A>(),
+<A HREF="./ribcalls.html#RibGetLastNVertex">RibGetLastNVertex</A>(),
+<A HREF="./ribcalls.html#RibSetLastNUniform">RibSetLastNUniform</A>(),
+<A HREF="./ribcalls.html#RibSetLastNVarying">RibSetLastNVarying</A>(), and
+<A HREF="./ribcalls.html#RibSetLastNVertex">RibSetLastNVertex</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetRITable"></A>
+<dl><dt><PRE>
+PRIB_RITABLE <b>RibGetRITable</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns a pointer to a table of Ri calls that has been associated to the
+RIB handle <i>rib</i>.
+</P>
+<P>
+The function <A HREF="./ribcalls.html#RibSetRITable">RibSetRITable</A>()
+changes what RI table is associated with <i>rib</i>.
+</P>
+</dl>
+
+
+<A NAME="RibGetRITableSize"></A>
+<dl><dt><PRE>
+int <b>RibGetRITableSize</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns the size in bytes needed to store a Ri table.  Refer to 
+<A HREF="./ritable.html#gRibRITable">gRibRITable[]</A> as an example table.
+</P>
+</dl>
+
+
+<A NAME="RibGetStatus"></A>
+<dl><dt><PRE>
+RIB_UINT32 <b>RibGetStatus</b>( RIB_HANDLE hrib )
+</PRE>
+<dd>
+<P>
+Returns the <A HREF="./status.html">Status Flags</A> 
+that are set for the RIB input <i>hrib</i>.
+</P>
+</dl>
+
+
+<A NAME="RibGetStringAtom"></A>
+<dl><dt><PRE>
+char *<b>RibGetStringAtom</b>( PRIB_HASHATOM a )
+</PRE>
+<dd>
+<P>
+Retrieves the string of hash atom <i>a</i> if it is of
+hash atom type kRIB_HASH_STRING.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibSetStringAtom">RibSetStringAtom</A>().
+</P>
+</dl>
+
+
+<A NAME="RibGetTypeClassNames"></A>
+<dl><dt><PRE>
+int <b>RibGetTypeClassNames</b>( unsigned int code, char **c, char **t )
+</PRE>
+<dd>
+<P>
+Variable names must have their class and type
+declared with a Declare statement before they can be used in a parameter
+list.  The RIB Reader library automatically adds variable declarations
+to a hash table associated to a RIB file.  A tool can also call 
+<A HREF="./ribcalls.html#RibDeclare">RibDeclare</A>()
+to perform this function for additional variable names unique to the tool
+being implemented.  
+<A HREF="./ribcalls.html#RibFindMatch">RibFindMatch</A>() can be used to
+query a variable already in a hash table.
+</P>
+<P>
+Once a variable has been declared and added to a RIB's hash table, its class
+and type has been converted into a single integer.  RibGetTypeClassNames()
+can be used to return two strings naming the class and type.  If either
+the <i>c</i> or <i>t</i> parameters are NULL, RibGetTypeClassNames() simply
+skips over the code that would have returned a string pointer for that 
+parameter without giving an error.  
+</P>
+<P>
+The following lists the class and type strings along with their
+assocaited kRIB_ integer values used to encode them:
+<PRE>
+      kRIB_FLOATTYPE      -- "float"
+      kRIB_STRINGTYPE     -- "string";
+      kRIB_POINTTYPE      -- "point";
+      kRIB_COLORTYPE      -- "color";
+      kRIB_NORMALTYPE     -- "normal";
+      kRIB_VECTORTYPE     -- "vector";
+      kRIB_HPOINTTYPE     -- "hpoint";
+      kRIB_INTTYPE        -- "int";
+      kRIB_FLOATPAIRTYPE  -- "float pair";
+      kRIB_INTPAIRTYPE    -- "integer pair";
+      kRIB_STANDALONETYPE -- "standalone";
+      no type code set    -- "unknown";
+</PRE>
+<PRE>
+      kRIB_VERTEXCLASS  -- "vertex";
+      kRIB_VARYINGCLASS -- "varying";
+      kRIB_UNIFORMCLASS -- "uniform";
+      no class code set -- "uniform";
+</PRE>
+</P>
+<P>
+The pointers to strings given to <i>c</i> and <i>t</i> should <b>not</b> be
+freed.  They are constant strings linked into the Affine library being
+used.
+</P>
+</dl>
+
+
+<A NAME="RibGetUserParameters"></A>
+<dl><dt><PRE>
+int <b>RibGetUserParameters</b>( char *table, int ntable,
+                         RtInt n, RtToken tokens[], RtPointer parms[], 
+                         RtPointer output[] )
+</PRE>
+<dd>
+<P>
+Refer to the tool <A HREF="./tokentbl.html">tokentbl</A> for a description of
+the format of <i>ntable</i>.
+</P>
+<P>Refer to <A HREF=coding.html#SortingThroughTheData>Sorting Through the Data</A>
+for an example using RibGetUserParameters().
+</P>
+</dl>
+
+
+<A NAME="RibGetUVStep"></A>
+<dl><dt><PRE>
+int <b>RibGetUVStep</b>( RIB_HANDLE hrib, RtInt *ustep, RtInt *vstep )
+</PRE>
+<dd>
+<P>
+When reading a RIB file statements such as Patch and PatchMesh require
+u and v step values.  Refer to specification for the use of step values.
+By default the u and v step values are set to 3.  To query the present
+setting use RibGetUVStep()
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibSetUVStep">RibSetUVStep</A>()
+for more information on U and V step values and setting them.
+</P>
+</dl>
+
+
+<A NAME="RibGetVectorCache"></A>
+<dl><dt><PRE>
+int <b>RibGetVectorCache</b>( RIB_HANDLE rib, 
+                     RtInt *n, RtToken **tokens, RtPointer **params )
+</PRE>
+<dd>
+<P>
+Returns the last read parameter list using vector form in 
+*<i>n</i>, *<i>tokens</i>, *<i>params</i>.
+</P>
+<P>
+The pointers assigned to <i>n</i>, <i>tokens</i>, <i>params</i>
+should not be freed.
+</P>
+</dl>
+
+
+<A NAME="RibGetVectorCacheInfo"></A>
+<dl><dt><PRE>
+int <b>RibGetVectorCacheInfo</b>( RIB_HANDLE rib, RtInt *n, RtInt *nvertices, 
+                         unsigned int **types, unsigned int **sizes )
+</PRE>
+<dd>
+<P>
+Returns information about the last read parameter list read.
+Associated with each token/parameter pair returned by
+<A HREF="./ribcalls.html#RibGetVectorCache">RibGetVectorCache</A>()
+is a <i>type</i> and parameter data <i>size</i>.  The <i>type</i>
+uses the following flags for a token's declaration:
+<PRE>
+   kRIB_UNKNOWNCLASS
+   kRIB_UNIFORMCLASS
+   kRIB_VARYINGCLASS
+   kRIB_VERTEXCLASS
+   kRIB_CONSTANTCLASS
+   kRIB_UNKNOWNTYPE
+   kRIB_FLOATTYPE
+   kRIB_STRINGTYPE
+   kRIB_POINTTYPE 
+   kRIB_COLORTYPE 
+   kRIB_NORMALTYPE
+   kRIB_VECTORTYPE
+   kRIB_HPOINTTYPE
+   kRIB_INTTYPE 
+   kRIB_MATRIXTYPE 
+   kRIB_FLOATPAIRTYPE
+   kRIB_INTPAIRTYPE 
+   kRIB_STANDALONETYPE
+</PRE>
+</P>
+</dl>
+
+
+<A NAME="RibHandleArchiveRecord"></A>
+<dl><dt><PRE>
+int <b>RibHandleArchiveRecord</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Calls <i>rib</i>'s archive record handler if there
+is one, otherwise the comment or structure that
+has been found is read and discarded.  By default
+<A HREF="./ribcalls.html#RibDefaultArchiveRecordHandler">RibDefaultArchiveRecordHandler</A>()
+is called.
+</P>
+</dl>
+
+
+<A NAME="RibHandlePrefix"></A>
+<dl><dt><PRE>
+int <b>RibHandlePrefix</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Comments, binary encoded RI requests, or
+binary encoded string definitions can be located 
+inbetween statement data and token/parameter pairs.
+RibHandlePrefix() is called before each atomic item
+of data to handle any comments or special codes that
+may appear.
+</P>
+</dl>
+
+
+<A NAME="RibHashValueFromInt"></A>
+<dl><dt><PRE>
+int <b>RibHashValueFromInt</b>( RIB_HASHHND hash, int key )
+</PRE>
+<dd>
+<P>
+Creates a hash value from integer value <i>key</i>.
+</P>
+</dl>
+
+
+<A NAME="RibHashValueFromString"></A>
+<dl><dt><PRE>
+int <b>RibHashValueFromString</b>( RIB_HASHHND hash, char* p )
+</PRE>
+<dd>
+<P>
+Creates a hash value from string <i>p</i>.
+</P>
+</dl>
+
+
+<A NAME="RibHashValueFromStringN"></A>
+<dl><dt><PRE>
+int <b>RibHashValueFromStringN</b>( RIB_HASHHND hash, char *p, int n )
+</PRE>
+<dd>
+<P>
+Creates a hash value from <i>n</i> characters in string <i>p</i>.
+</P>
+</dl>
+
+
+<A NAME="RibIgnoreArchiveRecords"></A>
+<dl><dt><PRE>
+int <b>RibIgnoreArchiveRecords</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Sets <i>rib</i>'s pointer to an archive record
+handler to NULL and disables lines of text
+following a '#' character from being forwarded
+to a RiArchiveRecord() function in <i>rib</i>'s
+RI table.
+</P>
+</dl>
+
+
+<A NAME="RibIgnoreLastChar"></A>
+<dl><dt><PRE>
+int <b>RibIgnoreLastChar</b>( RIB_HANDLE  rib )
+</PRE>
+<dd>
+<P>
+Removes a character from <i>rib</i>'s input buffer
+if the status flag kRIB_STATUS_SAVETOBUFFER 
+is set.
+</P>
+</dl>
+
+
+<A NAME="RibIncrLineCount"></A>
+<dl><dt><PRE>
+int <b>RibIncrLineCount</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Increments <i>rib</i>'s present line count by one.  
+Line count is used when printing error messages.
+</P>
+</dl>
+
+
+<A NAME="RibIncrBufferLength"></A>
+<dl><dt><PRE>
+int <b>RibIncrBufferLength</b>( RIB_HANDLE rib ) 
+</PRE>
+<dd>
+<P>
+Increments the count of bytes used in a buffer that
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>()
+can be set to copy input to when
+a status flag of kRIB_STATUS_SAVETOBUFFER is set.
+</P>
+</dl>
+
+
+<A NAME="RibIncrByteOffset"></A>
+<dl><dt><PRE>
+int <b>RibIncrByteOffset</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Increments <i>rib</i>'s present byte offset count 
+into the input file by one.  
+Byte offset count is used when printing error 
+messages for binary encoded RIBs.
+</P>
+</dl>
+
+
+<A NAME="RibIsaBinaryChar"></A>
+<dl><dt><PRE>
+int <b>RibIsaBinaryChar</b>( char c )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if the character <i>c</i> has the bit 0200 set.
+Otherwise RI_FALSE is returned.
+</P>
+</dl>
+
+
+<A NAME="RibIsaDelimitor"></A>
+<dl><dt><PRE>
+int <b>RibIsaDelimitor</b>( char c )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if the character <i>c</i> meets the following condition:
+<PRE>
+       (c)=='[' || (c)=='#' || c=='\"' )
+</PRE>
+Otherwise RI_FALSE is returned.
+</P>
+</dl>
+
+
+<A NAME="RibIsanEncodedDefinition"></A>
+<dl><dt><PRE>
+int <b>RibIsanEncodedDefinition</b>( char c )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if the character <i>c</i> meets the following condition:
+<PRE>
+       ((c) >= 0314 && (c) <= 0316)
+</PRE>
+Otherwise RI_FALSE is returned.
+</P>
+</dl>
+
+
+<A NAME="RibIsanEncodedRIRequest"></A>
+<dl><dt><PRE>
+int <b>RibIsanEncodedRIRequest</b>( char c )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if the character <i>c</i> meets the following condition:
+<PRE>
+       ((c)==0246)
+</PRE>
+Otherwise RI_FALSE is returned.
+</P>
+</dl>
+
+
+<A NAME="RibIsaLetter"></A>
+<dl><dt><PRE>
+int <b>RibIsaLetter</b>( char c )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if the character <i>c</i> meets the following condition:
+<PRE>
+       (( (c) >= 'a' && (c) <= 'z' ) || ( (c) >= 'A' && (c) <= 'Z' ))
+</PRE>
+Otherwise RI_FALSE is returned.
+</P>
+</dl>
+
+
+<A NAME="RibIsaStdASCIIChar"></A>
+<dl><dt><PRE>
+int <b>RibIsaStdASCIIChar</b>( char c )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if the character <i>c</i> meets the following condition:
+<PRE>
+      ((c) >= 32 && (c) <= 126 && (c) != '\"' && (c) != '\\' )
+</PRE>
+Otherwise RI_FALSE is returned.
+</P>
+</dl>
+
+
+<A NAME="RibIsaWhiteSpace"></A>
+<dl><dt><PRE>
+int <b>RibIsaWhiteSpace</b>( char c )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if the character <i>c</i> is a space, linefeed, tab,
+or a return.  Otherwise RI_FALSE is returned.
+</P>
+</dl>
+
+
+<A NAME="RibIsaNumberNext"></A>
+<dl><dt><PRE>
+RtBoolean <b>RibIsaNumberNext</b>( RIB_HANDLE hrib )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if a number follows after the present position in the
+RIB file or stream <i>rib</i>.  This function looks for an ASCII digit,
+plus sign, minus sign, decimal point, character of octal values 0244
+or 0245, or a value inclusively inbetween octal values 0200 and 0217.
+</P>
+<P>
+Comments and encoded definitions for strings or RI requests do not
+cause RibIsaStringNext() to return RI_FALSE if encountered.  Comments
+are given to the RI function in the kRIB_ARCHIVERECORD position of 
+<i>rib</i>'s RI table.  Encoded definitions are added to <i>rib</i>'s 
+hash table.
+</P>
+</dl>
+
+
+<A NAME="RibIsaStringNext"></A>
+<dl><dt><PRE>
+RtBoolean <b>RibIsaStringNext</b>( RIB_HANDLE hrib )
+</PRE>
+<dd>
+<P>
+Returns RI_TRUE if a string follows after the present position in the
+RIB file or stream <i>rib</i>.  This function looks for a quote or
+a binary character equal to octal value 0317 or inclusively inbetween
+octal values 0220 and 0243.
+</P>
+<P>
+Comments and encoded definitions for strings or RI requests do not
+cause RibIsaStringNext() to return RI_FALSE if encountered.  Comments
+are given to the archive handler associated with <i>rib</i>'s RI table.
+By default <A HREF="./ribcalls.html#RibOpen">RibOpen</A>()
+sets up 
+<A HREF="./ribcalls.html#RibDefaultArchiveRecordHandler">RibDefaultArchiveRecordHandler</A>() as the default archive handler.
+</P>
+</dl>
+
+
+<A NAME="RibKeepData"></A>
+<dl><dt><PRE>
+int <b>RibKeepData</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Called from a RI function listed in <i>rib</i>'s RI table
+to set a status flag kRIB_STATUS_KEEP_DATA to
+inform the RIB Reader library that the pointers to memory blocks
+given to the
+present RI call are not to be freed after the RI call returns control
+back to the RIB Reader library.
+</P>
+<P>
+Refer to 
+<A HREF="./coding.html#MoreAdvancedSubclassing">More Advanced Subclassing</A>.
+</P>
+</dl>
+
+
+<A NAME="RibMalloc"></A>
+<dl><dt><PRE>
+void *<b>RibMalloc</b>( unsigned int size )
+</PRE>
+<dd>
+<P>
+Allocates a memory block of size <i>size</i>.  This allows a central
+place for altering how the memory is malloc'ed.  The Affine Toolkit source code
+uses a macro _RibMalloc() defined in affine/include/ribhash.h instead of
+calling RibMalloc() directly.  This macro is used so that if a flag 
+RIB_MEMORY_TESTS is defined, the macro will call special compiled version 
+of RibMalloc() that keeps track of memory leaks.  
+</P>
+<P>
+If the Affine libraries are compiled with RIB_MEMORY_TESTS not defined, the
+macro _RibMalloc() is simply replaced with malloc().  This is to avoid the
+extra function call involved in calling RibMalloc() which without the memory
+tests simply calls malloc().
+</P>
+<P>
+Refer to <A HREF="./memory.html">Rib Memory Functions</A> 
+for more detail on the memory handling functions.
+</P>
+<P>
+Refer to <A HREF="./coding.html#MemoryAllocations">Memory Allocations</A> 
+in the section 
+<A HREF="./coding.html#MoreAdvancedSubclassing">More Advanced Subclassing</A>
+for how pointers to memory are handled in Ri-like calls called from the
+RIB Reader Library.
+</P>
+</dl>
+
+
+<A NAME="RibMemoryTestInit"></A>
+<dl><dt><PRE>
+PMEM_TEST <b>RibMemoryTestInit</b>( void )
+</PRE>
+<dd>
+<P>
+When affine/ribhash/ and affine/readrib/ are compiled with a flag
+RIB_MEMORY_TESTS defined, RibMalloc(), RibRealloc() and RibFree()
+are altered to keep track of source code line numbers and memory
+leaks.  RibMemoryTestInit() needs to be called before the test
+versions of the memory functions are called.
+</P>
+</dl>
+
+
+<A NAME="RibMemoryTestMalloc"></A>
+<dl><dt><PRE>
+int <b>RibMemoryTestMalloc</b>( char *file, unsigned int line,
+                        void *p, unsigned int size )
+</PRE>
+<dd>
+<P>
+Internal call used by the test version of RibMalloc() to keep
+track of possible memory leaks.  The pointer <i>p</i> is a
+pointer returned to a memory block of size <i>size</i> by 
+malloc().
+</P>
+</dl>
+
+
+<A NAME="RibMemoryTestFree"></A>
+<dl><dt><PRE>
+int <b>RibMemoryTestFree</b>( char *file, unsigned int line, void *p )
+</PRE>
+<dd>
+<P>
+Internal call used by the test version of RibFree() to keep
+track of possible memory leaks.  The pointer <i>p</i> is a
+pointer returned to a memory block of size <i>size</i> by 
+free().
+</P>
+</dl>
+
+
+<A NAME="RibMemoryTestResults"></A>
+<dl><dt><PRE>
+int <b>RibMemoryTestResults</b>( PMEM_TEST pmemtest )
+</PRE>
+<dd>
+<P>
+Prints the results gathered during the reading of a RIB file.  
+If a pointer returned by malloc() does not have a matching
+call to free() a memory leak has occured and the source code 
+file and line number of the unmatched malloc() call is printed.  
+</P>
+<P>
+The output of RibMemoryTestResults() takes the form of the
+following example:
+<PRE>
+    Valid _RibMalloc() calls: 137
+    Valid _RibFree() calls: 137
+    Step overs during _RibFree(): 0
+    Invalid _RibFree() calls: 0
+    Memory leaks found: 0
+</PRE>
+</P>
+<P>
+The term <i>step overs</i> is in reference to a counter
+that keeps track of when a last-to-first order of
+freeing malloc'ed memory blocks is not strickly 
+followed.  Following a last-to-first order in
+freeing memory blocks is not always possible.  A count
+of violations to this general rule is really a test
+for the RIB Reader library's source code.
+</P>
+</dl>
+
+
+<A NAME="RibMemoryTestStepOverAllowed"></A>
+<dl><dt><PRE>
+int <b>RibMemoryTestStepOverAllowed</b>( void )
+</PRE>
+<dd>
+<P>
+To prevent a call to RibFree() from incrementing a global <i>step over</i>
+counter, RibMemoryTestStepOverAllowed()
+precedes the RibFree() call.  The source code of the RIB Reader library
+needs the flag RIB_MEMORY_TESTS defined for this extra code to be
+included during a build.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibMemoryTestResults">RibMemoryTestResults</A>()
+for a description of <i>step overs</i>.
+</P>
+</dl>
+
+
+<A NAME="RibOpen"></A>
+<PRE>
+<dl>RIB_HANDLE <b>RibOpen</b>( char *filename, PRIB_RITABLE table )
+</PRE>
+<dd>
+<P>
+Opens <i>filename</i> as a RIB file to be read.  Note that stdin is used
+if filename is NULL.
+</P>
+</P>
+If <i>table</i> is not NULL it will be used as
+a table of function pointers to a complete set of Ri calls.  The memory
+pointed to by <i>table</i> is used until
+<A HREF="./ribcalls.html#RibClose">RibClose</A>()
+is called.  The string <i>filename</i> is copied by RibOpen() 
+and can be freed anytime after RibOpen() is called.
+</P>
+<P>
+Refer to <A HREF=./coding.html#RealQuickOverview>A Real Quick Overview</A>
+for examples using RibOpen().
+</P>
+</dl>
+
+
+<A NAME="RibOpenWithHashTable"></A>
+<PRE>
+<dl>RIB_HANDLE <b>RibOpenWithHashTable</b>( 
+                            char *filename, 
+                            PRIB_HASHTABLE hashtable )
+</PRE>
+<dd>
+<P>
+Opens <i>filename</i> and returns a RIB handle.  
+<P>
+The string <i>filename</i> is copied by RibOpenWithHashTable() 
+and can be freed anytime after RibOpenWithHashTable() is called.
+</P>
+<P>
+The parameter <i>hashtable</i> must be a valid RIB hash table or 
+RibOpenWithHashTable() will return NULL.  RibOpenWithHashTable() sets a 
+status flag kRIB_STATUS_EXTERNHASHTBL to identify the RIB hash table 
+<i>hashtable</i> as being created separately from
+the RIB handle.  The status flag kRIB_STATUS_EXTERNHASHTBL tells 
+<A HREF="./ribcalls.html#RibClose">RibClose</A>() to not
+free <i>hashtable</i> when closing the file <i>rib</i>.
+</P>
+<P>
+RibOpenWithHashTable() allows a hash table to be created and modified before
+a RIB file or stream is opened.  Tools such as affine/ributil/ribfixer.c make
+use of RibOpenWithHashTable() to add user data to the default hash table 
+while the command line parameters are being validated.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibCreateHashTable">RibCreateHashTable</A>().  For
+more detail on using the hash table library (libribhash.a) refer to 
+<A HREF=./hash.html>RIB Hash Table</A>.
+</P>
+</dl>
+
+
+<A NAME="RibOpenSubfile"></A>
+<dl><dt><PRE>
+RIB_HANDLE <b>RibOpenSubfile</b>( RIB_HANDLE rib, char *filename )
+</PRE>
+<dd>
+<P>
+Opens the file called <i>filename</i> with a parent file <i>rib</i>.  
+RibOpenSubfile() is used for such operations as handling recursively
+appearing ReadArchive statements.  To prevent 
+<A HREF="./ribcalls.html#RibClose">RibClose</A>()
+and 
+<A HREF="./ribcalls.html#RibCloseFile">RibCloseFile</A>() 
+from trying to free <i>rib</i>'s tables and buffers, a status flag 
+kRIB_STATUS_SUBFILEOPEN is set for the new child RIB handle.  
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetStatus">RibGetStatus</A>() and
+<A HREF="./ribcalls.html#RibSetStatus">RibSetStatus</A>() regarding
+kRIB_STATUS_SUBFILEOPEN.  
+</P>
+<P>
+Note there is no RibCloseSubfile(), just use 
+<A HREF="./ribcalls.html#RibClose">RibClose</A>().
+</P>
+</dl>
+
+
+
+<A NAME="RibOption"></A>
+<dl><dt><PRE>
+int <b>RibOption</b>( RIB_HANDLE hrib, RtToken name, RtToken token, RtPointer param )
+</PRE>
+<dd>
+<P>
+Note that RibOption() has the Prefix <b><i>Rib</i></b>, not simply 
+<b><i>Ri</i></b>.
+</P>
+<P>
+Calls the function at the kRIB_OPTION position of <i>rib</i>'s RI Table
+with a RenderMand Interface RiOption-like call.  RibOption() is used
+when a RiOption() call needs to be given to the output library hooked
+into <i>rib</i>'s RI Table.
+</P>
+</dl> 
+
+
+<A NAME="RibPutChar"></A>
+<dl><dt><PRE>
+int <b>RibPutChar</b>( RIB_HANDLE  rib, int c )
+</PRE>
+<dd>
+<P>
+When 
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>() 
+is called to store copies of incoming characters into a buffer,
+RibPutChar() can be used to add more characters to the buffer
+as if they had been a part of the original RIB input file or stream.
+Calls to functions such as RibCreateStringFromBuffer() will include 
+in the output the inserted caharacters added by RibPutChar().
+</P>
+<P>
+RibPutChar() is used mostly to replace binary string characters with
+their ASCII representation.  A character of octal value 0243 will be
+dropped from the buffer by a call to 
+<A HREF="./ribcalls.html#RibIgnoreLastChar">RibIgnoreLastChar</A>().
+RibPutChar() is then called four times with the following sequence of
+characters: '\', '2', '4', and '3'.  The resulting string made from 
+the buffer will include the substring "\243" instead of a single
+binary character.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() and
+<A HREF="./ribcalls.html#RibUngetChar">RibUngetChar</A>().
+</P>
+</dl>
+
+
+<A NAME="RibQueryClassType"></A>
+<dl><dt><PRE>
+RIB_UINT32 <b>RibQueryClassType</b>( RIB_HASHHND hash, char *tokenname, 
+                              RIB_UINT32 *n )
+</PRE>
+<dd>
+<P>
+To read a RIB statement's parameter list, the class and type of a variable
+such as "P", "Pw" or "Porig" needs to be retrieved from the hash table.  
+RibQueryClassType() returns a 32-bit value with a class and type flag
+ORed together.  The following are the class and type flags available:
+<PRE>
+     enum {
+        kRIB_UNKNOWNCLASS  = 0x00000000,
+        kRIB_UNIFORMCLASS  = 0x00010000,
+        kRIB_VARYINGCLASS  = 0x00020000,
+        kRIB_VERTEXCLASS   = 0x00030000,
+        kRIB_CONSTANTCLASS = 0x00040000,
+        kRIB_LASTCLASS     = 0x00050000
+     };
+     enum {
+        kRIB_UNKNOWNTYPE, 
+        kRIB_FLOATTYPE, 
+        kRIB_STRINGTYPE,
+        kRIB_POINTTYPE, 
+        kRIB_COLORTYPE, 
+        kRIB_NORMALTYPE,
+        kRIB_VECTORTYPE,
+        kRIB_HPOINTTYPE,
+        kRIB_INTTYPE,   
+        kRIB_MATRIXTYPE,  
+        kRIB_FLOATPAIRTYPE,
+        kRIB_INTPAIRTYPE,  
+        kRIB_STANDALONETYPE,
+        kRIB_LASTTYPE
+     };
+</PRE>
+</P>
+<P>
+The third parameter, <b>n</b>, is a pointer to an unsigned int used to 
+store the array length that <b>tokenname</b> was declared to have.  Most
+variables such as "P" and "N" have an declared array length of 1, so 
+don't confuse the array length given in a Declare statement with the number
+of "P" or "N" values given in a parameter list.  
+The parameter <b>n</b> can be NULL if the array size is not a needed 
+value to be returned.
+</P>
+<P>
+Use the the bit masks kRIB_CLASS_MASK, kRIB_TYPE_MASK and 
+kRIB_CLASSTYPE_MASK to create a value that can be directly
+compared with the above listed flags.
+</P>
+</dl>
+
+
+<A NAME="RibQueryKeepData"></A>
+<dl><dt><PRE>
+RtBoolean <b>RibQueryKeepData</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns nonzero value if pointers given in a present Ri call point
+to memory areas that should not be freed.  The function
+<A HREF="./ribcalls.html#RibShouldFreeData">RibShouldFreeData</A>()
+performs the same action except that it also resets a status flag called 
+kRIB_STATUS_KEEP_DATA.  
+</P>
+<P>
+RibQueryKeepData() is typically called from a RI function listed in
+the <i>rib</i>'s Ri table or that gets called by a 
+chain of functions where the first in the chain is listed in the
+<i>rib</i>'s Ri table.  The chaining of functions is how the Affine Toolkit allows
+subclassing of Ri calls.  When a Ri function is hooked into a Ri table the
+function pointer already present in the table should be saved and called by
+the Ri function being hooked in.  This procedure creates a chain of functions 
+where each function in the chain is responsible for calling the next in the
+chain and handling freeing of any memory allocated and forwarded on in the chain.
+If a function later in the chain decides to use a given memory block created by
+a previous function in the chain, 
+<A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>()
+is called and the previous function that allocated the memory must call 
+RibQueryKeepData() to find out if it is alright to free the data it created 
+and forwarded on in the chain.
+</P>
+<P>
+A Ri function must call RibQueryKeepData() if 1) it called 
+<A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>() to prevent data given to 
+it from being freed when the chain of Ri calls is complete,
+2) memory is allocated and given to the next function in the chain, and 3) one of
+the following functions in the chain needs to keep one of the allocated memory 
+blocks mention in step 2 (inshort 
+<A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>() is called by a following
+function in the chain).  
+</P>
+<P> If a Ri function did not need to call 
+<A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>() but does allocate
+memory to that is forwarded on in the chain (inshort the above mentioned steps 
+2 and 3 occured, but not step 1), then 
+<A HREF="./ribcalls.html#RibShouldFreeData">RibShouldFreeData</A>()
+is used instead of RibQueryKeepData().
+</P>
+<P>
+The difference between 
+<A HREF="./ribcalls.html#RibShouldFreeData">RibShouldFreeData</A>() and
+RibQueryKeepData() is whether or not a status flag kRIB_STATUS_KEEP_DATA
+should remain set as Ri functions return control back to the previous function
+in the chain.
+</P>
+</dl>
+
+
+<A NAME="RibRead"></A>
+<dl><dt><PRE>
+RIB_HANDLE <b>RibRead</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Reads a RIB file or stream identified with the RIB handle <i>rib</i>.
+RibRead requires that a RI Table be assigned to <i>rib</i> either by
+giving a pointer to the table as the second parameter to 
+<A HREF=./ribcalls.html#RibOpen>RibOpen</A>() or by calling 
+<A HREF=./ribcalls.html#RibSetRITable>RibSetRITable</A>().
+</P>
+<P>Refer to <A HREF=./coding.html#RealQuickOverview>A Real Quick Overview</A>
+for examples using RibRead().
+</P>
+</dl>
+
+
+<A NAME="RibReadArchiveRecord"></A>
+<dl><dt><PRE>
+int <b>RibReadArchiveRecord</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Called after a '#' character has been read indicating that the following 
+characters up to a '\n' is a comment or hint.  
+This function can be used to skip over archive records or store them
+into the buffer depending on the flag used in the last call to 
+<A HREF=./ribcalls.html#RibSaveToBuffer>RibSaveToBuffer</A>().
+</P>
+</dl>
+
+
+<A NAME="RibReadArrayAndLength"></A>
+<dl><dt><PRE>
+int <b>RibReadArrayAndLength</b>( RIB_HANDLE hrib, RIB_UINT32 options, 
+			 int *numberof, void **pp )
+</PRE>
+<dd>
+<P>
+Reads an array into a buffer, determines the array's length, allocates
+memory for the array and copies the buffer into the newly allocated
+memory returned in <i>*pp</i>.  The number of items in the array is
+is returned in <i>*numberof</i>.
+</P>
+<P>
+Refer to <A HREF=./readopt.html>Read Option Flags for Arrays</A> for 
+values to assign the parameter <i>options</i>.
+</P>
+</dl>
+
+
+<A NAME="RibReadDefiningBinCode"></A>
+<dl><dt><PRE>
+int <b>RibReadDefiningBinCode</b>( RIB_HANDLE rib, int alreadyreadin )
+</PRE>
+<dd>
+<P>
+Called when a character of octal value 0314 or 0316 is encounterd.
+The library uses the macro 
+<A HREF=./ribcalls.html#RibIsanEncodedDefinition>RibIsanEncodedDefinition</A>()
+to check this condition and if true, calls RibReadDefiningBinCode() to 
+handle an encoded RI request or string definition.  
+</P>
+</dl>
+
+
+<A NAME="RibReadFileForToken"></A>
+<dl><dt><PRE>
+int <b>RibReadFileForToken</b>( RIB_HANDLE rib, char *table )
+</PRE>
+<dd>
+<P>
+Given a <i>table</i> produced by <A HREF="./tokentbl.html">tokentbl</A>
+that has an encoded list of string tokens to look for, RibReadFileForToken()
+will read <i>rib</i> expecting a only a matching token.  If a character read
+in diverges from the possible strings, a value of EOF or kRIB_ERRRC_INDEX
+is returned.
+</P>
+</dl>
+
+
+<A NAME="RibReadFloatingPoint"></A>
+<dl><dt><PRE>
+int <b>RibReadFloatingPoint</b>( RIB_HANDLE rib, RtFloat *flt )
+</PRE>
+<dd>
+<P>
+Reads an ASCII or binary encoded floating point value and places it
+into <i>flt</i>.  If an invalid character is encountered <i>rib</i>'s
+error handler is called with a syntax error.
+</P>
+</dl>
+
+
+<A NAME="RibReadFloatingPointArray"></A>
+<dl><dt><PRE>
+int <b>RibReadFloatingPointArray</b>( RIB_HANDLE rib, RIB_UINT32 options, 
+                             int numberof, RtFloat **array )
+</PRE>
+<dd>
+<P>
+Allocates a block of memory to store an array of <i>numberof</i> floats
+once it has been read from <i>rib</i>.  If an invalid character is 
+encountered <i>rib</i>'s error handler is called with a syntax error.
+</P>
+<P>
+Refer to <A HREF=./readopt.html>Read Option Flags for Arrays</A> for 
+values to assign the parameter <i>options</i>.
+</P>
+</dl>
+
+
+<A NAME="RibReadInteger"></A>
+<dl><dt><PRE>
+int <b>RibReadInteger</b>( RIB_HANDLE rib, RtInt *i )
+</PRE>
+<dd>
+<P>
+Reads an ASCII or binary encoded integer value and places it
+into <i>i</i>.  If an invalid character is encountered <i>rib</i>'s
+error handler is called with a syntax error.
+</P>
+</dl>
+
+
+<A NAME="RibReadIntegerArray"></A>
+<dl><dt><PRE>
+int <b>RibReadIntegerArray</b>( RIB_HANDLE hrib, RIB_UINT32 options, 
+                       int numberof, RtInt **array)
+</PRE>
+<dd>
+<P>
+Allocates a block of memory to store an array of <i>numberof</i> integers
+once it has been read from <i>rib</i>.  If an invalid character is 
+encountered <i>rib</i>'s error handler is called with a syntax error.
+</P>
+<P>
+Refer to <A HREF=./readopt.html>Read Option Flags for Arrays</A> for 
+values to assign the parameter <i>options</i>.
+</P>
+</dl>
+
+
+<A NAME="RibReadParameterList"></A>
+<dl><dt><PRE>
+int <b>RibReadParameterList</b>( RIB_HANDLE rib, int require,
+                        int uniform, int varying, int vertex,
+                        RtInt *pn, RtToken **paTokens, RtPointer **paParams )
+</PRE>
+<dd>
+<P>
+Called after a RIB statement and standard parameters have been read and
+before the statements parameter list is expected.  Comments and binary
+encoded string and RI request definitions are also handled.  
+</P>
+<P>
+The values <i>uniform</i>, <i>varying</i> and <i>vertex</i> describe the 
+number of values a variable of type uniform, varying and vertex require
+respectively.  The value <i>require</i> takes one of the following
+values: 
+<PRE>
+   kRIB_REQUIRE_NOTHING 
+   kRIB_REQUIRE_P
+   kRIB_REQUIRE_P_OR_PW
+   kRIB_REQUIRE_P_OR_PZ
+</PRE>
+Statements such as NuPatch require position data P or Pw to be included
+in the parameter list and <i>require</i> is used to indicate which if 
+any of the positional variables is required.
+</P>
+<P>
+The values <i>pn</i>, <i>paTokens</i> and <i>paParams</i> are assigned
+a vectorized form of the parameter list that is expected to follow the
+present statement.  If there is no parameter list *<i>pn</i> is assigned
+a value of zero.  If required positional data is duplicated or missing
+<i>rib</i>'s error handler is called.
+</P>
+</dl>
+
+
+<A NAME="RibReadRIBCallParameters"></A>
+<dl><dt><PRE>
+int <b>RibReadRIBCallParameters</b>( RIB_HANDLE rib,
+			    char *cparams,
+			    int asizes[], void *params )
+</PRE>
+<dd>
+<P>
+After a statement name such as NuPatch and before the statement's
+parameter list, are a set of standard parameters.  Sphere for
+example has the statndard parameters radius, zmin, zmax, and thetamax
+as its standard parameters.  RibReadRIBCallParameters() uses an entry
+from the table gRibCParams[] linked in libribhash.a to automatically
+handle reading the standard parameters and return a block of memory
+that contains the values.  The array <i>asizes</i> describes to 
+RibReadRIBCallParameters() the sizes of any expected arrays in the order
+they appear.  
+</P>
+</dl>
+
+
+<A NAME="RibReadRIRequestToken"></A>
+<dl><dt><PRE>
+int <b>RibReadRIRequestToken</b>( RIB_HANDLE hrib )
+</PRE>
+<dd>
+<P>
+Binary encoded format allows for a RIB statement to be represented
+by a number called a RI request code or RI request token.  
+RibReadRIRequestToken() handles reading the value that represents
+a RIB statement.
+</P>
+RibReadRIRequestToken() returns an RI Table index after reading
+an expected one byte token that identifies an entry in the
+hash table.  The character 0246 has already been read in.
+<P>
+</P>
+</dl>
+
+
+<A NAME="RibReadString"></A>
+<dl><dt><PRE>
+int <b>RibReadString</b>( RIB_HANDLE rib, RIB_UINT32 options, RtString *p )
+</PRE>
+<dd>
+<P>
+Reads an ASCII or binary encoded string and returns a pointer to the
+string in <i>p</i>.  The memory used for the string is allocated and
+must be freed.  If the string is added into a hash table as a variable
+or string, 
+<A HREF=./ribcalls.html#RibDestroyHashTable>RibDestroyHashTable</A>()
+will free the data automatically.
+</P>
+<P>
+Refer to <A HREF=./readopt.html>Read Option Flags for Arrays</A> for 
+values to assign the parameter <i>options</i>.
+</P>
+</dl>
+
+
+<A NAME="RibReadStringArray"></A>
+<dl><dt><PRE>
+int <b>RibReadStringArray</b>( RIB_HANDLE hrib, RIB_UINT32 options, 
+		      int numberof, RtString **array)
+</PRE>
+<dd>
+<P>
+Reads an array of <i>numberof</i> strings, and assigns *<i>array</i>
+a pointer to the string array.  The memory used is allocated and must
+be freed when no longer needed.
+</P>
+<P>
+Refer to <A HREF=./readopt.html>Read Option Flags for Arrays</A> for 
+values to assign the parameter <i>options</i>.
+</P>
+</dl>
+
+
+<A NAME="RibReadStringForToken"></A>
+<dl><dt><PRE>
+int <b>RibReadStringForToken</b>( char *s, char *table, char **tokenend )
+</PRE>
+<dd>
+<P>
+Searches for a token listed in a <A HREF="./tokentbl.html">tokentbl</A>
+encoded <i>table</i> in the string <i>s</i>.  If a match followed by a
+white space, binary encoded character, quote, '#' or '['
+*<i>tokenend</i> points to the next character.
+</P>
+<P>
+Refer to 
+<A HREF=./ribcalls.html#RibReadFileForToken>RibReadFileForToken</A>().
+</P>
+</dl>
+
+
+<A NAME="RibReadThroughUndeclaredData"></A>
+<dl><dt><PRE>
+int <b>RibReadThroughUndeclaredData</b>( RIB_HANDLE hrib )
+</PRE>
+<dd>
+<P>
+If a parameter list contains a token (parameter ID) that has not been
+declared with a Declare statement, a array of data of unknown
+length and type probably follows the unknown token.  The RIB Reader
+will attempt to skip over the unknown and recover gracefully.  
+</P>
+<P>
+If the attempt to skip over an array fails, RibReadThroughUndeclaredData()
+reports a syntax error by calling 
+<A HREF="./ribcalls.html#RibSetError">RibSetError</A>().
+</P>
+</dl>
+
+
+<A NAME="RibReadVer35Option"></A>
+<dl><dt><PRE>
+int <b>RibReadVer35Option</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+To provide backward compatibility with RIB files made before PRMan 3.6,
+RibReadVer35Option replaces the function that reads NuPatch statements
+with a 3.5 PRMan compatible NuPatch reading function.  RibReadVer35Option()
+changes a function pointer in a table of pointers given by gRibReadTable[].
+</P>
+<P>
+The table gRibReadTable[] is a global value that once modified by
+RibReadVer35Option() affects all subsequently opened RIB files.
+RibReadVer35Option() replaces the pointer gRibReadTable[kRIB_NUPATCH] with
+an internal function called RibReadVer35NuPatchV().  To switch
+back an forth bewteen 3.5 and 3.6 compatibility use RibReadVer35Option()
+and 
+<A HREF="./ribcalls.html#RibReadVer36Option">RibReadVer36Option</A>().
+</P>
+<P>
+Version 3.5 of PRMan was the last version of PRMan to have only four
+varying values for each NuPatch.  Version 3.6 of PRMan redefined how 
+the parameters given used in NuPatch statements should be read.  
+</P>
+</dl>
+
+
+<A NAME="RibReadVer36Option"></A>
+<dl><dt><PRE>
+int <b>RibReadVer36Option</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Undoes the action taken by 
+<A HREF="./ribcalls.html#RibReadVer35Option">RibReadVer35Option</A>().
+By default the RIB Reader handles PRMan 3.6 compatible RIB files.  
+RibReadVer36Option only needs to be called when switching back and forth
+between 3.5 and 3.6 compatibility.
+</P>
+</dl>
+
+
+<A NAME="RibRealloc"></A>
+<dl><dt><PRE>
+void *<b>RibRealloc</b>( void *p, unsigned int size )
+</PRE>
+<dd>
+<P>
+Reallocates a memory block to a new size of <i>size</i> given a pointer
+to the memory <i>p</i>.  Because a memory block may need to be replaced
+to expand it's size by memory at a different location, a pointer is 
+returned.  The possible return values matches that of the standard realloc()
+function.
+</P>
+<P>
+RibRealloc provides a central place for altering how the memory is realloc'ed.
+The Affine Toolkit source code uses a macro _RibRealloc() defined in 
+affine/include/ribhash.h instead of calling RibRealloc() directly.  This 
+macro is used so that if a flag RIB_MEMORY_TESTS is defined, the macro 
+will call special compiled version of RibRealloc() that keeps track of 
+memory leaks.  
+</P>
+<P>
+If the Affine libraries are compiled with RIB_MEMORY_TESTS not defined, the
+macro _RibRealloc() is simply replaced with realloc().  This is to avoid the
+extra function call involved in calling RibRealloc() which without the memory
+tests simply calls realloc().
+</P>
+<P>
+Refer to <A HREF="./memory.html">Rib Memory Functions</A> 
+for more detail on the memory handling functions.
+</P>
+<P>
+Refer to <A HREF="./coding.html#MemoryAllocations">Memory Allocations</A> 
+in the section 
+<A HREF="./coding.html#MoreAdvancedSubclassing">More Advanced Subclassing</A>
+for how pointers to memory are handled in Ri-like calls called from the
+RIB Reader Library.
+</P>
+</dl>
+
+
+<A NAME="RibRemoveItem"></A>
+<dl><dt><PRE>
+int <b>RibRemoveItem</b>( RIB_HASHHND hash, PRIB_HASHATOM atom )
+</PRE>
+<dd>
+<P>
+Removes hash item <i>atom</i> from the hash table
+<i>hash</i>.  If the flags kRIB_HASH_FREEDATA and kRIB_HASH_FREEEXTDATA
+have been ORed into the <i>atom</i>'s type value, each flag's 
+associated data field will be freed.  
+</P>
+<P>
+The handle <i>atom</i> will no longer be valid after RibRemoveItem()
+is called.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>() and
+<A HREF="./hash.html#HashItemTypes">Hash Item Types</A>.
+</P>
+</dl>
+
+
+<A NAME="RibResetBuffer"></A>
+<dl><dt><PRE>
+int <b>RibResetBuffer</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Each RIB handle has an associated buffer to store incoming data such as 
+strings and arrays that are of unknown length.  The buffer is really a 
+linked list of small buffers.  When a new string or array is about to 
+be read RibResetBuffer() reduces the size of a RIB handle's link list 
+of buffers to just one RIB_BUFFERITEM data structure.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibCreateBuffer">RibCreateBuffer</A>(),
+<A HREF="./ribcalls.html#RibSaveToBuffer">RibSaveToBuffer</A>(), and
+<A HREF="./ribcalls.html#RibDestroyBuffer">RibDestroyBuffer</A>().
+</P>
+</dl>
+
+
+<A NAME="RibSaveToBuffer"></A>
+<dl><dt><PRE>
+int <b>RibSaveToBuffer</b>( RIB_HANDLE rib, int flag )
+</PRE>
+<dd>
+<P>
+The RenderMan Standard allows strings to have unlimited length.  To handle
+reading strings of arbitrary length, the RIB Reader library relies on 
+storing in-coming data into a linked list of buffers.  Most strings do not
+exceed 250 characters which fits easily into one buffer, so the ability to
+link together several buffers will not be used very often and should not
+slow performance.  RibSaveToBuffer() sets a flag that indicates that all
+following input should be saved into a buffer to be assembled later into 
+one contiguous block of memory.  
+</P>
+<P>
+Some arrays are of unknown length such as the nvertices array in a 
+GeneralPolygon statement.  To handle reading an array of integers, floats
+or strings that is of unknown length the function 
+<A HREF="./ribcalls.html#RibReadArrayAndLength">RibReadArrayAndLength</A>()
+uses RibSaveToBuffer() to store the array until its length is known and
+memory can be allocated.  
+</P>
+<P>
+RibSaveToBuffer() calls 
+<A HREF="./ribcalls.html#RibResetBuffer">RibResetBuffer</A>() to reduce
+the size of a RIB handle's link list of buffers to just one RIB_BUFFERITEM
+data structure.  An assumption is made that if RIB file had one string 
+requiring multiple RIB_BUFFERITEMs, there might be more long strings so
+once a RIB_BUFFERITEM has been allocated it is either in use or listed
+as available for use.  RIB_BUFFERITEMs are deallocated when the RIB is 
+closed.  This saves many extra calls to malloc and free RIB_BUFFERITEMs.
+</P>
+</dl>
+
+
+<A NAME="RibSetArchiveRecordHandler"></A>
+<dl><dt><PRE>
+int <b>RibSetArchiveRecordHandler</b>( RIB_HANDLE rib, PRIB_ARCRECFILTERPROC p )
+</PRE>
+<dd>
+<P>
+By default a RIB is given 
+<A HREF="./ribcalls.html#RibDefaultArchiveRecordHandler">RibDefaultArchiveRecordHandler</A>()
+as the function to handle lines of RIB data preceded with 
+a '#'.  To change the function receiving control when a '#' is encountered,
+RibSetArchiveRecordHandler() replaces the present function with <i>p</i>p.
+</P>
+<P>
+As a minimum the function <i>p</i> must read characters using 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>() until a '\n' is found.  Use 
+<A HREF="./ribcalls.html#RibReadArchiveRecord">RibReadArchiveRecord</A>() 
+to perform this simple function.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibGetArcRecHandler">RibGetArcRecHandler</A>().
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibIgnoreArchiveRecords">RibIgnoreArchiveRecords</A>().
+</P>
+</dl>
+
+
+<A NAME="RibSetDefinedLightHandle"></A>
+<dl><dt><PRE>
+int <b>RibSetDefinedLightHandle</b>( PRIB_HASHATOM a, 
+                           int sequence, RtLightHandle lh )
+</PRE>
+<dd>
+<P>
+Sets hash atom <i>a</i>'s fields code and extdata to 
+<i>sequence</i> and <i>lh</i>.
+</P>
+</dl>
+
+
+<A NAME="RibSetDefinedObjectHandle"></A>
+<dl><dt><PRE>
+int <b>RibSetDefinedObjectHandle</b>( PRIB_HASHATOM a, 
+                            int sequence, RtObjectHandle oh )
+</PRE>
+<dd>
+<P>
+Sets hash atom <i>a</i>'s fields code and extdata to 
+<i>sequence</i> and <i>oh</i>.
+</P>
+</dl>
+
+
+<A NAME="RibSetDefinedRIRequest"></A>
+<dl><dt><PRE>
+int <b>RibSetDefinedRIRequest</b>( PRIB_HASHATOM a, int token, int ripID )
+</PRE>
+<dd>
+<P>
+Sets hash atom <i>a</i>'s fields code and extdata to 
+<i>token</i> and <i>ripID</i>.
+</P>
+</dl>
+
+
+<A NAME="RibSetDefinedString"></A>
+<dl><dt><PRE>
+int <b>RibSetDefinedString</b>( PRIB_HASHATOM a, int token, char *s )
+</PRE>
+<dd>
+<P>
+Sets hash atom structure <i>a</i>'s code and and extdata fields with 
+<i>token</i> and <i>s</i> respectively.  The token is an integer
+value that was assigned to represent string <i>s</i> by a binary 
+encoded string definition in a RIB file.  Once the definition has
+been read and added to a RIb's hash table, the token can be
+used as an abbreviated form of the string.
+</P>
+</dl>
+
+
+<A NAME="RibSetError"></A>
+<dl><dt><PRE>
+int <b>RibSetError</b>( RIB_HANDLE rib, int code, int severity, PRIB_ERROR error )
+</PRE>
+<dd>
+</P>
+Calls the error handler associated with <i>rib</i>.  By default a RIB is
+assigned 
+<A HREF="./ribcalls.html#RibDefaultErrorHandler">RibDefaultErrorHandler</A>()
+as the error handler.
+<P>
+</dl>
+
+
+<A NAME="RibSetErrorHandler"></A>
+<dl><dt><PRE>
+int <b>RibSetErrorHandler</b>( RIB_HANDLE  rib, PRIB_ERRORFILTERPROC p )
+</PRE>
+<dd>
+<P>
+Changes the default error handler to function pointer <i>p</i>.
+By default a RIB is assigned 
+<A HREF="./ribcalls.html#RibDefaultErrorHandler">RibDefaultErrorHandler</A>()
+as the error handler.
+</P>
+</dl>
+
+
+<A NAME="RibSetHashExtendedData"></A>
+<dl><dt><PRE>
+int <b>RibSetHashExtendedData</b>( PRIB_HASHATOM a, void *t )
+</PRE>
+<dd>
+<P>
+Sets hash atom structure <i>a</i>'s extdata field to <i>t</i>.
+</P>
+</dl>
+
+
+<A NAME="RibSetHintTable"></A>
+<dl><dt><PRE>
+int <b>RibSetHintTable</b>( RIB_HANDLE rib, PRIB_HINTTABLE table )
+</PRE>
+<dd>
+<P>
+Assigns <i>table</i>, a table of hint handling functions called a hint table,
+to <i>rib</i>.
+</P>
+<P>
+When RibSetHintTable() has associated <i>table</i> with <i>rib</i>, 
+<A HREF="./ribcalls.html#RibDefaultArchiveRecordHandler">RibDefaultArchiveRecordHandler</A>()
+will identify the standard hints and forward the hint's data onto a matching hint function
+listed in a RIB handle's hint table.  By default a RIB handle does not have a hint table, but
+RibSetHintTable() can assign a RIB handle a table of function pointers to act as a hint
+table.
+</P>
+<P>
+A global variable gRibHintTable[] is provided in the RIB Reader library as
+a basic hint table.  A tool using the RIB Reader library could copy this
+table or simply use if global alterations are acceptable.
+<PRE>
+PRIB_ARCRECFILTERPROC gRibHintTable[] = {
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##CameraOrientation */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##CapabilitiesNeeded */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##CreationDate */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Creator */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##For */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Frames */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Include */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##RenderMan */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Scene */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler,/* ##Shaders */
+   (PRIB_ARCRECFILTERPROC)RibDefaultHintHandler /* ##Textures */
+};
+</PRE>
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetHintTableSize">RibGetHintTableSize</A>()
+and <A HREF="./ribcalls.html#RibGetHintTable">RibGetHintTable</A>().  By default
+a RIB handle has no hint table and RibGetHintTable() will return NULL. 
+</P>
+<P>
+To access the pointers in a hint table use the following named index offsets:
+<PRE>
+enum {
+   kRIB_CAMERAORIENTATION_HINT,  /* ##CameraOrientation */
+   kRIB_CAPABILITIESNEEDED_HINT, /* ##CapabilitiesNeeded */
+   kRIB_CREATIONDATE_HINT,       /* ##CreationDate */
+   kRIB_CREATOR_HINT,            /* ##Creator */
+   kRIB_FOR_HINT,                /* ##For */
+   kRIB_FRAMES_HINT,             /* ##Frames */
+   kRIB_INCLUDE_HINT,            /* ##Include */   
+   kRIB_RENDERMAN_HINT,          /* ##RenderMan */
+   kRIB_SCENE_HINT,              /* ##Scene */
+   kRIB_SHADERS_HINT,            /* ##Shaders */
+   kRIB_TEXTURES_HINT,           /* ##Textures */
+   kRIB_LAST_HINT
+};
+</PRE>
+</P>
+</dl>
+
+
+int RibSetLastNUniform( 
+<A NAME="RibSetLastNUniform"></A>
+<dl><dt><PRE>
+int <b>RibSetLastNUniform</b>( RIB_HANDLE rib, int nuniform )
+</PRE>
+<dd>
+<P>
+Sets the number of uniform parameters as number that
+the RIB Reader library calculated for a given Ri call.  This function
+should only be called from a Ri-like function hooked into the Ri table of 
+<i>rib</i>.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibGetLastNUniform">RibGetLastNUniform</A>()
+</P>
+</dl>
+
+
+int RibSetLastNVarying( 
+<A NAME="RibSetLastNVarying"></A>
+<dl><dt><PRE>
+int <b>RibSetLastNVarying</b>( RIB_HANDLE rib, int nuniform )
+</PRE>
+<dd>
+<P>
+Sets the number of varying parameters as number that
+the RIB Reader library calculated for a given Ri call.  This function
+should only be called from a Ri-like function hooked into the Ri table of 
+<i>rib</i>.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibGetLastNVarying">RibGetLastNVarying</A>()
+</P>
+</dl>
+
+
+int RibSetLastNVertex( 
+<A NAME="RibSetLastNVertex"></A>
+<dl><dt><PRE>
+int <b>RibSetLastNVertex</b>( RIB_HANDLE rib, int nuniform )
+</PRE>
+<dd>
+<P>
+Sets the number of vertex parameters as number that
+the RIB Reader library calculated for a given Ri call.  This function
+should only be called from a Ri-like function hooked into the Ri table of 
+<i>rib</i>.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibGetLastNVertex">RibGetLastNVertex</A>()
+</P>
+</dl>
+
+
+<A NAME="RibSetLastSequence"></A>
+<dl><dt><PRE>
+int <b>RibSetLastSequence</b>( RIB_HANDLE rib, int n )
+</PRE>
+<dd>
+<P>
+The RIB statements LightSource, AreaLightSource and ObjectBegin have a 
+sequence number that appears after the shader name.  The sequence
+number gives the light source or object an ID number.  When abstracted to
+the Ri calls the ID number takes the form of a lighthandle or objecthandle
+that is returned from RiLightSource(), RiLightSourceV(), RiAreaLightSource(), 
+RiAreaLightSourceV(), or RiObjectBegin().  
+</P>
+<P>
+A tool may want the actual sequence number read in the file.  The function
+<A HREF="./ribcalls.html#RibGetLastSequence">RibGetLastSequence</A>() returns
+the last sequence number read from a RIB file.  This last sequence number is
+set by the function that reads in a complete RIB statement calling 
+RibSetLastSequence().
+</P>
+<P>
+<A HREF="./ribcalls.html#RibGetLastSequence">RibGetLastSequence</A>()
+is typically called from a RI function that was listed in 
+the RI table associated with a RIB handle or a RI call that has hooked
+into the calling chain that starts at a given RI table.
+</P>
+</dl>
+
+
+<A NAME="RibSetNColorSamples"></A>
+<dl><dt><PRE>
+int <b>RibSetNColorSamples</b>( RIB_HANDLE rib, int n )
+</PRE>
+<dd>
+<P>
+A color can be 1 to n channels.  by defualt it is 3 channels,
+but RibSetNColorSamples() will alter <i>rib</i>'s default
+to <i>n</i>.  Subsequent RIB statements that use variables
+declared as type color, must have <i>n</i> channels.
+</P>
+</dl>
+
+
+<A NAME="RibSetOptions"></A>
+<dl><dt><PRE>
+int <b>RibSetOptions</b>( RIB_HANDLE hrib, RIB_UINT32 mask, RIB_UINT32 flags )
+</PRE>
+<dd>
+<P>
+Sets option flags that affect how a RIB file is handled.  
+Refer to <A HREF="./ribcalls.html#RibGetOptions">RibGetOptions</A>() for
+the possible flags.
+</P>
+</dl>
+
+
+<A NAME="RibSetRITable"></A>
+<dl><dt><PRE>
+int <b>RibSetRITable</b>( RIB_HANDLE rib, PRIB_RITABLE table )
+</PRE>
+<dd>
+<P>
+Associates a table of Ri calls to a RIB handle.  This function allows
+an RI table to be assigned after 
+<A HREF="./ribcalls.html#RibOpenWithHashTable">RibOpenWithHashTable</A>() 
+was used to open a RIB file or after RibOpen() was called with NULL as the 
+<i>ritable</i> parameter.  
+</P>
+<P>
+RibSetRITable() could also be used to dynamically change the set of Ri calls
+that are called as a RIB file is read in.  For example a tool may need to 
+change the set or Ri calls depending on a file's version number.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetRITable">RibGetRITable</A>().
+</P>
+</dl>
+
+
+<A NAME="RibSetStringAtom"></A>
+<dl><dt><PRE>
+int <b>RibSetStringAtom</b>( PRIB_HASHATOM a, int token, char *s )
+</PRE>
+<dd>
+<P>
+When writing a RIB file in binary encoded format, string definitions
+are made that define an integer as a more compact way of referring to
+a string rather than writing the entire string out.  RibSetStringAtom()
+sets the code and data fields of hash atom structure <i>atom</i> to
+<i>token</i> and <i>s</i> respectively.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetStringAtom">RibGetStringAtom</A>().
+</P>
+</dl>
+
+
+<A NAME="RibSetStatus"></A>
+<dl><dt><PRE>
+int <b>RibSetStatus</b>( RIB_HANDLE hrib, RIB_UINT32 mask, RIB_UINT32 flags )
+</PRE>
+<dd>
+<P>
+Sets the <A HREF="./status.html">Status Flags</A> 
+that are set for the RIB input <i>hrib</i>.  The <i>mask</i> indicates
+which flags can be changed and <i>flags</i> has the kRIB_STATUS_* values
+to be set ORed together.  To set a flag to zero OR its kRIB_STATUS_* value
+into the <i>mask</i> value but not into the <i>flags</i> value.  Use zero
+for <i>flags</i> if no flags are to be set.
+</P>
+</dl>
+
+
+<A NAME="RibSetUVStep"></A>
+<dl><dt><PRE>
+int <b>RibSetUVStep</b>( RIB_HANDLE rib, RtInt ustep, RtInt vstep )
+</PRE>
+<dd>
+<P>
+Sets <i>rib</i>'s U and V step values that are both by default set to 
+3, but depending on the basis used by RiCurve, RiPatch and RiPatchMesh 
+the U and V step values may need to altered.
+</P>
+<P>
+RibRead() will alter the U and V step values after reading a 
+Basis statement from the input <i>rib</i>.  The values are
+altered before calling the Ri function at position
+kRIB_BASIS in <i>rib</i>'s RI Table.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibGetUVStep">RibGetUVStep</A>().
+</P>
+</dl>
+
+
+<A NAME="RibShouldFreeData"></A>
+<dl><dt><PRE>
+RtBoolean <b>RibShouldFreeData</b>( RIB_HANDLE rib )
+</PRE>
+<dd>
+<P>
+Returns nonzero value if pointers given in a present Ri call point
+to memory areas that should not be freed.  Functions the same as 
+<A HREF="./ribcalls.html#RibQueryKeepData">RibQueryKeepData</A>()
+except that it resets a status flag called kRIB_STATUS_KEEP_DATA.  
+</P>
+<P>
+A Ri function must call RibShouldFreeData() if 1) it did <b>not</b> call
+<A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>() to prevent data given to 
+it from being freed when the chain of Ri calls is complete but it did,
+2) allocate memory that was given to the next function in the chain, and 3) one of
+the following functions in the chain called 
+<A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>() to keep one of the 
+allocated memory blocks mention in step 2.
+</P>
+<P>
+If <A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>() was called by
+the present Ri function and the above steps 2 and 3 also occurred then
+<A HREF="./ribcalls.html#RibQueryKeepData">RibQueryKeepData</A>()
+should be called instead of RibShouldFreeData().
+</P>
+<P>
+The difference between RibShouldFreeData() and
+<A HREF="./ribcalls.html#RibQueryKeepData">RibQueryKeepData</A>() 
+is whether or not a status flag kRIB_STATUS_KEEP_DATA
+should remain set as Ri functions return control back to the previous function
+in the chain.
+</P>
+<P>
+Refer to <A HREF="./ribcalls.html#RibKeepData">RibKeepData</A>()
+for how to tell the RIB Reader that pointers given to a RI call 
+are pointing to data that <b>can not</b> be freed upon completion of 
+the RI call.
+</P>
+</dl>
+
+
+<A NAME="RibUngetChar"></A>
+<dl><dt><PRE>
+int <b>RibUngetChar</b>( RIB_HANDLE rib, int c )
+</PRE>
+<dd>
+<P>
+Places the character <i>c</i> back undoing the last 
+<A HREF="./ribcalls.html#RibGetChar">RibGetChar</A>().
+</P>
+</dl>
+
+
+<A NAME="RibVectorCacheInit"></A>
+<dl><dt><PRE>
+int <b>RibVectorCacheInit</b>( RIB_HANDLE hrib, RtInt n )
+</PRE>
+<dd>
+Internal call that sets up a set of arrays referred to 
+as the vector cache.  These arrays store token/parameter
+pairs as they are being read in.
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibCacheVector">RibCacheVector</A>() and
+<A HREF="./ribcalls.html#RibFreeVectorCache">RibFreeVectorCache</A>().
+</dl>
+
+
+<A NAME="Rib_version"></A>
+<dl><dt><PRE>
+RtVoid <b>Rib_version</b>( RtFloat version )
+</PRE>
+<dd>
+<P>
+RIB files can have a version statement which is marked by the
+word "version" (lowercase 'v') and followed by a floating
+point value.  Rib_Version handles these calls by simply a
+doing a simple return.  
+</P>
+The underscore is present because the version statement 
+was never officially added to the RenderMan Standard.  There
+was some mention that it would have been added in version
+4.0 of the specification, but Pixar doesn't appear to be
+planning any further releases of the specification.  But
+just incase "version" is ever added to the specification an 
+extra underscore was added in the RI table index name 
+kRIB__VERSION and the function Rib_version() to distinguish 
+them from any future additions to the standard.
+<P>
+</P>
+</dl>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>
+

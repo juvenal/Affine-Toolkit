@@ -1,0 +1,13 @@
+# To run test add do the following commands:
+#   mkdir affine/readrib/tests/search1
+#   mkdir affine/readrib/tests/search1/target
+#   mkdir affine/readrib/tests/search2
+#   mkdir affine/readrib/tests/search3
+#   echo '# Should reach here.' > affine/readrib/tests/search3/target
+#
+#   typerib -r searchtest.rib
+#
+# Note: catrib does not know about "archive" making it need a declaration.
+#Declare "archive" "uniform string"
+Option "searchpath" "archive" ["search1:search2:search3"]
+ReadArchive "target"

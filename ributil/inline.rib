@@ -1,0 +1,5 @@
+Points "P" [1 2 3] "uniform color roughness" [1 2 3]
+Declare "bob" "uniform float"
+Points "P" [1 2 3] "bob" [1]
+Points "P" [1 2 3] "uniform color bob" [1 2 3]
+Points "P" [1 2 3] "bob" [1]

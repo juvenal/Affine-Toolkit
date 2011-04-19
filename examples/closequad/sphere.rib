@@ -1,0 +1,14 @@
+Display "sphere.tif" "file" "rgb"
+Format 250 250 1
+Clipping 0.001 1000
+Projection "perspective"
+Translate 0 0 2
+WorldBegin
+LightSource "distantlight" 1 "intensity" [1.0]
+LightSource "ambientlight" 2 "intensity" [0.3]
+Surface "paintedplastic" "texturename" ["grid2.tex"]
+Rotate 55 1 0 0 
+Rotate -55 0 0 1
+Sphere 1 -0.75 0.5 240 
+WorldEnd
+

@@ -1,0 +1,298 @@
+<!--
+/* $RCSfile: bmppack.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  bmppack.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<A NAME="affine"></A>
+<H1><CENTER>Affine Bitmap Tools Package</CENTER></H1>
+<CENTER>(7-5-98)</CENTER>
+<P>
+</P>
+<H2>New Features</H2>
+<P>
+Support for Maya's IFF files has been added with 
+<A HREF="./bmppack.html#iffinfo">iffinfo</A>,
+<A HREF="./bmppack.html#iff2tiff">iff2tiff</A>,
+<A HREF="./bmppack.html#tiff2iff">tiff2iff</A>,
+and <A HREF="./bmppack.html#iff2iff">iff2iff</A>.
+This package is based on the code in the Affine Toolkit's affine/pixNtiff/ 
+subdirectory.  New TIFF tools have also been added.  For those who find 
+Maya 1.0 "upside-down" oriented TIFF files to be annoying, the 
+<A HREF="./bmppack.html#tifforient">tifforient</A>
+tool can be used to change the
+orientation of a set of TIFF files.  
+</P>
+<P>
+Also included is a tool to invert the image of a TIFF file with 
+<A HREF="./bmppack.html#tiffinvert">tiffinvert</A>
+and a tool called 
+<A HREF="./bmppack.html#tifftile">tifftile</A>
+that can assemble CropWindow created
+TIFF files from both Pixar's PRMan and BMRT's rendrib.  
+</P>
+
+
+<H2><CENTER>Downloading the Bitmap Tools</CENTER></H2>
+<P>
+At present the package is tested to build and run only under IRIX.  Later
+it will be merge it back into the <A HREF="./affine.html">Affine Toolkit</A>
+as a part of the bitmap utilities.
+</P>
+<UL>
+<LI>
+The Affine Bitmap Tools Package is available at
+<A HREF="ftp://www.systemv.com/pub/affine/bmp9806.tar.gz">ftp://www.systemv.com/pub/affine/bmp9806.tar.gz</A>.
+The Affine Bitmap Tools Package is copyright (c) 
+1995-1998 Thomas Burge.
+</LI>
+<LI>
+You will also need to get a copy of libtiff.a available at 
+SGI's website.  The libtiff.a library is Copyright (c) 
+1988-1996 Sam Leffler and copyright (c) 1991-1996 Silicon 
+Graphics, Inc.
+</LI>
+</UL>
+
+
+<H2>New Maya IFF Tools:</H2>
+<P>
+Both Maya 1.0 and Composer 4.5 IFF files (8bit, 12bit and 16bit) can be read.  
+The code writes the IFF files out in Maya's 8bit and 16bit format.  The 
+12bit format written out by Composer 4.5 can only be read not written.  Also
+the odd GEND tags that Composer 4.5 adds to its 8bit and 12bit files are 
+handled when reading by are not written by the tools here.  The format 
+choosen when writing matches that of Maya 1.0.
+</P>
+<P>
+Basically Maya IFF files are fully supported both compressed and uncompressed.
+Composer 4.5 does not appear to support Maya 1.0 16 bit IFF files and instead
+uses some odd IFF format that the tools included here can read.
+</P>
+<UL>
+<LI>
+<A NAME="iffinfo"></A>
+<B>iffinfo</B>    -- Utility to print out descriptions of structures in 
+              Alias/Wavefront IFF files.  Also can print some information 
+              on sound files (AIFF) and Maya binary scene files.
+</LI>
+<LI>
+<A NAME="iff2tiff"></A>
+<B>iff2tiff</B>   -- Convert Maya IFF image files to TIFF format.
+</LI>
+<LI>
+<A NAME="tiff2iff"></A>
+<B>tiff2iff</B>   -- Convert TIFF format to Maya IFF format.
+</LI>
+<LI>
+<A NAME="iff2iff"></A>
+<B>iff2iff</B>    -- Test program to copy Maya IFF image files to a separate
+              Maya IFF file.  A change in compression and bit depth
+              can be done.
+</LI>
+</UL>
+
+<H2>New TIFF Tools:</H2>
+<UL>
+<LI>
+<A NAME="tifforient"></A>
+<B>tifforient</B> -- Changes the orientation of TIFF file images.  Can also be
+              used to simply change the TIFF orientation flags, which is
+              useful sometimes for testing.
+</LI>
+<LI>
+<A NAME="tifftile"></A>
+<B>tifftile</B>   -- Assembles CropWindow images into a single image.
+              This tool works with both PRMan and BMRT TIFF files.
+              This tool does not have problems with the TIFF 
+              tags TIFFTAG_XRESOLUTION and TIFFTAG_YRESOLUTION set to
+              a pitch of 72.0 and not 1.0.  Many applications use 72.0
+              when writing TIFF files including BMRT 3.6.  
+</LI>
+<LI>
+<A NAME="tiffinvert"></A>
+<B>tiffinvert</B> -- Changes the given TIFF files to have inverted images.
+</LI>
+</UL>
+
+<H2>Original Tools:</H2>
+<UL>
+<LI>
+fp2tiff    -- Store ASCII printed floating point values into an IEEE TIFF
+              file of a user specified size.
+</LI>
+<LI>
+normfptiff -- Adjust the min to max range of values in an IEEE TIFF file 
+              to be from 0 to 1.  
+<LI>
+pix2tiff   -- Convert Alias PIX files into TIFF.
+</LI>
+<LI>
+pixinfo    -- Print size information of Alias PIX files.
+</LI>
+<LI>
+showbits   -- Displays Alias PIX, TIFF and TGA files.  Showbits will try
+              to figure out the file format if the user doesn't indicate which.
+</LI>
+<LI>
+tga2tga    -- Test program to convert TGA uncompressed/compressed to 
+              TGA compressed.
+</LI>
+<LI>
+tga2tiff   -- Convert TGA to TIFF.
+</LI>
+<LI>
+tgainfo    -- Print size information of TGA files.
+</LI>
+<LI>
+tif2tif    -- Test program to convert TIFF uncompressed/compressed to 
+              TIFF compressed files.
+</LI>
+<LI>
+tiff2X     -- Convert a black and white TIFF into X Window's ASCII format.
+</LI>
+<LI>
+tiff2fp    -- Print IEEE values in an IEEE TIFF file.
+</LI>
+<LI>
+tiff2pix   -- Convert TIFF to Alias PIX.
+</LI>
+<LI>
+tiff2tga   -- Convert TIFF to TGA compressed.
+</LI>
+<LI>
+<A HREF="./tiffedge.html">tiffedge</A>
+-- Composite TIFF images of constant surface shaded objects, 
+   normal-variance shaded object, and depth maps into a Sobel
+   filtered image that looks like the ink lines of a cartoon.
+   Some additional filtering is really needed to smooth out the
+   lines a bit.  I will try to add this in later.  
+</LI>
+<LI>
+z2tiff     -- Takes Pixar's Z format and converts the data into a TIFF image.
+</LI>
+</UL>
+
+<A NAME="BitmapCode"></A>
+<H2>Reading and Writing Various 2D Image Formats</H2>
+<P>
+Located in affine/pixNtiff/ are several C files that are used to
+read and write Alias's PIX, Maya IFF, TIFF, and TGA file formats.  
+Included is also the ability to write X Windows bitmaps or 
+read Pixar's zfile format.
+<P>
+</P>
+Each fully supported format has two self-named C files prefixed with a
+'r' for reading and a 'w' for writing.  TIFF for example has rtiff.c
+and wtiff.c with the functions ReadTiff() and WriteTiff() respectively.  
+Each 'r' and 'w' file has an associated header file with a ".h" 
+filename extension.  Refer to these headers for the main function 
+exported by its associated C file.  
+</P>
+<P>
+The writing functions rely on a data structure called simply BITMAP 
+defined in the header affine/pixNtiff/bitmap.h with the following code:
+<PRE>
+     typedef struct _BITMAP {
+        unsigned int  xres;
+        unsigned int  yres;
+        unsigned int  xpos;
+        unsigned int  ypos;
+        unsigned int  sampleformat; /* uint8, uint16 or IEEE floats. */
+        unsigned int  orientation;  /* Refer to flags in bitmap.h. */
+        unsigned int  nsamples;  /* How many channels. */
+        unsigned int  bitspersample; 
+        unsigned int  rowbytes;  /* for an RGB image rowbytes = 3*xres */
+                          /* rowbytes is needed incase padding is needed */
+        PBITS  pbits;
+     } BITMAP;
+     typedef BITMAP *PBITMAP;
+</PRE>
+</P>
+<P>
+Most of the code in affine/pixNtiff/ avoids issues with the processor's
+endedness.  But some code does use a flag called LITTLE_ENDIAN.  
+For information on big-endian and little-endian refer to the 
+section <A HREF="./endian.html">Ten Little Endians</A>
+for a brief overview of what the term "endian" means.
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmppack.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+<PRE>
+  Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
+  
+  Affine (R) is a registered trademark of Thomas E. Burge
+ 
+  THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+  AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+  PARTICULAR PURPOSE.  
+ 
+  In no event shall Thomas E. Burge be liable for any indirect or
+  consequential damages or loss of data resulting from use or performance 
+  of this software.
+  
+ 
+                 The Affine (R) Libraries and Tools are 
+           Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+                          All rights reserved.
+
+         Affine (R) is a registered trademark of Thomas E. Burge.
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,50 @@
+##RenderMan RIB
+#
+#   linear periodic
+#
+#   P(22*3=66) width(22) constantwidth(1) texturename(22=tex22)
+version 3.03
+Curves "linear" [2 2 3 4 5 6] "periodic" "P" [1 2 3 4 5 6
+7 8 9 10 11 12 13 14 15 16 17 18
+19 20 21 22 23 24 25 26 27 28 29 30
+31 32 33 34 35 36 37 38 39 40 41 42
+43 44 45 46 47 48 49 50 51 52 53 54
+55 56 57 58 59 60 61 62 63 64 65 66.1]"width" [1 2 3 4 5 6 7 8 9 10
+11 12 13 14 15 16 17 18 19 20 21 22.123]"constantwidth" [1]"texturename" ["tex1" "tex2" "tex3" "tex4" "tex5" "tex6" "tex7" "tex8" "tex9" "tex10" "tex11" "tex12" "tex13" "tex14" "tex15" "tex16" "tex17" "tex18" "tex19" "tex20" "tex21" "tex22"]
+Curves "linear" [2 2 3 4 5 6] "periodic" "P" [1 2 3 4 5 6
+7 8 9 10 11 12 13 14 15 16 17 18
+19 20 21 22 23 24 25 26 27 28 29 30
+31 32 33 34 35 36 37 38 39 40 41 42
+43 44 45 46 47 48 49 50 51 52 53 54
+55 56 57 58 59 60 61 62 63 64 65 66.1]"width" [1 2 3 4 5 6 7 8 9 10
+11 12 13 14 15 16 17 18 19 20 21 22.123]"constantwidth" [1]"texturename" ["tex1" "tex2" "tex3" "tex4" "tex5" "tex6" "tex7" "tex8" "tex9" "tex10" "tex11" "tex12" "tex13" "tex14" "tex15" "tex16" "tex17" "tex18" "tex19" "tex20" "tex21" "tex22"]
+#
+#   linear nonperiodic
+#
+#   P(22*3=66) width(22) constantwidth(1) texturename(16=tex16)
+Curves "linear" [2 2 3 4 5 6] "nonperiodic" "P" [1 2 3 4 5 6
+7 8 9 10 11 12 13 14 15 16 17 18
+19 20 21 22 23 24 25 26 27 28 29 30
+31 32 33 34 35 36 37 38 39 40 41 42
+43 44 45 46 47 48 49 50 51 52 53 54
+55 56 57 58 59 60 61 62 63 64 65 66.1]"width" [1 2 3 4 5 6 7 8 9 10
+11 12 13 14 15 16 17 18 19 20 21 22.123]"constantwidth" [1]"texturename" ["tex1" "tex2" "tex3" "tex4" "tex5" "tex6" "tex7" "tex8" "tex9" "tex10" "tex11" "tex12" "tex13" "tex14" "tex15" "tex16"]
+Curves "linear" [2 2 3 4 5 6] "nonperiodic" "P" [1 2 3 4 5 6
+7 8 9 10 11 12 13 14 15 16 17 18
+19 20 21 22 23 24 25 26 27 28 29 30
+31 32 33 34 35 36 37 38 39 40 41 42
+43 44 45 46 47 48 49 50 51 52 53 54
+55 56 57 58 59 60 61 62 63 64 65 66.1]"width" [1 2 3 4 5 6 7 8 9 10
+11 12 13 14 15 16 17 18 19 20 21 22.123]"constantwidth" [1]"texturename" ["tex1" "tex2" "tex3" "tex4" "tex5" "tex6" "tex7" "tex8" "tex9" "tex10" "tex11" "tex12" "tex13" "tex14" "tex15" "tex16"]
+#
+#   cubic nonperiodic
+#
+#   P(4*3=12) width(4) constantwidth(1) texturename(1=tex1)
+Curves "cubic" [4] "nonperiodic" "P" [1 2 3 4 5 6 7 8 9 10 11 12.1]"width" [1 2]"constantwidth" [1]"texturename" ["tex1"]
+Curves "cubic" [4] "nonperiodic" "P" [1 2 3 4 5 6 7 8 9 10 11 12.1]"width" [1 2]"constantwidth" [1]"texturename" ["tex1"]
+#
+#   cubic periodic
+#
+#   P(3*3=9) width(1) constantwidth(1) texturename(1=tex1)
+Curves "cubic" [3] "periodic" "P" [1 2 3 4 5 6 7 8 9.1]"width" [1.1]"constantwidth" [1]"texturename" ["tex1"]
+Curves "cubic" [3] "periodic" "P" [1 2 3 4 5 6 7 8 9.1]"width" [1.1]"constantwidth" [1]"texturename" ["tex1"]

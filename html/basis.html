@@ -1,0 +1,168 @@
+<!--
+/* $RCSfile: basis.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  basis.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<PRE>
+1/1/98 12:20 PM
+>    Does anyone have ideas as to how I should map the RiBasis capability
+>to OpenGL. I vaguely remember that in the old Silicon Graphics GL, there
+>was a way to update some basis matrix (or something similar).
+>
+>    Am I approaching the problem from a correct angle ?
+>
+>    From the documentation, the Basis are Bernstien Polynomials in
+>OpenGL but RenderMan allows a user to write customized basis function.
+>
+You'll have to change the basis of the patches using the values given in
+the last Basis statement in the RIB file.  By default the values are
+RiBezierBasis basis matrices for u and v directions and both ustep and 
+vstep set to 3.
+
+I'll include a brief explanation here on changing a basis.  Hopefully 
+it answers your questions without too much extra information.  
+
+To convert from a UBasis by VBasis patch to a Bezier by Bezier basis 
+patch, the control points CP of the UBasis by VBasis patch need to be 
+altered to a new set of points newCP.
+
+   Let CPx, CPy and CPz be 4x4 arrays of floats storing just the 
+      X,Y and Z components of CP respectively.  
+   Let newCPx, newCPy and newCPz be 4x4 arrays of floats storing 
+      just the X,Y and Z components of newCP respectively.  
+   Let Bezier equal the RiBezierBasis basis matrix.
+   Let InvBezier equal the inverse of the RiBezierBasis basis matrix.
+
+   newCPx = InvBezier * VBasis * CPx * Transpose(InvBezier*UBasis)
+   
+   newCPy = InvBezier * VBasis * CPy * Transpose(InvBezier*UBasis)
+   
+   newCPz = InvBezier * VBasis * CPz * Transpose(InvBezier*UBasis)
+
+To derive the above equations and to also convert a bicubic to any form
+of basis matrices you may desire, consider a point P on the surface of a 
+patch defined by parameter values u and v; basis matrices U and V; 
+and control points CP.  Let Px, Py and Pz be the X,Y and Z components 
+of P respectively.  A carrot "^" indicates an exponent.
+
+   Px = [v^3  v^2  v  1]*V*CPx*Transpose(U)*Transpose([u^3  u^2  u  1])
+   
+   Py = [v^3  v^2  v  1]*V*CPy*Transpose(U)*Transpose([u^3  u^2  u  1])
+   
+   Pz = [v^3  v^2  v  1]*V*CPz*Transpose(U)*Transpose([u^3  u^2  u  1])
+   
+To change a basis of a bicubic patch from U1 by V1 to U2 by V2 note that
+
+    Px = [v^3  v^2  v  1]*V1*CP1x*Transpose(U1)*Transpose([u^3  u^2  u  1])
+       = [v^3  v^2  v  1]*V2*CP2x*Transpose(U2)*Transpose([u^3  u^2  u  1])
+
+    Py = [v^3  v^2  v  1]*V1*CP1y*Transpose(U1)*Transpose([u^3  u^2  u  1])
+       = [v^3  v^2  v  1]*V2*CP2y*Transpose(U2)*Transpose([u^3  u^2  u  1])
+
+    Pz = [v^3  v^2  v  1]*V1*CP1z*Transpose(U1)*Transpose([u^3  u^2  u  1])
+       = [v^3  v^2  v  1]*V2*CP2z*Transpose(U2)*Transpose([u^3  u^2  u  1])
+       
+The above can be simplified to 
+
+   V1*CP1x*Transpose(U1) = V2*CP2x*Transpose(U2)
+
+   V1*CP1y*Transpose(U1) = V2*CP2y*Transpose(U2)
+
+   V1*CP1z*Transpose(U1) = V2*CP2z*Transpose(U2)
+
+The new control points CP2 have the following relation to the old control
+points CP1:
+
+   CP2x = Inv(V2)*V1 * CP1x * Transpose( Inv(U2) * U1 )
+
+   CP2y = Inv(V2)*V1 * CP1y * Transpose( Inv(U2) * U1 )
+
+   CP2z = Inv(V2)*V1 * CP1z * Transpose( Inv(U2) * U1 )
+
+The first set of equations at the beginning of this note are taken from 
+some code I wrote a couple years back.  So barring any typos, they 
+should work.  For the rest, hopefully I didn't mix up my 1's and 2's, 
+U's and V's while writing this.  
+
+I believe there were course notes from SIGGRAPH '92 that provided some 
+material on this.  Atleast I think it was 92.  When I wrote the code, I 
+included a reference to a memo by Rob Cook which I think came from the 
+'92 course notes.  For the section on basis matrices, Cook's memo 
+stated it was based on Ed Catmull's thesis and also work from Tom Duff.  
+
+To optimize code, you might consider precalculating conversion matrices
+to interchange the standard basis matrices.  With five standard basis
+matrices used by the RenderMan standard, there would be twenty-five
+Inv(Basis2)*Basis1 matrices that can be precalculated and stored.  Note 
+that when Basis2 equals Basis1, the precalculated value is simply the 
+identity matrix -- which you probably don't need to waste space storing.  
+That makes it only twenty precalculated matrices to store.  Only four
+are needed if you are only going to convert to one of the basis matrices,
+for example RiBezierBasis.
+
+Hope that helps,
+T. Burge
+
+P.S.  Refer to www.affine.com for reading and writing RIB files.  You 
+might find the RIB Reader useful for what you are doing.   
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

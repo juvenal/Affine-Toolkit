@@ -1,0 +1,16 @@
+##RenderMan RIB-Structure 1.0
+version 3.03
+#Comment out the following "Color 123 456" statement and this RIB prints 
+#  without error from catrib.  
+#  With "Color 123 456" the following two statements the follow is printed:
+# 
+#       P79014 RIB syntax error (at line 15 in o, last token 
+#            OPERATOR(PointsGeneralPolygons)).
+#       ##RenderMan RIB-Structure 1.0
+#       version 3.03
+#       ColorSamples [1 2 3 4 5 6] [7 8 9 10 11 12]
+#
+# The missing Sides 1
+ColorSamples [1 2 3 4 5 6] [7 8 9 10 11 12]
+#Color 123 456
+Sides 1

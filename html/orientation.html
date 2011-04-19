@@ -1,0 +1,318 @@
+<!--
+/* $RCSfile: orientation.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  orientation.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<PRE>
+> am interested in converting my OGL to RenderMan and was wondering if 
+>anyone has had success with this.  Obviously we are all busy, so I am 
+>just interested in how you converted from OGL's Right-handedness to 
+>RMan's Left-handedness? Did you simply use the RiOrientation and change 
+>the Rman to Left-handedness?  And if so, does that call effect the 
+>drawing direction and order of your objects? Rotations? Translations?
+
+I agree with Michael Johnson's answer regarding doing some
+experimentation to get a feel for how the transformations work, but
+reading your question it looks like you might be expecting an
+Orientation RIB statement to do a few things more than it can actually
+do.  
+
+When reading about the Orientation and ReverseOrientation statements,
+it's best to have both the RenderMan Spec and the RenderMan Companion. 
+The specification's section "Orientation and Sides", can be a bit more
+helpful than the Companion in that in does give a clearer notion that
+the term "current orientation" and the term "orientation of the current
+coordinate system" are regarded as separate things when handling a RIB
+file.  It's easy to look at these two terms and merge them together.  If
+you interpret the "current orientation" to simply be a flag that
+indicates whether or not the normals need to be flipped in the opposite
+direction, the Companion's reference to a detection scheme to compensate
+for certain transformations starts to make more sense.
+
+Without including the typical ASCII diagrams with slashes and
+underscores attempting to draw left and right handed coordinate systems,
+I'll try to use some RIB files to show how others export RIBs from their
+applications and hopefully without making this note too long I'll
+explain the "current orientation" term used in the spec.  I'm going to
+focus on how an application can get its geometry correctly positioned
+and orientated in world space.  
+
+One should probably become familiar with three basic configurations. 
+Phigs and OpenGL use a coordinate system where in a front view Y is up,
+Z points into the camera and X points to the right.  RenderMan uses a
+system where Y is up, Z points away from the camera and X points to the
+right.  I've not seen any system have X point to the left, but I have
+seen it where Z points up, Y points away and X points to the right. 
+This last coordinate system is the default in Alias.  Alias does allow
+you to also set Y as up, but I haven't seen any industrial designers or
+animators take advantage of that feature.  I'm certain folks have, but I
+bet Z up is the most used in Alias.  
+
+You can say that RenderMan is using a left-handed coordinate system and
+the others are using a right-handed system, but when converting your
+data from one system to another ignore the terminology at first and
+simply look at the directions the axes point and convert a single 3D
+point from the original system to the target coordinate system.  If we
+set Alias to use Y up, it will match the OpenGL coordinate system and
+some examples of RIB output should be helpful for the questions shown
+above.  With Alias using Y-up, a 3-D point placed at an absolute
+location (1,2,3) is converted to RenderMan world space at location
+(1,2,-3).  
+
+You should avoid interpreting the shown negation of the Z-coordinate as
+simply meaning that a "Scale 1 1 -1" can be used in your RIB output and
+your geometry's positional data can be written out unchanged.  It is
+better to output your geometry with the Z-coordinate negated, because
+this will actually avoid flipping the normals of the surfaces.
+
+The following is a RIB file of a bilinear NURB surface that appears as a
+square in a front view.  With a perspective added, it can be seen that
+the upper right corner has been pushed back one unit and the lower-left
+corner pulled forward one unit.  
+
+In the following RIB I'll show what Alias gave in the way of
+transformations and geometry, but much of the other RIB statements
+although good for rendering were for this example extra "ribbish", so I
+edited those lines out:
+
+---------------------------------------------------------
+#example1.rib
+Display "example1.rib.tiff" "framebuffer" "rgba" 
+Projection "perspective" "fov" [40.7]
+#Alias's camera was left just showing a simple front view.
+Translate 0 0 12
+WorldBegin 
+LightSource "distantlight" 1 
+# When a front view has Y as up, Z pointing into the camera, and X 
+#    pointing to the right; the following are the coordinates of the 
+#    CVs and their associated u,v values:
+#       -1,-1, 1, 1 -->u:0,v:0
+#       -1, 1, 0, 1 -->u:0,v:1
+#        1,-1, 0, 1 -->u:1,v:0
+#        1, 1,-1, 1 -->u:1,v:1
+Surface "plastic"
+NuPatch 2 2 [0 0 1 1] 0 1 2 2 [0 0 1 1] 0 1 "Pw" [
+-1 -1 -1 1
+-1  1  0 1
+ 1 -1  0 1
+ 1  1  1 1]
+WorldEnd 
+---------------------------------------------------------
+
+In the above notice how the "Pw" data had its Z coordinates negated.  If
+the "Pw" data has the Z-coordinate negation undone and a scaling
+transformation used to negate the Z-coordinate instead, the geometry
+appears in the same place but the normal is reversed.
+
+The following RIB file shows the above alterations made.  The RIB file
+following this one shows a technique that can be used to see if a
+surface's normal is facing forward or not:
+---------------------------------------------------------
+#example2.rib
+Display "example2.rib.tiff" "framebuffer" "rgba" 
+Projection "perspective" "fov" [40.7]
+Translate 0 0 12
+WorldBegin 
+LightSource "distantlight" 1 
+Scale 1 1 -1
+Surface "plastic"
+NuPatch 2 2 [0 0 1 1] 0 1 2 2 [0 0 1 1] 0 1 "Pw" [
+-1 -1  1 1
+-1  1  0 1
+ 1 -1  0 1
+ 1  1 -1 1]
+WorldEnd 
+---------------------------------------------------------
+
+To see that the scaling transformation did infact flip the surface's
+normal add the line "Sides 1" as shown in the following RIB file and
+notice that the geometry is culled.  Because the normal does not face
+forward the resulting image is just blank.  In example1.rib, the
+addition of a "Sides 1" statement does not cause the geometry to be
+culled unlike the following RIB example.  The following is simply
+example 2 with a "Sides 1" added:
+
+---------------------------------------------------------
+#example3.rib
+Display "example3.rib.tiff" "framebuffer" "rgba" 
+Projection "perspective" "fov" [40.7]
+Translate 0 0 12
+WorldBegin 
+LightSource "distantlight" 1 
+Sides 1
+Scale 1 1 -1
+Surface "plastic"
+NuPatch 2 2 [0 0 1 1] 0 1 2 2 [0 0 1 1] 0 1 "Pw" [
+-1 -1  1 1
+-1  1  0 1
+ 1 -1  0 1
+ 1  1 -1 1]
+WorldEnd 
+---------------------------------------------------------
+
+If you have geometry being culled and would like the normals to face out
+or be forward facing, use ReverseOrientation.  You could also use
+Orientation instead.  In the following example, I'll leave one
+possibility uncommented and comment out the other two possibilities:
+---------------------------------------------------------
+Display "example4.rib.tiff" "framebuffer" "rgba" 
+Projection "perspective" "fov" [40.7]
+Translate 0 0 12
+WorldBegin 
+LightSource "distantlight" 1 
+# To fix the surface's orientation use ReverseOrientation or
+#   Orientation "lh" or Orientation "inside".
+Sides 1
+Scale 1 1 -1
+#ReverseOrientation
+Orientation "lh"
+#Orientation "inside"
+Surface "plastic"
+NuPatch 2 2 [0 0 1 1] 0 1 2 2 [0 0 1 1] 0 1 "Pw" [
+-1 -1  1 1
+-1  1  0 1
+ 1 -1  0 1
+ 1  1 -1 1]
+WorldEnd 
+---------------------------------------------------------
+
+Notice in example 5 how reflecting twice keeps the normal facing
+forward:
+
+---------------------------------------------------------
+#example5
+Display "example5.rib.tiff" "framebuffer" "rgba" 
+Projection "perspective" "fov" [40.7]
+Translate 0 0 12
+WorldBegin 
+LightSource "distantlight" 1 
+Sides 1
+Scale -1 1 -1
+Surface "plastic"
+NuPatch 2 2 [0 0 1 1] 0 1 2 2 [0 0 1 1] 0 1 "Pw" [
+ 1 -1  1 1
+ 1  1  0 1
+-1 -1  0 1
+-1  1 -1 1]
+WorldEnd 
+---------------------------------------------------------
+
+Listing points clockwise makes a polygon's normal face forward and
+therefore the polygon is visible even when a "Sides 1" statement is
+present.  Outputting the RIB data with a negative Z coordinate did not
+altered the direction of the polygon's normal.  
+
+---------------------------------------------------------
+Display "YupTriangle.rib.tiff" "framebuffer" "rgba" 
+Projection "perspective" "fov" [40.7]
+Rotate 1.28066e-06 0 0 1
+Rotate -6.7 1 0 0
+Rotate 20 0 1 0
+Translate -4.07621 -1.40005 11.1993
+WorldBegin 
+Sides 1
+#Listing points clockwise makes a polygon's normal faceforward
+#   and therefore the polygon is visible.
+Surface "plastic"
+PointsGeneralPolygons [1] [3] [0 1 2] 
+"P" [
+0  2 -2 
+0  2  2 
+0 -1  2]
+WorldEnd 
+---------------------------------------------------------
+The first, second and third points shown above were originally
+(0,2,2),(0,2,-2) and (0,-1,-2) respectively.  
+
+In the above examples, an odd number of reflections (Scale
+transformations with a negative value for one of the parameters) toggled
+the current coordinate system between left and right.  Each time this
+occurred, the RenderMan renderer noted this as a transformation that
+altered the current orientation of the coordinate system.  If an
+Orientation statement were to appear requesting a particular
+orientation, the render would know if the request would require the
+normals of the subsequent surfaces to be reversed.  Inshort the "current
+orientation" is only information about whether to alter a surface's
+normal or simply leave it alone.  The "orientation of the current
+coordinate system" can alter a normal, but the "current orientation" set
+by the user can override this.  
+
+So that a renderer can know how to alter normals to match what the user
+wants, the determinant of the concatenated set of transformations upto
+the present object space can be checked.  If a transformation has a
+positive sign, it matches the sign of an ordinary non-reflecting
+transformation and therefore indicates that the two have the same
+orientation (left-handed).  If a negative value were encountered, that
+transformation would have a different orientation from the norm and
+therefore be right-handed.  There is a brief blurb about this in the
+spec's section called "Orientation and Sides".  Also if you look at a
+second edition Foley book at page 1105 you'll find a few bits there as
+well.  I've not seen much of anything directly written about what the
+RenderMan Companion called the "renderer's detection scheme", but I
+believe I've included here a more technical statement describing it and
+although a bit brief is hopefully accurate.
+
+Sorry for the long note, but hopefully something here was of use.
+
+T. Burge
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

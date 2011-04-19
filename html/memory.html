@@ -1,0 +1,130 @@
+<!--
+/* $RCSfile: memory.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  memory.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#ffffff"></FONT>
+<H1><CENTER>Rib Memory Functions</CENTER></H1>
+
+<H2>Quick Reference List to Rib Memory Handling Functions</H2>
+<H3>Basic Memory Functions</H3>
+<UL>
+<LI><A HREF="./ribcalls.html#RibMalloc">RibMalloc</A>()
+ -- Allocate a memory block.</LI>
+<LI><A HREF="./ribcalls.html#RibFree">RibRealloc</A>()
+ -- Resize or replace a given block of memory to provide a block of
+a different size.</LI>
+<LI><A HREF="./ribcalls.html#RibFree">RibFree</A>()
+ -- Deallocate a memory block.</LI>
+<LI><A HREF="./ribcalls.html#RibFreeBasisMatrix">RibFreeBasisMatrix</A>()
+ -- Deallocate a memory block that represents a basis matrix.  A
+check is done to see if the memory is one of the RI_ constants
+which can not be freed.  If an RI_ constant such RiPowerBasis is
+given, RibFreeBasisMatrix() simply returns without error.</LI>
+</UL>
+
+<H3>RI Subclassing Memory Functions</H3>
+<UL>
+<LI><A HREF="./ribcalls.html#RibQueryKeepData">RibQueryKeepData</A>()
+ -- Returns nonzero value if pointers given in present Ri call point
+to memory areas that should not be freed.</LI>
+<LI><A HREF="./ribcalls.html#RibShouldFreeData">RibShouldFreeData</A>()
+ -- Same as RibQueryKeepData() except that it resets the 
+status flag called kRIB_STATUS_KEEP_DATA.</LI>   
+</UL>
+
+<H3>Parameter List Memory Functions</H3>
+<UL>
+<LI><A HREF="./ribcalls.html#RibFreeVectorData">RibFreeVectorData</A>()
+ -- Deallocate data in the parameter list of token/param pairs.</LI>
+<LI><A HREF="./ribcalls.html#RibVectorCacheInit">RibVectorCacheInit</A>()
+ -- Sets up a set of arrays referred to as the vector cache.</LI>
+<LI><A HREF="./ribcalls.html#RibCacheVector">RibCacheVector</A>()
+ -- RibCacheVector() increases the size of four arrays associated with 
+each RIB handle.  Most tools should not need to call this function 
+directly.</LI>
+<LI><A HREF="./ribcalls.html#RibCopyVectorCache">RibCopyVectorCache</A>()
+ -- Makes a copy of n items from the start of a RIB statement's 
+token/parameter pairs based on the vector cache.</LI>
+<LI><A HREF="./ribcalls.html#RibFreeVectorCache">RibFreeVectorCache</A>()
+ -- Frees the token and parameters data given in vector form to the 
+present Ri call.</LI>
+<LI><A HREF="./ribcalls.html#RibGetVectorCache">RibGetVectorCache</A>()
+ -- Returns the last read parameter list using vector form.</LI>
+<LI><A HREF="./ribcalls.html#RibGetVectorCacheInfo">RibGetVectorCacheInfo</A>()
+ -- Returns information about the last read parameter list read.</LI>
+</UL>
+
+<H3>Memory Test Functions for Finding Memory Leaks</H3>
+<UL>
+<LI><A HREF="./ribcalls.html#RibMemoryTestInit">RibMemoryTestInit</A>()
+-- Sets up counters and lists used by memory testing functions.</LI>
+<LI><A HREF="./ribcalls.html#RibMemoryTestMalloc">RibMemoryTestMalloc</A>()
+-- Internal call used by the test version of RibMalloc().</LI>
+<LI><A HREF="./ribcalls.html#RibMemoryTestFree">RibMemoryTestFree</A>()
+-- Internal call used by the test version of RibFree().</LI>
+<LI><A HREF="./ribcalls.html#RibMemoryTestResults">RibMemoryTestResults</A>()
+-- Prints results so far accumulated by the memory testing functions.</LI>
+<LI><A HREF="./ribcalls.html#RibMemoryTestStepOverAllowed">RibMemoryTestStepOverAllowed</A>()
+-- Function used only by the Affine libraries to reduce some of the data 
+collected by the memory testing functions.</LI>
+</UL>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

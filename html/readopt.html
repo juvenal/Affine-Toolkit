@@ -1,0 +1,250 @@
+<!--
+/* $RCSfile: readopt.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  readopt.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#ffffff"></FONT>
+<H1><CENTER>Read Option Flags for Arrays</CENTER></H1>
+
+<P>
+Below is a description of flags used in the <i>options</i>
+parameter given to the functions:
+</P>
+<UL>
+<LI><A HREF="./ribcalls.html#RibReadArrayAndLength">RibReadArrayAndLength</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibReadFloatingPointArray">RibReadFloatingPointArray</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibReadIntegerArray">RibReadIntegerArray</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibReadStringArray">RibReadStringArray</A>()</LI>
+</UL>
+
+
+<PRE>
+/* The following are options for reading arrays and strings:
+ *
+ * (options & kRIB_BRACKETS_MASK)==kRIB_BRACKETS_NONE
+ *    The value being read is not surrounded by square brackets.  
+ *    RIB statements do not allow brackets around strings except for
+ *    data in a parameter list.
+ *
+ *    For example, the statement:
+ *
+ *             Surface "paintedplastic" "texturename" "grid2.tex"
+ *
+ *    can not have brackets around "paintedplastic" without causing a
+ *    syntax error (such as catrib's P79014 RIB syntax error).
+ *
+ *    Tokens can not have brackets.  For example, in the statement:
+ *
+ *             Surface "paintedplastic" "texturename" "grid2.tex"
+ *
+ *    the string "texturename" is the token part of a token and 
+ *    parameter pair and can not have brackets around it.
+ * 
+ *    The following causes a syntax error (such as catrib's P79014 
+ *    RIB syntax error):
+ *
+ *             Surface "paintedplastic" ["texturename"] "grid2.tex"
+ *
+ * (options & kRIB_BRACKETS_MASK)==kRIB_BRACKETS_OPTIONAL
+ *    The following calls have optional brackets around the values given
+ *    them: Bound, Color, Cone, CropWindow, Cylinder, Detail, DetailRange, 
+ *    Disk, Hyperboloid, Opacity, Paraboloid, ScreenWindow, Sphere, 
+ *    TextureCoordinates, and Torus.  These calls can have the values given
+ *    them in the form of an encoded array of IEEE floats.
+ *
+ *    The following are valid RIB statements (Note that the '[' character
+ *    can also be adjacent to the RIB request such as "Color[1 1 1]".):
+ *
+ *           Color 1 1 1
+ *           Color[1 1 1]
+ *           CropWindow 0.0 0.0 1 1.0 
+ *           CropWindow [0 0 1 1 ]
+ *
+ *    Skew is mentioned in the spec [PIXA89] as allowing brackets, but catrib
+ *    doesn't appear to like it.  I'm tempted to write it off as a 
+ *    cut-paste typo in the spec.  The suspected typo is also in HTML 3.6 
+ *    version of the RenderMan Interface Specification.
+ *
+ * (options & kRIB_BRACKETS_MASK)==kRIB_BRACKETS_PARAML
+ *    The parameter "grid2.tex" in the above example can have optional
+ *    brackets.  The following statements are both valid (note the last
+ *    string "grid2.tex"):
+ *
+ *             Surface "paintedplastic" "texturename" "grid2.tex"
+ *             Surface "paintedplastic" "texturename" ["grid2.tex"]
+ *
+ *    The brackets are also optional for parameters that are either a single 
+ *    integer or a single floating point value.  The following statements
+ *    are both valid (notice the format given the last "1" on each line):
+ *
+ *            LightSource "distantlight" 1 "intensity" 1
+ *            LightSource "distantlight" 1 "intensity" [1]
+ *
+ *    The parameter data in a parameter lists can have optional brackets
+ *    only when the data is a single string, float or integer.  Use
+ *    kRIB_BRACKETS_PARAML to get this behavior when reading an array or
+ *    string.
+ *
+ * (options & kRIB_BRACKETS_MASK)==kRIB_BRACKETS_REQUIRED
+ *    In parameter lists arrays of more than one floating point value or 
+ *    integer value require brackets.  The following statement is valid 
+ *    syntatically:
+ *
+ *        Transform [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
+ *    
+ *    Without the brackets in the above array there would be a syntax
+ *    error.  An encoded array of IEEE floats acts like a bracketed array
+ *    of floats.
+ *
+ * (options & kRIB_BRACKETS_MASK)==kRIB_BRACKETS_CLOSE
+ *    Used if an open bracket was already read and a closing square
+ *    bracket should be found.
+ *
+ * options & kRIB_STRING_ENCODED
+ *    Accept only encoded strings.  This is used for reading a definition 
+ *    for a RI request where strings in the normal ASCII format delimited
+ *    by beginning and ending quotes are not allowed.
+ *    
+ *    The spec [PIXA89] says strings in ASCII form are used for defining 
+ *    a RI request, but this doesn't seem to work.  Only encoded strings 
+ *    or a reference to a defined string seems to work with catrib 3.6c.
+ *
+ * options & kRIB_STRING_RTARRAY
+ *    Makes RibReadString() accumulate strings in rib->pbuf.  This allows
+ *    one block of memory to be allocated for all of the strings and 
+ *    an array of pointers to them..
+ *
+ * options & kRIB_STRING_RTSTRING
+ *    RibReadString() will return a char** (pointer to a pointer to a char
+ *    array) instead of a normal char*.  This is for strings placed on the
+ *    parameter list.
+ *
+ *    When passing a string in a parameter list, a simple char* is not
+ *    used.  Instead a pointer to a char* is used.  Inshort, if "texture"
+ *    is declared and initialized with the following C code:
+ *              char *texture = "texturename";
+ *    a call using "texture" in a parameter list would require &texture
+ *    to be used not just texture such as the following example:
+ *              RiSurface( "Bob", "texturename", &texture, RI_NULL );
+ *    The above call is correct and the following call would core dump 
+ *    with the RIB writer libraries available:
+ *              RiSurface( "Bob", "texturename", texture, RI_NULL );
+ *  
+ *    This extra dereferencing appears to be setup this way because 
+ *    RtString is treated as a type and a parameter list contains 
+ *    RtPointer's to RtFloat's, RtInt's and also RtString's.  For strings
+ *    this turns into a pointer to a pointer to a block of characters.
+ *
+ *    The RIB Reader library counts on a function listed in the RI Table
+ *    being able to call RibFree() for any pointers to data that it is 
+ *    given.  (As a side note:  If a RI Table function wants to keep some
+ *    of the data it is given, but release other pieces, then it needs to
+ *    call RibKeepData().  This prevents the RIB Reader from freeing all of
+ *    the data after the RI Table function returns, but it also means that
+ *    the RI Table function must call RibFree() for the pieces of data it
+ *    wishes to discard -- because the RIB Reader won't be freeing anything.)
+ *
+ *    To get around the pointer to pointer issue and allow RI Table functions
+ *    to call RibFree() for all pointers including parameter list strings,
+ *    the RIB Reader library allocates space for the string and space for a
+ *    pointer.  These two allocated areas are really allocated with one call
+ *    to malloc() and the RtString pointer is placed in the first few bytes
+ *    of the memory area.  
+ *
+ * options & kRIB_ARRAY_ENCODED
+ *    Set RibReadFloatingPointArray() to only accept an encoded array
+ *    of floating point values.
+ *
+ * options & kRIB_ARRAY_INTEGER
+ *    Set RibReadArrayAndLength() to only accept integers in the array.
+ *
+ * options & kRIB_ARRAY_FLOAT
+ *    Set RibReadArrayAndLength() to only accept floating point values in 
+ *    the array.  
+ *
+ * options & kRIB_ARRAY_STRING
+ *    Set RibReadArrayAndLength() to only accept strings in the array.  
+ *
+ */
+</PRE>
+
+<P>
+Here is an excerpt from the affine/include/ribrdr.h header file:
+</P>
+<PRE>
+/* Flags for RibRead...Array() functions. */
+#define kRIB_BRACKETS_MASK    0x00000007
+enum {
+   kRIB_BRACKETS_NONE       = 0x00000000,
+   kRIB_BRACKETS_OPTIONAL   = 0x00000001,
+   kRIB_BRACKETS_PARAML     = 0x00000002,
+   kRIB_BRACKETS_REQUIRED   = 0x00000003,
+   kRIB_BRACKETS_CLOSE      = 0x00000004,
+   kRIB_STRING_ENCODED      = 0x00000008,
+   kRIB_STRING_RTSTRING     = 0x00000010,
+   kRIB_STRING_RTARRAY      = 0x00000020,
+   kRIB_ARRAY_ENCODED       = 0x00000040,
+   kRIB_ARRAY_INTEGER       = 0x00000080,
+   kRIB_ARRAY_FLOAT         = 0x00000100,
+   kRIB_ARRAY_STRING        = 0x00000200
+};
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

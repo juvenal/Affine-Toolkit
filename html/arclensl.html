@@ -1,0 +1,131 @@
+<!--
+/* $RCSfile: arclensl.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  arclensl.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<PRE>
+/* 
+ * 
+ * FILE:  tebALPaintedPlastic.sl
+ *
+ * DESCRIPTION:  
+ *   
+ *    Contains:
+ *  
+ *    References:
+ *
+ * Copyright (c) 1997 Thomas E. Burge.  All rights reserved.  
+ *
+ */
+surface
+tebALPaintedPlastic( 
+		    float Ka  = 1.0;
+		    float Kd  = 0.5;
+		    float Ks  = 0.5; 
+		    float roughness = 0.1; 
+		    color specularcolor = 1;
+		    float uscale = 1.0;
+		    float vscale = 1.0;
+		    string texturename = "";
+		    string uarclengthmap = ""; 
+		    string varclengthmap = ""; )
+{
+   normal  Nf;
+   vector  V;
+   color   Ct;
+   float   ss;
+   float   tt;
+
+
+   if (uarclengthmap != "") 
+   {
+      ss = texture( uarclengthmap ) * uscale;
+   } else 
+   {
+      ss = s * uscale;
+   } 
+   
+   if (varclengthmap != "") 
+   {
+      tt = texture( varclengthmap ) * vscale;
+   } else 
+   {
+      tt = t * vscale;
+   } 
+   
+   if (texturename != "") 
+   {
+      Ct = color texture( texturename, ss, tt );
+   } else 
+   {
+      Ct = 1.0;
+   } 
+   
+   Nf = faceforward( normalize(N), I );
+   V = -normalize(I);
+
+   Oi = Os;
+   Ci = Os*(Cs * Ct * (Ka*ambient() + Kd*diffuse(Nf)) + 
+	    specularcolor * Ks * specular(Nf,V,roughness));
+}
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

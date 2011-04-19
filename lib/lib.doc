@@ -1,0 +1,50 @@
+Most utilities should just use -lributil -lm.  But if you just want to read a 
+   RIB file use -lribrdr -lribhash -lm.  
+
+libribconst.a -- Contains only the RI_ exported variables with the values
+                 defined by the RI Specification.
+
+libriberror.a -- Contains a default error message handler.
+
+libribhash.a  -- Hash library for reading and writing RIB files.  Contains
+                 the RI_ constants, since they are needed for setting up
+                 the initial hash table.
+
+libribmsg.a   -- Contains error messages listed in RI specification.
+
+libribnop.a   -- Provides a Ri table with functions that do nothing but
+                 return.  NOP is a abbreviation for No Operation.  This is
+                 useful for filters that are only looking for one or two
+                 types of RIB statements.
+
+libribrdr.a   -- RIB Reader library.  RI_ constants and error messages 
+                 included.
+
+libribtable.a -- A table that lists all the Ri calls in the order given in
+                 ribrdr.h.
+
+libribwrtr.a  -- RIB writer library.  Has the RI_ constants and all the 
+                 Ri calls listed in the RI Specification and the 
+                 RenderMan Artist's Toolkit 3.7 additions.  Supports ASCII 
+                 and binary RIB output.  Pixel filter functions are supported 
+                 as well.
+
+libributil.a  -- Contains the RIB reader and writer functions.  Basically
+                 it's libribrdr.a, libribwrtr.a and libsribhash.a put 
+                 together (also libz.a thrown in as of 7-15-97).
+
+libsribhash.a -- Simple ribhash, basically libribhash.a but without the
+                 RI_ constants.
+
+libsribrdr.a  -- Simple RIB Reader, basically libribrdr.a but without the 
+                 Ri table (libribtable.a) and error messages (libribmsg.a).
+
+libsribw.a    -- Simple RIB writer.  Has the RI_ constants and all the
+                 Ri calls listed by the RI specification and the RenderMan
+                 Artist's Toolkit 3.6 additions.  It is called simple 
+                 because it's basically just a bunch of printf()s, only ASCII 
+                 RIB output is supported, and the pixel filter functions just 
+                 return zero.
+
+
+

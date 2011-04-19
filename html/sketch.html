@@ -1,0 +1,133 @@
+<!--
+/* $RCSfile: sketch.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  sketch.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<PRE>
+For those using Alias Sketch!, I have included here some example 
+code to get the light sources used in Sketch! RIBs to match the Alias renderering
+a little bit better.
+
+Below is a standard spotlight shader as given in the 3.1 RI spec, but
+with the L.L commented out, the code to support "decay" added, use of
+"camera" space chnaged to "shader", and the
+variable type "point" used in declaring the variable "A" changed to
+"vector" (just to get rid of a shader 3.7 warning).  If you have 3.4 of
+prman, it will not take "vector" and instead expects "point" to be used.
+
+For Sketch! users wanting their lightsource intensities to be consistent
+between prman and Sketch!'s renderer, you'll need to declare a "decay"
+variable as a "uniform float" at the beginning of Sketch! RIB files; add
+in the decay values as you set them in Sketch! with 0,1,2,3 for None,
+Slow, Realistic and Fast respectively; use a beamdistribution of 0; and
+change the "spotlight" shader name to whatever you choose to name the
+shader below.  Use the pointlight shader I posted a few days ago to
+replace the standard pointlight shader used by Sketch!. 
+
+----------------------------------------------------------------
+/*
+ *  Sketchpointlight(): provide a light with position but no orientation
+ *
+ *      Refer to RenderMan Companion listing 16.7.
+ */
+light
+Sketchpointlight( 
+        float   intensity  = 1;
+        color   lightcolor = 1;
+        float   decay  = 0.0; #decay none=0, slow=1, realistic=2, fast=3
+        point   from       = point "shader" (0,0,0) )   /* light position */
+{
+        illuminate( from )
+                Cl = intensity * lightcolor / pow(length(L),decay);
+}
+----------------------------------------------------------------
+/*
+ *  Sketchspotlight(): cast a fuzzy cone of light
+ *
+ *      Refer to RenderMan Companion listing 16.8.
+ */
+light
+Sketchspotlight( 
+              float  intensity        = 1;
+              color  lightcolor       = 1;
+              point  from             = point "shader" (0,0,0);
+              point  to               = point "shader" (0,0,1);
+              float  coneangle        = radians(30);
+              float  conedeltaangle   = radians(5);
+              float  beamdistribution = 2;
+              float  decay            = 0;
+)
+{
+    float atten;
+    float cosangle;
+    uniform /*point*/ vector A = (to-from)/length(to-from);
+        illuminate( from, A, coneangle ) {
+        cosangle = L.A/length(L);
+        atten    = pow( cosangle, beamdistribution ); /* / L.L; */
+        atten   *= smoothstep( cos(coneangle),
+                               cos(coneangle-conedeltaangle),
+                               cosangle );
+        Cl = atten * intensity * lightcolor / pow(length(L), decay);
+    }
+}
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

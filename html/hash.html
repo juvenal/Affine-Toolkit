@@ -1,0 +1,217 @@
+<!--
+/* $RCSfile: hash.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  hash.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#ffffff"></FONT>
+<H1><CENTER>RIB Hash Table</CENTER></H1>
+
+<A NAME="RibHashTableFunctions"></A>
+<H2>Quick Reference List to Rib Hash Table Functions</H2>
+
+<H3>Create/Destroy Hash Table Functions</H3>
+<UL>
+<LI><A HREF="./ribcalls.html#RibCreateHashTable">RibCreateHashTable</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibDestroyHashTable">RibDestroyHashTable</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibDestroyHashTableKeepData">RibDestroyHashTableKeepData</A>()</LI>
+</UL>
+
+<H3>Adding Data</H3>
+<UL>
+<LI><A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibHashValueFromString">RibHashValueFromString</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibHashValueFromStringN">RibHashValueFromStringN</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetDefinedString">RibSetDefinedString</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetStringAtom">RibSetStringAtom</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetDefinedLightHandle">RibSetDefinedLightHandle</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetDefinedObjectHandle">RibSetDefinedObjectHandle</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetHashExtendedData">RibSetHashExtendedData</A>()</LI>
+</UL>
+
+<H3>Retrieving Data</H3>
+<UL>
+<LI><A HREF="./ribcalls.html#RibFindMatch">RibFindMatch</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibFindNextMatch">RibFindNextMatch</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetConflictingHashAtom">RibGetConflictingHashAtom</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetDefinedRIRequest">RibGetDefinedRIRequest</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetDefinedLightHandle">RibGetDefinedLightHandle</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetDefinedObjectHandle">RibGetDefinedObjectHandle</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetDefinedString">RibGetDefinedString</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetHashExtendedData">RibGetHashExtendedData</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetHashHandle">RibGetHashHandle</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetStringAtom">RibGetStringAtom</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibGetTypeClassNames">RibGetTypeClassNames</A>()</LI>
+<LI><A HREF="./ribcalls.html#RibSetDefinedRIRequest">RibSetDefinedRIRequest</A>()</LI>
+</UL>
+
+RibRemoveItem
+
+
+<A NAME="HashItemTypes"></A>
+<H2>Hash Item Types</H2>
+
+<P>
+The following is a list of the types of hash items and how 
+<A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>() 
+is called depending on the type:
+<P>
+<PRE>
+ If ((type & kRIB_HASH_TYPEMASK) == (kRIB_HASH_RIREQUESTCODE) then use
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, int requestcode, 
+             int ripID );</b>
+
+ If ((type & kRIB_HASH_TYPEMASK) == kRIB_HASH_VARIABLE) 
+    && !(classNtype & kRIB_ARRAY_DECLARED)  -- Notice the negation '!'.
+  then use 
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, int classNtype,
+              char *variablename );</b>
+
+ If ((type & kRIB_HASH_TYPEMASK) == kRIB_HASH_VARIABLE) 
+    && (classNtype & kRIB_ARRAY_DECLARED) then use
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, int classNtype,
+              char *variablename, int ntype );</b>
+
+ If ((type & kRIB_HASH_TYPEMASK) == kRIB_HASH_STRINGTOKEN) then use
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, int code, char *string );</b>
+
+ If ((type & kRIB_HASH_TYPEMASK) == kRIB_HASH_STRING) then use
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, int code, char *string );</b>
+
+ If ((type & kRIB_HASH_TYPEMASK) == kRIB_HASH_LIGHTHANDLE) 
+  or (type & kRIB_HASH_TYPEMASK == kRIB_HASH_OBJECTHANDLE) then use
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, int handle, 
+             void *extended_data );</b>
+
+ If ((type & kRIB_HASH_TYPEMASK) == kRIB_HASH_COORDSYS) then use
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, char *name, 
+             void *extended_data );</b>
+
+ if ((type & kRIB_HASH_TYPEMASK) >= kRIB_HASH_USER) then use
+  <b>RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, int code, 
+              void *data, void *extended_data );</b>
+
+
+/* Constants for hashatom.type */
+#define kRIB_HASH_TYPEMASK  0x00ffffff
+#define kRIB_HASH_FLAGMASK  0xff000000
+enum {
+   kRIB_HASH_UNKNOWN,
+   kRIB_HASH_RIREQUESTCODE,
+   kRIB_HASH_LIGHTHANDLE,
+   kRIB_HASH_OBJECTHANDLE,
+   kRIB_HASH_STRINGTOKEN,
+   kRIB_HASH_STRING,
+   kRIB_HASH_VARIABLE,
+   kRIB_HASH_COORDSYS,
+   kRIB_HASH_LAST,
+   kRIB_HASH_USER = 1024
+};
+#define kRIB_HASH_FREEDATA     0x01000000
+#define kRIB_HASH_FREEEXTDATA  0x02000000
+</PRE>
+</P>
+
+<A NAME="UserHashItemTypes"></A>
+<H2>User Hash Item Types</H2>
+
+<P>
+To add user data to the hash table use a 
+<A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>() with the
+following parameters:
+<PRE>
+
+    RibAddItem( (RIB_HASHHND)hash, (RIB_UINT32)type, (int)code, 
+                (void*) data, (void*) extended_data );
+
+</PRE>
+Store a pointer to data of any format in <i>extended_data</i> and
+set <i>type</i> to any value above or equal to kRIB_HASH_USER.  
+The values <i>code</i> and <i>data</i> have a special meanings to
+<A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>().  If <i>data</i>
+is a NULL pointer, then 
+<A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>() adds the item
+into the hash table by using <i>code</i> to create the hash value.
+If <i>data</i> is not a NULL pointer, it is assumed to be a pointer
+to a NULL terminated string and is used to create a hash value instead
+of using <i>code</i>.  
+</P>
+<P>
+Refer to 
+<A HREF="./ribcalls.html#RibHashValueFromInt">RibHashValueFromInt</A>() 
+for how <i>code</i> is used to create a hash value and 
+<A HREF="./ribcalls.html#RibHashValueFromString">RibHashValueFromString</A>() 
+for how <i>data</i>
+is used to create a hash value.
+</P>
+<P>
+When hash table is destroyed by 
+<A HREF="./ribcalls.html#RibDestroyHashTable">RibDestroyHashTable</A>()
+the data pointed to by <i>data</i> and <i>extended_data</i> are freed
+if the value <i>type</i> given to 
+<A HREF="./ribcalls.html#RibAddItem">RibAddItem</A>() had the
+values kRIB_HASH_FREEDATA and kRIB_HASH_FREEEXTDATA ORed in respectively.
+Without ORing in the values kRIB_HASH_FREEDATA and kRIB_HASH_FREEEXTDATA,
+the memory blocks pointed to by <i>data</i> and <i>extended_data</i>
+are not freed.  Not using kRIB_HASH_FREEDATA allows constant strings stored
+in an applications data segment to be untouched since free() would not
+work on such memory anyway.
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

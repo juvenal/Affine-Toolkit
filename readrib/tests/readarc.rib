@@ -1,0 +1,6 @@
+#The following declaration should cary to the recursive
+#  reading of "readarc1.rib" when 'typerib -r readarc.rib' is done
+#  as a test.
+Declare "testtest" "uniform float"
+ReadArchive "readarc1.rib"
+

@@ -1,0 +1,99 @@
+<!--
+/* $RCSfile: ribdump.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  ribdump.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H2>The Ribdump Tool</H2>
+<P>
+</P>
+<PRE>
+<STRONG>ribdump</STRONG> [-o file] [-octal] [filename . . .]
+
+   Prints a rib file in the format shown on page 165 of the RenderMan 
+   Specification.  Ribdump provides an easy way to test binary RIB
+   file utilities and is included in the Affine Toolkit to help 
+   answer questions about the binary format.
+
+   [-o file]          Output file name.  If not given, stdout is used.
+   [-octal]           Print octal values only (no comments).
+   [-offset n]        Print octal values starting at zero based
+                      offset n.
+   [filename . . .]   If no file names are given then ribdump will
+                      use standard input.
+
+   Example:
+
+    ribdump bin.rib
+
+      #    #    R    e    n    d    e    r   # ##Render
+      M    a    n  040    R    I    B   \n   # Man RIB\n
+      v    e    r    s    i    o    n  212   # version
+    003  007  256    D    i    s    p    l   # 3.03 Displ
+      a    y  315  000  225    a    .    t   # ay <defstr 0 "a.t
+      i    f  317  000  315  001  233    f   # if"> <str 0> <defstr 1 "f
+      r    a    m    e    b    u    f    f   # ramebuff
+      e    r  317  001  315  002  224    r   # er"> <str 1> <defstr 2 "r
+      g    b    a  317  002    F    o    r   # gba"> <str 2> For
+      m    a    t  201  000  310  201  000   # mat 200
+    -----(The output continues, but was cut here)-----
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

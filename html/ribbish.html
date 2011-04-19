@@ -1,0 +1,93 @@
+<!--
+/* $RCSfile: ribbish.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  ribbish.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H2>The Ribbish Tool</H2>
+<P>
+</P>
+<PRE>
+<STRONG>ribbish</STRONG> [-o file] [-binary] [-RIBcall1 [-RIBcall2] ...] [filename ...]
+
+Utility to print out a RIB file without a given set of RIB statements
+listed by the user.
+
+[-o file]                    Output file name.  If not given, stdout is
+                             used.
+[-binary]                    Print output in encoded format.
+[-RIBcall1 [-RIBcall2] ...]  Name of RIB statement(s) to remove.
+[filename ...]               If no file names are given then ribbish
+                             will use standard input.
+
+Note:  Many modelers include extra RIB calls that are not needed or
+       that represent settings that were too annoying in the GUI to
+       actually set and change their default values.  Such extra and
+       unwanted RIB code is "ribbish" that can be removed by the
+       ribbish utility.
+
+Example:
+        The following copies myold.rib to mynew.rib except for the
+        TextureCoordinates and Color RIB statements:
+             ribbish -o mynew.rib -TextureCoordinates -Color myold.rib
+
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

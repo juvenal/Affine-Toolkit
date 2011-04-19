@@ -1,0 +1,199 @@
+<!--
+/* $RCSfile: tokentbl.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ * 
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  tokentbl.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H2>The TokenTbl Tool</H2>
+<P>
+</P>
+<PRE>
+<STRONG>tokentbl</STRONG> [-s] file tablename
+</PRE>
+<P>
+Creates a table that can be used to find tokens in a string or file using 
+the functions
+<A HREF="./ribcalls.html#RibReadFileForToken">RibReadFileForToken</A>() or 
+<A HREF="./ribcalls.html#RibReadStringForToken">RibReadStringForToken</A>().
+The function 
+<A HREF="./ribcalls.html#RibGetUserParameters">RibGetUserParameters</A>()
+also makes use of the tables produced by tokentbl.
+</P>
+<PRE>
+DESCRIPTION:  
+
+Quick and dirty table generator for the functions:
+   RibReadFileForToken( RIB_HANDLE rib, char *table ),
+   RibReadStringForToken( char *s, char *table, char **tokenend ), and
+   RibGetUserParameters( char *table, int ntable,
+                        RtInt n, RtToken tokens[], RtPointer parms[], 
+                        RtPointer output[] ) functions.
+
+Originally I wasn't planning on publishing this utility, but I started
+using it too much in the toolkit.  Some folks might find such 
+functions as RibGetUserParameters() to be useful and the table
+parameter refers to the output created by this program.  
+
+I have tried to give this code a good once over, but it still is rather
+ugly.  It really is just a quick tool, so don't stress test it with
+wild test cases.  And please do not find bugs with this thing, as that
+would mean that I would have to figure it out again and I have long
+since forgotten most of it.
+
+USING THIS TOOL
+---------------
+This tool creates a table that can be used for finding tokens in a
+string or file reasonably quickly.  It is not a great lexer, but it's
+simplicity and ability to to have code that does error checking
+as data is read prompted it's use in the toolkit.  
+
+You first start by listing a set of tokens you want a function such
+as RibReadStringForToken() to identify such as the following list in
+the file fruits.asc:
+
+                  Apples
+                  Oranges
+                  Peaches
+                  Pears
+
+These didn't have to be listed alphabetically, but they do have to
+be listed one string per line and with strings grouped together
+that have the same prefixing substring.
+
+Inshort Pear and Peaches have to be listed together because of the
+commond string "Pea" they each start with.  They could be listed
+as Peaches followed by Pears or Pears followed by Peaches.
+
+Using the command "tokentbl -s fruits.asc Fruits" the following 
+table is created:
+           char Fruits[] = {
+               8,  8 ,'A','p','p','l','e','s','\0',  0,
+               9,  9 ,'O','r','a','n','g','e','s','\0',  1,
+               0,  3 ,'P', 'e', 'a',
+               6,  6 ,'c','h','e','s','\0',  2,
+               0,  4 ,'r','s','\0',  3,
+           };
+
+The table basically describes a tree structure.  The first number
+of each line gives an offset to branch from the same node.  The
+second number on each line gives the starting offset to a child 
+node.    
+
+In the above example, the first token "Apple" is given the ID 
+number 0 and the other tokens follow in ascending order: 
+Oranges(1), Pears(2) and Peaches(3).
+
+Without the "-s" option the items in fruits.asc would be listed in
+separate tables depending on the first letter.  Using the command 
+"tokentbl fruits.asc Fruits" the following tables were created:
+
+           char Fruits_A[] = {
+               0,  7 ,'p','p','l','e','s','\0',  0,
+           };
+           char Fruits_O[] = {
+               0,  8 ,'r','a','n','g','e','s','\0',  1,
+           };
+           
+           char Fruits_P[] = {
+               0,  2 , 'e', 'a',
+               6,  6 ,'c','h','e','s','\0',  2,
+               0,  4 ,'r','s','\0',  3,
+           };
+           char *Fruits_table[] = { Fruits_A, Fruits_O, Fruits_P };
+
+The above output is useful for large sets of tokens.  Refer to 
+affine/readrib/ribread.c and affine/readrib/ribtbl.c for an example 
+of how these types of tables can be used.
+
+WHAT DO THE NUMBERS MEAN?
+-------------------------
+We'll refer to the last two tables entries from the first example:
+
+               0,  3 ,'P', 'e', 'a',
+               6,  6 ,'c','h','e','s','\0',  2,
+               0,  4 ,'r','s','\0',  3,
+
+Each line has the format of starting with two numbers followed by a 
+list of characters and optional ID number if the last character 
+is a NULL.  The first number is the offset from the first letter 
+needed to move onto the next possible matching prefix.  The second 
+number is the offset from the first character to the next possible 
+continuation of the string after the rest of the characters on the
+line have been matched.  
+
+In the above example the common prefix ("Pea") to Pears and Peaches has
+been separated from the two strings and placed on the first line.  The
+number 0 indicates no other possible prefixes are given.  If the string
+being examined does not start with 'P', 'e' and then an 'a' the number 0
+indicates no match is possible.   The second number of the first line
+is a three.  Since it is not zero, there are continuations of the 
+string "Pea" that must be examined before a match is found.  A non-zero 
+second value indicates that no ID number will be given on this line.  
+
+The 3 gives the offset from the first character 'P' to the next line.
+The next line's first number 6 indicates the number of characters to 
+the next possible substring.  When the second line is reached, the 
+letters 'P', 'e' and 'a' have been found to match the first three
+characters of the string being examined.  Once "Pea" has been checked 
+the 6 starting the second line indictes that more than one possible
+substring can be matched.  
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

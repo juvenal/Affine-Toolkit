@@ -1,0 +1,180 @@
+<!--
+/* $RCSfile: snulen.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  snulen.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H1><CENTER>Arc Length Parametrizations of NURBS</CENTER></H1>
+<H2>The NuPatch Arc Length Tool</H2>
+
+<P>
+Creates a TIFF file containing approximated arc lengths of a NuPatch surface.
+The values are IEEE floats from 0 to 1 representing arc lengths from 0
+to maximum found length.
+</P>
+<P>
+I'll include this tool in a later release for those folks who might find it 
+interesting.                                  
+</P>
+<P>
+<PRE>
+<STRONG>nulen</STRONG> -x xres -y yres [-u tiff_file] [-v tiff_file]
+                       [-n nupatch_name|-g shadinggroup]
+                       [rib_file . . .]
+   [-u tiff_file]     Output TIFF file name to contain arc lengths
+                      of isoparms going in the u direction.
+   [-v tiff_file]     Output TIFF file name to contain arc lengths
+                      of isoparms going in the v direction.
+   [-n name           Use first Nupatch surface in named using an
+                      Attribute statement of the following form:
+
+                         Attribute "identity" "name" [name]
+
+                      If no name is given the first NuPatch statment
+                      is used.                                           
+   |-g shadinggroup]  Use first Nupatch surface in shading group defined
+                      with an Attribute statement of the following form:      
+
+                         Attribute "identity" "shadinggroup" [shadinggroup]
+
+                      If no name is given the first NuPatch statment
+                      is used.
+   [rib_file . . .]   If no file names are given then nulen will
+                      use standard input.
+</PRE>
+</P>
+<H2>Example:</H2>
+<P>
+The arc lengths of a NURB surface can be calculated and stored into an IEEE
+TIFF image using nulen.  The following shows a simple NURB surface that 
+when rendered with a texture map shows the speed both in the u and v 
+direction accelerating and decelerating across the surface.  
+</P>
+<P>
+Shown below are four TIFF images rendered from the rib file 
+<A HREF="./n5x5rib.html">n5x5.rib</A>.  The first image shows the n5x5.rib 
+rendered with the standard paintedplastic.sl shader.  The two following 
+TIFF images were calculated with nulen and show the arclength 
+parametrization going across the n5x5.rib surface.  The left image goes 
+from 0 to 1 in the u direction and second image from 0 to 1 in the v direction.
+</P>
+<P>
+Note that in the example below the sizes of the arclength texmaps were 
+set to the size 256x256.  
+Because of this example's geometry the left image could really be 2 pels 
+high and 256 pels wide.  The right
+image could be 256 pels high and 2 pels wide.  Atleast 2 rows or columns
+are needed for txmake.
+</P>
+<CENTER><P><IMG SRC="nulen.jpeg" HEIGHT=974 WIDTH=612></P></CENTER>
+<P>
+By adding the following code to the n5x5.rib file, the two arclength 
+texmaps and the shader <A HREF="./arclensl.html">tebALPaintedPlastic.sl</A>
+create a uniform speed of the texture coordinates across the NURB surface:
+<PRE>
+       Surface "tebALPaintedPlastic" "texturename" "grid2.tex" 
+	       "uarclengthmap" ["n5x5u.tex"]
+	       "varclengthmap" ["n5x5v.tex"]
+</PRE>
+</P>
+</P>
+<H2>Example:</H2>
+<P>
+<P>
+The following is a more three dimensional example.  In the top image 
+the texture coordinate u travels across the surface from left to right.
+Its speed slows down where there are more isoparams and then
+suddenly speeds back up when there is more distance between isoparams.
+In the bottom image an arclength texmap and tebALPaintedPlastic was used
+to compensates for the varying speeds of u.  
+</P>
+</P>
+<CENTER><P><IMG SRC="arclen2.jpeg" HEIGHT=905 WIDTH=578></P></CENTER>
+<P>
+When using nulen to output true arclengths and using normfptiff to
+find the max and minimum the following output is printed that shows 
+the maximum arc length
+<PRE>
+
+          %normfptiff -v arclengthtestU arclengthtestU.tif
+          min found: 0
+          max found: 10.8643
+          min: 0
+          max: 10.8643
+
+</PRE>
+<P>
+The above value 10.8643 happens to match Alias's arc length shown in the 
+following figure.
+</P>
+<CENTER><P><IMG SRC="arclen1.jpeg" HEIGHT=412 WIDTH=564></P></CENTER>
+<P>
+In the above example the values nulen calculated match exactly with 
+Alias's calculated arc lengths.  :-)
+</P>
+
+<H2>Using ArcLength Maps</H2>
+<P>
+</P>
+<P>
+<CENTER><P><IMG SRC="WebBaseBall.jpeg" HEIGHT=582 WIDTH=440></P></CENTER>
+</P>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>

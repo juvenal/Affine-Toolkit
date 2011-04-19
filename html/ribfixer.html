@@ -1,0 +1,239 @@
+<!--
+/* $RCSfile: ribfixer.html,v $  $Revision: 1.1 $ $Date: 1999/06/12 06:54:19 $
+ *
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
+ * 
+ * Affine (R) is a registered trademark of Thomas E. Burge
+ *
+ * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
+ * PARTICULAR PURPOSE.  
+ *
+ * In no event shall Thomas E. Burge be liable for any indirect or
+ * consequential damages or loss of data resulting from use or performance 
+ * of this software.
+ * 
+ * Permission is granted to include compiled versions of this code in
+ * noncommercially sold software provided the following copyrights and
+ * notices appear in all software and any related documentation:
+ *
+ *                 The Affine (R) Libraries and Tools are 
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                          All rights reserved.
+ *
+ *         Affine (R) is a registered trademark of Thomas E. Burge.
+ *
+ *
+ *         The RenderMan (R) Interface Procedures and Protocol are:
+ *                    Copyright 1988, 1989, Pixar
+ *                        All Rights Reserved
+ *
+ *             RenderMan (R) is a registered trademark of Pixar
+ *
+ *
+ * Affine Toolkit
+ *
+ * FILE:  ribfixer.html
+ *
+ * DESCRIPTION:  
+ *   
+ *
+ *    Contains:
+ * 
+ *    References:
+ *
+ */
+-->
+<HTML>
+<HEAD>
+<TITLE>Copyright (c) 1996, 1997, 1998 Thomas E. Burge. All rights reserved.</TITLE>
+</HEAD>
+<BODY BGCOLOR="808080">
+<BODY>
+<FONT COLOR="#FFFFFF"></FONT>
+<H2>The Ribfixer Tool</H2>
+<P>
+</P>
+<PRE>
+<STRONG>ribfixer</STRONG> [-o file] [-binary] [-fixname. . .] [filename . . .]
+
+ [-o file]                 Output file name.  If not given, stdout is
+                           used.
+
+ [-binary]                 Print RIB in encoded format. (not implemented)
+
+ [-fixname. . .]           See below for list of fixes.
+
+ [filename . . .]          If no file names are given then ribfixer
+                           will use standard input.
+
+  Several fixes and touch-ups are provided with ribfixer.  Please note,
+  I would like to avoid having ribfixer ending up with a reputation of
+  being a RIB breaker.  If you are not seeing the specific problems listed
+  below, do not use this program.  And do not use it on a RIB file more
+  than once.  Although some fixes could be run n times without problems,
+  many fixes can not check if the fix was already made and therefore
+  ruins a RIB file while applying the fix more than once.
+
+  The following fixes are available with corresponding names for
+  [-fixname. . .] and are applied in the order they are listed below:
+
+    [-AliasToRenderman7.0]  Version 7.0.1 of Alias's AliasToRenderman
+                            utility had a problem with NuPatch's min/max
+                            values of periodic surfaces.  The min and max
+                            were simply assigned the minimum and maximum
+                            values of their associated knot vector.  The
+                            valid range for choosing min/max values is
+                            from the (order-1)th to nth knot values.
+                            The range is altered to be valid.
+
+                            Add Attribute "identifier" "name" [name]
+                            for the comments of the form "# Face name",
+                            "# Polyset name" and "# Surface name".
+
+                            Calls to "TextureCoordinates 0 0 0 -1 1 0
+                            1 -1" are removed.  "#Scene" is replaced 
+                            with "##Scene".
+
+                            GeneralPolygon is used incorrectly for faces
+                            made of multiple curves forming separate faces.
+                            It appears that the loops following the first
+                            where expected to produce polygons not holes.
+                            The result is that only one face is seen if
+                            the "Set planar" Alias tool (using faces not 
+                            trim curves) is used with more than one curve at 
+                            a time.  Fix by using multiple GeneralPolygon 
+                            statements.
+
+                            GeneralPolygon is also given concave polygons
+                            described in the first loop.  The RenderMan
+                            standard requires that the first loop outline
+                            the boundaries.  No fix given in ribfixer yet.
+                            I need to test my code and clean it up a bit.
+
+    [-AliasToRenderman7.5   Implements all the fixes mentioned above except
+                            the min/max fix and also the missing Surface
+                            and Polyset name attribute fix which were fixed 
+                            in the 7.5 releases.  The name attribute for 
+                            "# Face" is still missing in this Alias release.
+
+                            Also fix the ##Creator version number.  
+                            AliasToRenderman leaves it at 7.0.
+
+    [-AliasToRenderman8.0   Implements all the fixes for 7.5, including 
+                            version number which still says 7.0.
+
+    [-AliasToRenderman8.1   Implements all the fixes for 7.5.
+
+    [-AliasToRenderman8.2   Implements all the fixes for 7.5.
+                            Note:  As of 12-14-97 I haven't updated to
+                             8.2 yet, but I have tried a few 8.2 Designer
+                             RIB files.  For now just check your RIB files
+                             at first when using this flag.
+
+    [-AliasZUp]             If modeling in Alias with Z as being up,
+                            problems may appear with how the Z-axis is set
+                            "up".  The Z values will increase in height
+                            as Z coordinates go in the negative direction.
+                            To fix the orientation, a new camera angle is
+                            calculated, Y and Z coordinates in positional
+                            data are swapped while the Z value is also
+                            negated.  Rotate, Scale and Translate are also
+                            altered to compensate.
+
+                            If Y is set to being up, the RIB geometry is
+                            correct, although the modeling windows label
+                            the Z-axis as being negative pointing away from
+                            the camera's point of view
+
+    [-Amapi2.05]            Amapi 2.05 outputs a mirror image of a scene.
+                            Also NURB cubes have normals pointing in.
+                            The fix is done by negating the Z coordinate
+                            adding a ReverseOrientation statement before
+                            the geometry statements.
+
+                            Note:  Don't export to RIB with anything grouped
+                            together.  Amapi 2.05 turns a set of grouped
+                            NURBS and polygons into one huge PointsGeneral-
+                            Polygons call.
+
+                            Also fix problem of 0x7f characters appearing
+                            as the first characters in the name attribute
+                            strings. (Amapi 2.05 Mac)
+
+    [-Sketch2.0]            Sketch! 2.02 outputs RIBs that have an added
+                            space in front of the user given names
+                            shown in Attribute "identifier" statements.
+                            Spotlight shaders are given an unknown
+                            parameter called "falloff".  A Declare is
+                            given for the "falloff".  For now, just
+                            simply remove "falloff" from these calls.
+
+                            Sketch! 2.02 will also include extra Make-
+                            Texture statements for texture maps not even
+                            used.  For now just leave them in the RIB.
+
+    [-texpaths old new]...  Sketch! uses the pathnames from the system
+                            the model was created on.  When rendering on
+                            other systems the pathnames will probably not
+                            work and need to be replaced.  Useful for
+                            replacing Mac colon pathnames with paths using
+                            Unix slashes.  End each path with a ':' or '/'
+                            or '\'(Wintel, OS/2) so ribfixer knows which
+                            system to use.  This option can be used more
+                            than once.
+
+                            If no slash or colon ends the string old, then
+                            ribfixer will assume it is a full file pathname
+                            and will replace the entire string old with the
+                            string new.
+
+                            Note:  Right now -texpaths only fixes Make...
+                            statements since it's hard to even find
+                            modeler that even does that.  A full fix would
+                            require not only all the Make... statements,
+                            but also the parameter data given to shaders.
+
+    [-unitparam]            It is possible to change the range of a knot
+                            vector's values and not change the shape of
+                            the NURB geometry, just the min/max ranges.
+                            If you alter the knot vectors and change the
+                            u,v ranges that trim curves are written to,
+                            a NURB surface can be reparametrized for any
+                            min/max range.  A nice parametrization is 0
+                            to 1 which allows simple shaders such as the
+                            paintedplastic shader to be used.
+
+                            Note:  For now ribfixer assumes that a NuPatch
+                                   call and all its trimcurves are together
+                                   in the same Attribute block and there is
+                                   only one NuPatch in the Attribute block.
+                                   Most modelers do it this way, so this
+                                   restriction shouldn't be very limiting
+
+   [-macromodel]  MacroMedia's MacroModel software created RIBs with some
+                  RIB statements starting with a lower case letter.  The
+                  Spec has the statements starting with capital letters,
+                  but Pixar's programs do take RIB statements starting
+                  with lower case letters, if the statement's name does
+                  not have any capital letters in the middle of the name
+                  listed in the spec.  (That's my latest theory anyway.)
+                  BMRT follows the RenderMan specification and does not
+                  like MacroModel's RIBs.
+                  To fix this problem simply run Pixar's catrib or this
+                  option with ribfixer, both take lower/upper case
+                  in the way mentioned above, but then they create output
+                  that matches the RI Spec.
+</PRE>
+
+<HR>
+<CENTER><A HREF="./affine.html">[Affine Toolkit]</A></CENTER>
+<CENTER><A HREF="./rib.html">[RIB Utilities]</A>
+   <A HREF="./bmp.html">[Bitmap Utilities]</A>
+   <A HREF="./util.html">[Handy Little Utilities]</A></CENTER>
+<CENTER><A HREF="./lib.html">[Libraries]</A>
+   <A HREF="./coding.html">[Using the Libraries]</A></CENTER>
+<HR>
+
+</BODY>
+</HTML>
