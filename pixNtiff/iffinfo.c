@@ -639,7 +639,7 @@ int handlechunk( FILE *iff, PGROUP groups, char tag[4], int id )
        *    upper most bit is set, this is supposed to be a negative 
        *    number.
        */
-      char  *meaning;
+      char  *meaning = "";
 
       switch (size) {
        case 0x80000000:

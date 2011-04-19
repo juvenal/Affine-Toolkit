@@ -65,7 +65,7 @@ PBITMAP ReadZ( char *filename )
 {
    static unsigned char    b[4];
    FILE                    *z;
-   PBITMAP                 pBmp;
+   PBITMAP                 pBmp = NULL;
    unsigned int            xres, yres;
    register unsigned char  *p,*pp;
 

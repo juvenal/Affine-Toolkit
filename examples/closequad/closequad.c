@@ -427,15 +427,15 @@ RtVoid ClosedHyperboloidV( RtPoint point1, RtPoint point2, RtFloat thetamax,
     * A twist would result in the normal being reversed and pointing into
     *    the solid on one half of the twisted patch, so use use two patches.
     */
-   if ( (point1[Y] < 0.0 && point2[Y] > 0.0
-	 || point2[Y] < 0.0 && point1[Y] > 0.0 )
+   if (((point1[Y] < 0.0 && point2[Y] > 0.0)
+	 || (point2[Y] < 0.0 && point1[Y] > 0.0))
 	&& fabs((point1[X]/point1[Y]) + (point2[X]/point2[Y])) < 1E-05 )
    {
       z = point1[Z] - (point2[Z] * point1[Y])/point2[Y];
       twisted = RI_TRUE;
    }
-   else if ( (point1[X] < 0.0 && point2[X] > 0.0 
-	      || point2[X] < 0.0 && point1[X] > 0.0 )
+   else if (((point1[X] < 0.0 && point2[X] > 0.0 )
+	      || (point2[X] < 0.0 && point1[X] > 0.0))
 	     && fabs((point1[Y]/point1[X]) + (point2[Y]/point2[X])) < 1E-05 )
    {
       z = point1[Z] - (point2[Z] * point1[X])/point2[X];

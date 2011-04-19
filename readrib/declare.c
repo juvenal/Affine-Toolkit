@@ -58,6 +58,9 @@
  *       10-14-99  Moved commenting out to error.c.  Now someone can setup
  *                 an error handler if they want to set redeclaration errors
  *                 printed.
+ *       05-30-06  Corrected a conflict naming with the type modifier
+ *                 inline and the inline list. The list is now called as
+ *                 inlined.
  *
  *
  *         The RenderMan (R) Interface Procedures and Protocol are:
@@ -144,14 +147,14 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
    char                *p;
    unsigned int        classNtype;
    PRIB_HASHATOM       a;
-   PRIB_INLINEDECL     inline = NULL;
+   PRIB_INLINEDECL     inlined = NULL;
    auto int            i;
    auto unsigned int   l;
    auto char           *c;
    auto int            n;
    
 
-   /* If declaration is NULL then assume it is an inline declaration and
+   /* If declaration is NULL then assume it is an inlined declaration and
     *   the string name has the class and type along with the name.
     */
    p = ( declaration ? declaration : name );
@@ -262,17 +265,17 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
 
    if (!declaration)
    {
-      inline = (PRIB_INLINEDECL)_RibMalloc( sizeof(RIB_INLINEDECL) );
-      if (!inline)
+      inlined = (PRIB_INLINEDECL)_RibMalloc( sizeof(RIB_INLINEDECL) );
+      if (!inlined)
 	 return NULL;
 
-      inline->next = rib->inlinelist;
-      rib->inlinelist = inline;
+      inlined->next = rib->inlinelist;
+      rib->inlinelist = inlined;
 
       while( isspace(*p) )
 	 p++;
 
-      /* Have name point passed the inline declaration to the actual
+      /* Have name point passed the inlined declaration to the actual
        *    variable name being declared.
        */
       name = p;      
@@ -313,31 +316,31 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
          rib->error.type = kRIB_ERRTYPE_ADDING_TO_HASH;
          RibSetError( rib, RIE_SYNTAX, RIE_ERROR, &(rib->error) );
 
-	 if (inline)
+	 if (inlined)
 	 {
-	    rib->inlinelist = inline->next;
-	    _RibFree(inline);
+	    rib->inlinelist = inlined->next;
+	    _RibFree(inlined);
 	 }
 	 return NULL;
       }
 
       /* If in-line, save off the data. */
-      if (inline)
+      if (inlined)
       {
-	 /* Note that inline->code does not get kRIB_INLINE_DECLARED
+	 /* Note that inlined->code does not get kRIB_INLINE_DECLARED
 	  *   so that RibUndoInLineList() knows that an atom existed
 	  *   before that should be restored to it's old code and n
 	  *   values instead of being deleted from the hash table.
 	  */
-	 inline->code = a->code;
-	 inline->n = a->with.n;
-	 inline->atom = a;
+	 inlined->code = a->code;
+	 inlined->n = a->with.n;
+	 inlined->atom = a;
       }
 
       /* The name has already been declared. */
       a->with.n = n;
 
-      /* Don't print a warning if this is an inline declaration.
+      /* Don't print a warning if this is an inlined declaration.
        *    Found it to be too annoying:
        *
        *      WARNING: "inline.rib", line 2: byte offset 79: Parameters 
@@ -349,7 +352,7 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
       /* 10-14-99  Moved to error.c to allow error handlers to decide
        *           whether or not to print something.
        */
-      if ( a->code & kRIB_SYS_DECLARED /*&& !inline*/ )
+      if ( a->code & kRIB_SYS_DECLARED /*&& !inlined*/ )
       {
          rib->error.type = kRIB_ERRTYPE_SYSTEM_PARAM;
          rib->error.var = a;
@@ -361,14 +364,14 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
    else
    {
       /* If in-line, save off the data. */
-      if (inline)
+      if (inlined)
       {
 	 /* Inline item has never been declared before and is therefore
 	  *   not already in the hash table.
 	  */
-	 inline->code = a->code | kRIB_INLINE_DECLARED;
-	 inline->n = a->with.n;
-	 inline->atom = a;
+	 inlined->code = a->code | kRIB_INLINE_DECLARED;
+	 inlined->n = a->with.n;
+	 inlined->atom = a;
       }
 
       /* Change the data pointer to be a copy of name. */
@@ -381,12 +384,12 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
    }
 
    /* The user may have an old client library that doesn't understand
-    *    token names with inline declarations.  To get around that 
+    *    token names with inlined declarations.  To get around that 
     *    use the kRIB_OPTION_EXPAND_INLINE option which causes a before
     *    and after declaration to be used with simple token names 
     *    going down to the client library.
     */
-   if ( rib->options & kRIB_OPTION_EXPAND_INLINE && inline )
+   if ( rib->options & kRIB_OPTION_EXPAND_INLINE && inlined )
    {
       if ( HandleExpandInlineOption(rib,a) )
 	 goto Error;
@@ -394,8 +397,8 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
    return a; 
 
 Error:
-   if (inline)
-      _RibFree(inline);
+   if (inlined)
+      _RibFree(inlined);
    return NULL;
 }
 
@@ -449,7 +452,7 @@ int RibUndoInLineList( RIB_HANDLE hrib )
 	 if (rib->options & kRIB_OPTION_EXPAND_INLINE)
 	 {
 	    /* If error, keep going so that atleast the inline structures 
-	     *    in the inline list can be freed. 
+	     *    in the inlined list can be freed. 
 	     * Inshort ignore the return code.
 	     */
 	    (void)HandleExpandInlineOption(rib,a);

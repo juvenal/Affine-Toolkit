@@ -701,7 +701,8 @@ PBITMAP ReadIff( char *filename, unsigned int iffflags )
 	     */
 	    static int channelmapRGBA16[8] = { 6, 4, 2, 0, 7, 5, 3, 1 };
 #endif
-	    int *channelmap;
+	    int *channelmap = NULL;
+
 	    if (nsamples==3)
 	       channelmap=channelmapRGB16;
 	    else if (nsamples==4)

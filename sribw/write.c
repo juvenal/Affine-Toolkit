@@ -770,7 +770,7 @@ static void HandleParamList( va_list ap,
 			    int nvertex, int nuniform, int nvarying )
 {
    RtToken  paramlist;
-   int      t, classNtype, ntype, narray;
+   int      t, classNtype, ntype = 0, narray;
    int      IsaLinefeedNeeded = RI_TRUE;
    char              *c;
    unsigned int      u;
@@ -2178,8 +2178,8 @@ RtVoid RiArchiveRecord( RtToken type, char *format, ... )
        *    so if a hint and strncmp() returns a nonzero value call 
        *    HandleFirstLine(). 
        */
-      if ( !hint 
-	   || hint && strncmp( "RenderMan", format, sizeof("RenderMan")-1) )
+      if (!hint 
+	   || (hint && strncmp("RenderMan", format, sizeof("RenderMan")-1)))
       {
 	 /* RI_TRUE indicates to HandleFirstLine() that it is being called
           *    from RiArchiveRecord().

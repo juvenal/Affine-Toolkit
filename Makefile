@@ -44,10 +44,13 @@
 #
 
 all:
-	@echo Type \"make setupsgi32\" to copy over the needed makefiles.
+	@echo Type \"make setupsgi32\"  for SGI MIPS4000/8000 32 bits
+	@echo      \"make setupsun\" for SunOS or Solaris
+	@echo      \"make setuplinux\" for linux
+	@echo to copy over the needed makefiles.
 	@echo To customize how the code is built edit the file called
 	@echo config.mak.
-	@echo Type \"make World\" to build the toolkit.
+	@echo Type \"make World\" to build the affine toolkit.
 
 clean:
 	-cd ribdump;  make -f Makefile clean; cd ..
@@ -96,6 +99,30 @@ World:
 	-cd pcutil;   make ; cd ..
 	-cd examples/ribtree;  make ; cd ../..
 	-cd examples/closequad;  make ; cd ../..
+
+setuplinux:
+	cp config.mak.linux config.mak
+	chmod u+w config.mak
+	cp ribdump/Makefile.unix ribdump/Makefile
+	cp ribhash/Makefile.unix ribhash/Makefile
+	cp sribw/Makefile.unix sribw/Makefile
+	cp readrib/Makefile.unix readrib/Makefile
+	cp tokentbl/Makefile.unix tokentbl/Makefile
+	cp ributil/Makefile.unix ributil/Makefile
+	cp pixNtiff/Makefile.unix pixNtiff/Makefile
+	cp pcutil/Makefile.unix pcutil/Makefile
+	cp examples/ribtree/Makefile.unix examples/ribtree/Makefile
+	cp examples/closequad/Makefile.unix examples/closequad/Makefile
+	chmod u+w  ribdump/Makefile
+	chmod u+w  ribhash/Makefile
+	chmod u+w  sribw/Makefile
+	chmod u+w  readrib/Makefile
+	chmod u+w  tokentbl/Makefile
+	chmod u+w  ributil/Makefile
+	chmod u+w  pixNtiff/Makefile
+	chmod u+w  pcutil/Makefile
+	chmod u+w  examples/ribtree/Makefile
+	chmod u+w  examples/closequad/Makefile
 
 setupsun:
 	cp config.mak.sun config.mak

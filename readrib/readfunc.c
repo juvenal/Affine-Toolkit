@@ -2303,7 +2303,7 @@ int RibReadIntegerArray( RIB_HANDLE hrib, unsigned int options,
    int                 rc = 0;
    int                 unget = -1; /* Don't unget a char before error msg. */
    auto int            c,i;
-   auto RtInt          *p;
+   auto RtInt          *p = NULL;
 
 
    if (!rib)

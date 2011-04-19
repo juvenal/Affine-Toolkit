@@ -676,7 +676,7 @@ PRIB_HASHATOM RibAddItem( RIB_HASHHND hash, RIB_UINT32 type, ... )
    va_list        arg;
    RIB_UINT32     mtype;
    int            code = 0;
-   int            ripIDorN;
+   int            ripIDorN = 0;
    void           *data = NULL;
    void           *extdata = NULL;
    PRIB_HASHATOM  p, *pp;

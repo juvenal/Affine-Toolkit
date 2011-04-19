@@ -523,13 +523,13 @@ unsigned int isqrt( unsigned int n )
 
 int WriteIff( PBITMAP pBmp, char *filename, int rle )
 {
-   unsigned int          flags;
+   unsigned int          flags = 0;
    unsigned int          bytes;
    unsigned int          tiles;
    unsigned int          for4size1;
    unsigned int          for4size2;
    unsigned int          i,j;
-   unsigned int          xtiles,ytiles;
+   unsigned int          xtiles = 0,ytiles = 0;
    unsigned int          bitsperpixel;
 
 
@@ -722,7 +722,7 @@ int WriteIff( PBITMAP pBmp, char *filename, int rle )
 #endif
       static int channelmapRGB8[3] = { 2, 1, 0 };
       static int channelmapRGBA8[4] = { 3, 2, 1, 0 };
-      int                 *channelmap;
+      int                 *channelmap = NULL;
       unsigned int        maxbuffer;
       int                 channel;
       unsigned char       *s,*t;

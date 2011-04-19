@@ -3117,7 +3117,7 @@ STATIC int RibReadPatchMeshV( PRIB_INSTANCE rib )
    RtToken       uwrap = NULL;
    RtInt         nv;
    RtToken       vwrap = NULL;
-   int           nupatches, nvpatches;
+   int           nupatches = 0, nvpatches = 0;
    int           unowrap, vnowrap;
    int           nvarying;
    int           t,i;

@@ -1958,8 +1958,8 @@ char *ReplacementFilePathName( char *name )
    auto PATHFILENAME  *pfn;
    char               *s = NULL;
    char               *p,*pp;
-   char               olddelimitor;
-   char               newdelimitor;
+   char               olddelimitor='\n';
+   char               newdelimitor='\n';
 
 
    hashvalue = RibHashValueFromString( RibGetHashHandle(rib), name );

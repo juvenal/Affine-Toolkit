@@ -64,6 +64,6 @@ clean:
 
 ../../bin/closequad: closequad.o 
 	${CC} ${LFLAGS32} -o ../../bin/closequad closequad.o ${LIBPATHS} \
-	-lributil -lm
+	-lributil -lm -lz
 
 

@@ -82,14 +82,7 @@ clean:
 		../readrib/declare.o  ../readrib/ribtbl.o     \
 		../readrib/hinttbl.o  ../readrib/ritable.o    \
 		../readrib/error.o                            \
-		../sribw/write.o                              \
-                ${Z_PATH}/adler32.o  ${Z_PATH}/compress.o \
-		${Z_PATH}/crc32.o    ${Z_PATH}/gzio.o     \
-		${Z_PATH}/uncompr.o  ${Z_PATH}/deflate.o  \
-		${Z_PATH}/trees.o    ${Z_PATH}/zutil.o    \
-		${Z_PATH}/inflate.o  ${Z_PATH}/infblock.o \
-		${Z_PATH}/inftrees.o ${Z_PATH}/infcodes.o \
-		${Z_PATH}/infutil.o  ${Z_PATH}/inffast.o
+		../sribw/write.o
 
 ../lib/libribhash.a: ${RDRHEADERS}
 	cd ../ribhash; make -f Makefile; cd ../ributil
