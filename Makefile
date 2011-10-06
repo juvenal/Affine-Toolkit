@@ -44,13 +44,25 @@
 #
 
 all:
-	@echo Type \"make setupsgi32\"  for SGI MIPS4000/8000 32 bits
-	@echo      \"make setupsun\" for SunOS or Solaris
-	@echo      \"make setuplinux\" for linux
+	@echo Type \"make setupsgi32\" - for SGI MIPS4000/8000 32 bits
+	@echo      \"make setuplinux\" - for GNU/Linux
+	@echo      \"make setupsun\"   - for SunOS or Solaris
 	@echo to copy over the needed makefiles.
 	@echo To customize how the code is built edit the file called
 	@echo config.mak.
-	@echo Type \"make World\" to build the affine toolkit.
+	@echo Type \"make toolkit\" to build the affine toolkit.
+
+toolkit:
+	-cd ribdump;  make ; cd ..
+	-cd ribhash;  make ; cd ..
+	-cd sribw;    make ; cd ..
+	-cd readrib;  make ; cd ..
+	-cd tokentbl; make ; cd ..
+	-cd ributil;  make ; cd ..
+	-cd pixNtiff; make ; cd ..
+	-cd pcutil;   make ; cd ..
+	-cd examples/ribtree;  make ; cd ../..
+	-cd examples/closequad;  make ; cd ../..
 
 clean:
 	-cd ribdump;  make -f Makefile clean; cd ..
@@ -87,18 +99,6 @@ setupsgi32:
 	chmod u+w  pcutil/Makefile
 	chmod u+w  examples/ribtree/Makefile
 	chmod u+w  examples/closequad/Makefile
-
-World:
-	-cd ribdump;  make ; cd ..
-	-cd ribhash;  make ; cd ..
-	-cd sribw;    make ; cd ..
-	-cd readrib;  make ; cd ..
-	-cd tokentbl; make ; cd ..
-	-cd ributil;  make ; cd ..
-	-cd pixNtiff; make ; cd ..
-	-cd pcutil;   make ; cd ..
-	-cd examples/ribtree;  make ; cd ../..
-	-cd examples/closequad;  make ; cd ../..
 
 setuplinux:
 	cp config.mak.linux config.mak
