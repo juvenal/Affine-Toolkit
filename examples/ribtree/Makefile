@@ -42,16 +42,16 @@
 #
 #
 #
-TOP=../..
+TOP = ../..
 
 #Put all the compiler and linker flags in one place:
 include ${TOP}/config.mak
 
-TARGETPATH= ../../bin
-INCPATHS= -I. -I../../include
-LIBPATHS= -L../../lib
-LIBS=-lsribw
-HEADERS=
+TARGETPATH = ../../bin
+INCPATHS = -I. -I../../include
+LIBPATHS = -L../../lib
+LIBS = -lsribw
+HEADERS =
 
 all: ${TARGETPATH}/ribtree
 

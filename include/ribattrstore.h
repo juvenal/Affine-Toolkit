@@ -53,43 +53,44 @@
  *
  *             Renderman (R) is a registered trademark of Pixar
  */
+
 #ifndef __ATTRSTORE_HEADER__
 #define __ATTRSTORE_HEADER__
 
 #define  ATTR_DONTFREEDATA    0x00000001
 
 enum ATTRSTORECALLS { 
-   ATTR_ATTRIBUTE,
-   ATTR_ATTRIBUTEBEGIN,
-   ATTR_ATTRIBUTEEND,
-   ATTR_BEGIN,
-   ATTR_END,
-   ATTR_FRAMEBEGIN,
-   ATTR_FRAMEEND,
-   ATTR_TRIMCURVE,
-   ATTR_WORLDBEGIN,
-   ATTR_WORLDEND,
-   ATTR_LAST
+    ATTR_ATTRIBUTE,
+    ATTR_ATTRIBUTEBEGIN,
+    ATTR_ATTRIBUTEEND,
+    ATTR_BEGIN,
+    ATTR_END,
+    ATTR_FRAMEBEGIN,
+    ATTR_FRAMEEND,
+    ATTR_TRIMCURVE,
+    ATTR_WORLDBEGIN,
+    ATTR_WORLDEND,
+    ATTR_LAST
 };
 
 
 typedef struct _ATTRITEM {
-   int               level;
-   char              *name;
-   char              *property;
-   void              *setting;
-   struct _ATTRITEM  *prev;
-   struct _ATTRITEM  *next;
+    int               level;
+    char              *name;
+    char              *property;
+    void              *setting;
+    struct _ATTRITEM  *prev;
+    struct _ATTRITEM  *next;
 } ATTRITEM;
-typedef ATTRITEM  *PATTRITEM;
+typedef (ATTRITEM *) PATTRITEM;
 
 
 typedef struct _ATTR {
-   RIB_UINT32     flags;
-   int            presentlevel;
-   PATTRITEM      first;
-   PATTRITEM      last;
-   PRIB_RIPROC    ricalls[ATTR_LAST];
+    RIB_UINT32     flags;
+    int            presentlevel;
+    PATTRITEM      first;
+    PATTRITEM      last;
+    PRIB_RIPROC    ricalls[ATTR_LAST];
 } ATTR;
 typedef ATTR  *PATTR;
 
@@ -104,32 +105,32 @@ extern "C" {
 #define EXTERN extern
 #endif
 
-EXTERN RtVoid AttrAttributeBegin( void );
-EXTERN RtVoid AttrAttributeEnd( void );
-EXTERN RtVoid AttrAttributeV( RtToken name,
-                             RtInt n, RtToken tokens[], RtPointer parms[] );
-EXTERN RtVoid AttrBegin( RtToken name );
-EXTERN RtVoid AttrEnd( void );
-EXTERN RtVoid AttrFrameBegin( RtInt frame );
-EXTERN RtVoid AttrFrameEnd( void );
-EXTERN RtVoid AttrWorldBegin( void );
-EXTERN RtVoid AttrWorldEnd( void );
+EXTERN RtVoid AttrAttributeBegin(void);
+EXTERN RtVoid AttrAttributeEnd(void);
+EXTERN RtVoid AttrAttributeV(RtToken name,
+                             RtInt n, RtToken tokens[], RtPointer parms[]);
+EXTERN RtVoid AttrBegin(RtToken name);
+EXTERN RtVoid AttrEnd(void);
+EXTERN RtVoid AttrFrameBegin(RtInt frame);
+EXTERN RtVoid AttrFrameEnd(void);
+EXTERN RtVoid AttrWorldBegin(void);
+EXTERN RtVoid AttrWorldEnd(void);
 
-EXTERN PATTR AttrInitRITable( PRIB_RITABLE ritable, 
-                             RIB_UINT32 flags );
-EXTERN int AttrUseRIB( PATTR p, RIB_HANDLE rib );
-EXTERN int AttrUse( PATTR p );
-EXTERN PATTR AttrInitRIB( RIB_HANDLE rib, RIB_UINT32 flags );
-EXTERN int AttrRestoreRITable( PATTR p, PRIB_RITABLE ritable );
-EXTERN int AttrSetFlags( PATTR p, 
-                        RIB_UINT32 mask, RIB_UINT32 flags );
-EXTERN RIB_UINT32 AttrGetFlags( PATTR p );
-EXTERN PATTRITEM AttrGetFirstAttribute( PATTR p );
-EXTERN PATTRITEM AttrGetLastAttribute( PATTR p );
-EXTERN void *AttrQueryAttribute( PATTR p, char *name, char *property );
-EXTERN int AttrBeginBlock( PATTR p );
-EXTERN int AttrEndBlock( PATTR p );
-EXTERN int AttrDestroy( PATTR p );
+EXTERN PATTR AttrInitRITable(PRIB_RITABLE ritable, 
+                             RIB_UINT32 flags);
+EXTERN int AttrUseRIB(PATTR p, RIB_HANDLE rib);
+EXTERN int AttrUse(PATTR p);
+EXTERN PATTR AttrInitRIB(RIB_HANDLE rib, RIB_UINT32 flags);
+EXTERN int AttrRestoreRITable(PATTR p, PRIB_RITABLE ritable);
+EXTERN int AttrSetFlags(PATTR p, 
+                        RIB_UINT32 mask, RIB_UINT32 flags);
+EXTERN RIB_UINT32 AttrGetFlags(PATTR p);
+EXTERN PATTRITEM AttrGetFirstAttribute(PATTR p);
+EXTERN PATTRITEM AttrGetLastAttribute(PATTR p);
+EXTERN void *AttrQueryAttribute(PATTR p, char *name, char *property);
+EXTERN int AttrBeginBlock(PATTR p);
+EXTERN int AttrEndBlock(PATTR p);
+EXTERN int AttrDestroy(PATTR p);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

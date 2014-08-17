@@ -45,8 +45,8 @@
  *    References:
  *
  */
-#include <stdio.h>
 
+#include <stdio.h>
 
 int mac2unix( void );
 int main( int argc, char **argv );
@@ -55,72 +55,61 @@ int main( int argc, char **argv );
 FILE *fpin;
 FILE *fpout;
 
+int main(int argc, char **argv) {
+    int i;
 
-int main( int argc, char **argv ) 
-{
-   int i;
-        
-   if ( argc > 1 && argv[1][0]=='-' )
-   {
-      if ( argv[1][1]=='o' && argv[1][2]=='\0' )
-      {
-         fpout = fopen( argv[2], "wb" );
-         if (!fpout)
-         {
-            printf( "Can't open %s\n", argv[2] );
+    if (argc > 1 && argv[1][0]=='-') {
+        if (argv[1][1]=='o' && argv[1][2]=='\0') {
+            fpout = fopen(argv[2], "wb");
+            if (!fpout) {
+                printf("Can't open %s\n", argv[2]);
+                return 1;
+            }
+            i = 3;
+        }
+        else {
+            printf( "mac2unix [-o outputfile] files . . .\n"                     \
+                    "   [filename . . .]   If no file names are given then\n"     \
+                    "                      mac2unix will use standard input.\n"   \
+                    "   [-o outputfile]    UNIX file to write to.\n"              \
+                    "                      If no output file name is given then\n"\
+                    "                      mac2unix will use standard output.\n" );
             return 1;
-         }
-         i = 3;
-      }
-      else 
-      {
-         printf( "mac2unix [-o outputfile] files . . .\n"                     \
-                "   [filename . . .]   If no file names are given then\n"     \
-                "                      mac2unix will use standard input.\n"   \
-                "   [-o outputfile]    UNIX file to write to.\n"              \
-                "                      If no output file name is given then\n"\
-                "                      mac2unix will use standard output.\n" );
-         return 1;
-      }
-   }
-   else
-   {
-      fpout = stdout;
-      i=1;
-   }
-   
-   if ( i < argc )
-     while ( i < argc )
-     {
-        fpin = fopen(argv[i],"rb");
-        if (!fpin)
-        {
-           printf( "Can't open %s\n", argv[i] );
-           return 1;
+        }
+    }
+    else {
+        fpout = stdout;
+        i = 1;
+    }
+    if (i < argc) {
+        while (i < argc) {
+            fpin = fopen(argv[i],"rb");
+            if (!fpin) {
+                printf("Can't open %s\n", argv[i]);
+                return 1;
+            }
         }
         mac2unix();
         fclose(fpin);
         i++;
-     }     
-   else
-   {
-      fpin = stdin;
-      mac2unix();
-   }
-
-   return 0;
+    }     
+    else {
+        fpin = stdin;
+        mac2unix();
+    }
+    return 0;
 }
 
+int mac2unix(void) {
+    int c;
 
-int mac2unix( void )
-{
-   int c;
-
-   while ( EOF != (c=fgetc(fpin)))
-     if (13 == c)
-       fputc( 10, fpout );
-     else
-       fputc( c, fpout );
-
-   return 0;
+    while (EOF != (c=fgetc(fpin))) {
+        if (13 == c) {
+            fputc(10, fpout);
+        }
+        else {
+            fputc(c, fpout);
+        }
+    }
+    return 0;
 }
