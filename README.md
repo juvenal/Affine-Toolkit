@@ -1,5 +1,7 @@
 
-    Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
+[![Build Status](https://travis-ci.org/juvenal/Affine-Toolkit.svg?branch=master)](https://travis-ci.org/juvenal/Affine-Toolkit)
+
+Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
     
     Affine (R) is a registered trademark of Thomas E. Burge
    
