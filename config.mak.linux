@@ -75,10 +75,10 @@ TIFF_LIBPATH=-L${TIFFPATH}
 
 # For SGI C compiler:
 CC= cc
-CFLAGS= -g -ansi -fullwarn ${INCPATHS}
+CFLAGS= -g -ansi -Wall ${INCPATHS}
 LFLAGS= 
-CFLAGS32= -n32 -mips4
-LFLAGS32= -n32 -mips4
+CFLAGS32=
+LFLAGS32=
 CFLAGS64=
 LFLAGS64=
 DSOFLAGS=-shared
