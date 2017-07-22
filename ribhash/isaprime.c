@@ -59,6 +59,7 @@
  *             RenderMan (R) is a registered trademark of Pixar
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
@@ -97,7 +98,7 @@
  *
  */
 /* See above comment for including "#define TABLE" into the code. */
-#if 0
+#if 1
 #define TABLE
 #endif
 
@@ -134,86 +135,77 @@
  * the sqrt(p) is sufficient enough to show that p is prime.
  * 
  */
-int main(int argc, char **argv) 
-{
+int main(int argc, char *argv[]) {
    int     i,j,s,prime;
    float   f,v;
 #ifdef TABLE
-   int  min;
-   int  max;
+   int     min;
+   int     max;
 #endif
 
    i = 1;
+
 #ifndef TABLE
-   while ( i < argc )
+   while (i < argc) {
 #else
-   if ( argc==3 )
-   {
+   if (argc == 3) {
       min = atoi(argv[1]);
       max = atoi(argv[2]);
    }
-   else if ( argc==2 )
-   {
+   else if (argc == 2) {
       min = 2;
       max = atoi(argv[1]);
    }
-   else
-   {
-      printf( "isaprime [min] max\n" );
+   else {
+      printf("isaprime [min] max\n");
       return 1;
    }
    i = min;
-   while ( i <= max )
+   while (i <= max) {
 #endif
-   {
       prime = 1;
 #ifndef TABLE
-#ifdef atof
+# ifdef atof
       /* Just using atof() as a better command-line parser for numbers. */
-      f = atof( argv[i] );
-#else
-      f = (float)atoi( argv[i] );
-#endif
+      f = atof(argv[i]);
+# else
+      f = (float) atoi(argv[i]);
+# endif
 #else
       f = i;
 #endif
       v = floor(f);
-      if (v!=f)
-      {
-         printf("Value %g is not an integer.\n",f);
+      if (v != f) {
+         printf("Value %g is not an integer.\n", f);
       }
-      else if (v<=0)
-      {
-         printf("Value %g must be greater than zero.\n",v);
+      else if (v <= 0) {
+         printf("Value %g must be greater than zero.\n", v);
       }
-      else
-      {
-         s = (int)sqrt(f);
-         for ( j = 2; j <= s; j++ )
-         {
-            f = v/(float)j;
-            if ( floor(f) == f )
-            {
+      else {
+         s = (int) sqrt(f);
+         for (j = 2; j <= s; j++) {
+            f = v / (float) j;
+            if (floor(f) == f) {
 #ifndef TABLE
-               printf( "%g not prime because %d divides it.\n", 
-                       v, j );
+               printf("%g not prime because %d divides it.\n",
+                      v, j);
 #endif
                prime = 0;
                break;
             }
          }
-         if ( prime )
+         if (prime) {
 #ifndef TABLE
-            printf( "%g is prime.\n", v );
+            printf("%g is prime.\n", v);
 #else
-            printf( "%g ", v );
+            printf("%g ", v);
 #endif
+         }
       }
       i++;
-   }     
+   }
 #ifdef TABLE
-   printf( "\n" );
+   printf("\n");
 #endif
-
    return 0;
 }
