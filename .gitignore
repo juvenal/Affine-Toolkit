@@ -1,0 +1,42 @@
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# Executables
+bin/*
+!bin/.gitkeep
+
+# Libraries
+lib/*.a
+lib/*.so
+lib/*.dylib
+
+# Generated configuration
+config.mak
+
+# Makefiles copied from templates
+*/Makefile
+!*/Makefile.unix
+
+# Editor and IDE files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test outputs
+*.log
+*.tmp
+
+# Dependencies
+zlib/
+libtiff/
