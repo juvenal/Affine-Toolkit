@@ -73,10 +73,18 @@ TIFFPATH=${TOP}/../libtiff/libtiff
 TIFF_INCPATH=-I${TIFFPATH}
 TIFF_LIBPATH=-L${TIFFPATH}
 
-# For SGI C compiler:
+# C compiler (gcc or clang)
 CC= cc
-CFLAGS= -g -ansi -Wall ${INCPATHS}
-LFLAGS= 
+CFLAGS= -g -std=c17 -Wall -Wextra \
+        -Wformat=2 -Wformat-security \
+        -Wstrict-overflow=2 \
+        -Wcast-align \
+        -Wpointer-arith \
+        -Wmissing-prototypes \
+        -Wshadow \
+        -Wno-cast-function-type \
+        ${INCPATHS}
+LFLAGS=
 CFLAGS32=
 LFLAGS32=
 CFLAGS64=
@@ -85,11 +93,11 @@ DSOFLAGS=-shared
 
 # Use -DRIB_MEMORY_TESTS to get statistics on memory leaks.
 #
-#COPTS=-DRIB_MEMORY_TESTS -DRIB_ZLIB
+#COPTS=-DRIB_MEMORY_TESTS -DRIB_ZLIB -D_POSIX_C_SOURCE=200809L
 
 # Use Z library for gzip RIB file support (use with zlib 1.1.3 or higher):
 #
-COPTS=-DRIB_ZLIB
+COPTS=-DRIB_ZLIB -D_POSIX_C_SOURCE=200809L
 
 AR= ar rc
 

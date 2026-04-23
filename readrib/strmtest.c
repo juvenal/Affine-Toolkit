@@ -182,7 +182,7 @@ int main( void )
 
    RibSaveToBuffer( rib, RI_FALSE );
    if ((u = RibGetBufferLength(rib)) != 0)
-      printf("ERROR:  Buffer Length!=0 (buflen==%u)\n",u );
+      printf("ERROR:  Buffer Length!=0 (buflen==%zu)\n",u );
 #ifdef RIB_MEMORY_TESTS
    ss = (char*)_RibMalloc( 1234 + 1 );
 #else
@@ -199,7 +199,7 @@ int main( void )
          ss[i] = i%26 + 'A';
       }
       if ((u = RibGetBufferLength(rib)) != 1234)
-        printf("ERROR:  Buffer Length!=1234 (buflen==%u)\n",u );
+        printf("ERROR:  Buffer Length!=1234 (buflen==%zu)\n",u );
       else
       {
          s = RibCreateStringFromBuffer( rib, 0 );
@@ -241,7 +241,7 @@ int main( void )
 
       for (i=0; i<1234; i++)
       {
-         for (c=0; c<sizeof(RtInt); c++ )
+         for (c=0; c<(int)sizeof(RtInt); c++ )
          {
             RibPutChar( rib, ((char*)&I)[c] );
             ss[i*sizeof(RtInt)+c] = ((char*)&I)[c];
@@ -250,7 +250,7 @@ int main( void )
       u = RibGetBufferLength(rib);
       if ( u != 1234*sizeof(RtInt) )
       {
-         printf( "ERROR:  Buffer Length!=1234*sizeof(RtInt) (buflen==%u)\n",
+         printf( "ERROR:  Buffer Length!=1234*sizeof(RtInt) (buflen==%zu)\n",
                  u );
       }
       else
@@ -292,7 +292,7 @@ int main( void )
 
       for (i=0; i<1234; i++)
       {
-         for (c=0; c<sizeof(RtFloat); c++ )
+         for (c=0; c<(int)sizeof(RtFloat); c++ )
          {
             RibPutChar( rib, ((char*)&F)[c] );
             ss[i*sizeof(RtFloat)+c] = ((char*)&F)[c];
@@ -302,7 +302,7 @@ int main( void )
       if ( u != 1234*sizeof(RtFloat))
       {
          printf("ERROR:  " \
-                "Buffer Length!=1234*sizeof(RtFloat) (buflen==%u)\n",u );
+                "Buffer Length!=1234*sizeof(RtFloat) (buflen==%zu)\n",u );
       }
       else
       {

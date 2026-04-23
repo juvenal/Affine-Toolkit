@@ -198,7 +198,7 @@ unsigned int RibFindFile( PRIB_INSTANCE prib, char *filename )
       memcpy( b, filename, lfilename );
 
       if ( !stat( prib->archivenamebuffer, &statbuf )
-	   && !(statbuf.st_mode & S_IFDIR) )
+	   && !S_ISDIR(statbuf.st_mode) )
 	 return lfilename + lpath;
    } while (*p!='\0');
 
@@ -220,7 +220,7 @@ static PRIB_INSTANCE RibOpenWith( char *filename,
    auto  PRIB_BUFFER    pbuf;
    void  *pv;
 #if defined(RIB_ZLIB)
-   gzFile  *fp;
+   gzFile  fp;
 #else
    FILE  *fp;
 #endif
@@ -525,7 +525,6 @@ static PRIB_INSTANCE RibOpenWith( char *filename,
 
    if (rib)
    {
-      _RibFree(rib);
       if (rib->tokencache)
         _RibFree(rib->tokencache);
       if (rib->paramcache)
@@ -534,6 +533,7 @@ static PRIB_INSTANCE RibOpenWith( char *filename,
         _RibFree(rib->typecache);
       if (rib->ncache)
         _RibFree(rib->ncache);
+      _RibFree(rib);
    }
 
    return kRIB_ERRRC_PTR; /* Error */  
@@ -623,8 +623,8 @@ int RibTempClose( PRIB_INSTANCE prib )
    rib->status |= kRIB_STATUS_CLOSED;
 #if defined(RIB_ZLIB)
  {
-    auto gzFile  *fp;
-    
+    auto gzFile  fp;
+
     /* Assume Affine Z library. */
     fp = rib->fp;
 
@@ -653,7 +653,7 @@ int RibReopen( PRIB_INSTANCE prib )
    if ( gRibNOpenSubfiles <= gRibMaxFiles )
    {
 #if defined(RIB_ZLIB)
-      gzFile  *fp;
+      gzFile  fp;
 
       fp = gzopen( rib->filename, "rb" );
       if ( !fp )
@@ -1213,16 +1213,16 @@ int RibCreateStringsFromBuffer( RIB_HANDLE hrib, RtInt n, RtString **r )
 
    
    if ( !(rib && rib->pbuf && r) )
-     return kRIB_ERRRC_PTR; /* Error */
+     return kRIB_ERRRC_INT; /* Error */
 
    pbuf = rib->pbuf;
    p = pbuf->plist;
-   l = pbuf->buflength; 
+   l = pbuf->buflength;
 
    /* NULLs were already added into the buffer to terminate each string. */
    ar = (RtString*)_RibMalloc( sizeof(RtString)*n + l );
    if ( !ar )
-     return kRIB_ERRRC_PTR;
+     return kRIB_ERRRC_INT;
 
    /* Block of memory ar has n char*'s followed by n NULL terminated 
     *    strings.  Use ar to access the array of RtString's (the char*'s)

@@ -75,10 +75,10 @@
 #define _RIB_RTLONGINT 0
 #define _RIB_RTDOUBLE  0
 
-typedef int RIB_INT32;
-typedef int *PRIB_INT32;
-typedef unsigned int RIB_UINT32;
-typedef unsigned int *PRIB_UINT32;
+typedef int32_t  RIB_INT32;
+typedef int32_t *PRIB_INT32;
+typedef uint32_t  RIB_UINT32;
+typedef uint32_t *PRIB_UINT32;
 
 /* Constants for hashatom.type */
 #define kRIB_HASH_TYPEMASK  0x00ffffff

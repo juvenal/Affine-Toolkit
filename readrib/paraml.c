@@ -211,29 +211,29 @@ int RibReadParameterList( RIB_HANDLE hrib, int require,
       if ( rib->options & kRIB_OPTION_EXPAND_INLINE && p )
       {
 	 int   l;
-	 char  *c;
+	 char  *namecopy;
 
 	 /* Change the data pointer to be a copy of name. */
 	 l = strlen( name ) + 1;
-	 c = (char*)_RibMalloc( l );
-	 if (!c)
+	 namecopy = (char*)_RibMalloc( l );
+	 if (!namecopy)
 	 {
 	    /* Free token declaration/name read by RibReadString() above. */
 	    _RibFree(s);
 
 	    /* Note that at this point pTokens[n] and pParams[n] do
-	     *   not point to anything and the arrays pTokens and 
+	     *   not point to anything and the arrays pTokens and
 	     *   pParams may not even have n elements in them at this
 	     *   point.  Doing a goto ErrorCleanUp might cause a problem
-	     *   when it tries to free the data pointed to by pTokens[n] 
+	     *   when it tries to free the data pointed to by pTokens[n]
 	     *   and pParams[n].
 	     * So skip ErrorCleanUp and goto ErrorCleanUpInlineList.
 	     */
 	    goto ErrorCleanUpInlineList;
 	 }
-	 strcpy( c, name );
+	 strcpy( namecopy, name );
 	 _RibFree(s);
-	 s = c;
+	 s = namecopy;
       }
 
       /* No in-line declaration given, check hash table. */

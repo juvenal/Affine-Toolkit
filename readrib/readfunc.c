@@ -726,7 +726,7 @@ int RibReadString( RIB_HANDLE hrib, RIB_UINT32 options, RtString *pp )
          {
             RibSaveToBuffer( rib, RI_TRUE );
          }
-         for ( l=0; l < w; l++ )
+         for ( l=0; (int)l < w; l++ )
          {
             c = RibGetChar( rib ); 
             if (EOF == c)
@@ -753,12 +753,12 @@ int RibReadString( RIB_HANDLE hrib, RIB_UINT32 options, RtString *pp )
 
          /* Read all l number of bytes. */
          utmp = 0;
-         for ( w=0; w < l; w++ )
+         for ( w=0; w < (int)l; w++ )
          {
             c = RibGetChar( rib );
             if (EOF==c)
               goto Error;
-            
+
             utmp = utmp << 8;
             utmp |= 0xff&c;
          }
@@ -772,9 +772,9 @@ int RibReadString( RIB_HANDLE hrib, RIB_UINT32 options, RtString *pp )
          {
             RibSaveToBuffer( rib, RI_TRUE );
          }
-         for ( w=0; w < utmp; w++ )
+         for ( w=0; (unsigned int)w < utmp; w++ )
          {
-            c = RibGetChar( rib ); 
+            c = RibGetChar( rib );
             if (EOF == c)
               goto Error;
             
@@ -1353,9 +1353,9 @@ int RibReadFloatingPoint( RIB_HANDLE hrib, float *pflt )
       {
          /* Read float. */
          tmp = 0;
-         for ( i=0; i < sizeof(float); i++ )
+         for ( i=0; i < (int)sizeof(float); i++ )
          {
-            c = RibGetChar( rib ); 
+            c = RibGetChar( rib );
             if (EOF == c)
               goto Error;
             tmp = tmp << 8;
@@ -1387,10 +1387,10 @@ int RibReadFloatingPoint( RIB_HANDLE hrib, float *pflt )
          v = (char*)(void*)&dbl;
          
          /* Read double. */
-#ifdef LITTLE_ENDIAN         
-         for ( i=(sizeof(double)-1); i > -1; i-- )
+#ifdef LITTLE_ENDIAN
+         for ( i=(int)sizeof(double)-1; i > -1; i-- )
 #else
-         for ( i=0; i < sizeof(double); i++ )
+         for ( i=0; i < (int)sizeof(double); i++ )
 #endif        
          {
             c = RibGetChar( rib ); 
@@ -1691,11 +1691,11 @@ int RibReadFloatingPointArray( RIB_HANDLE hrib, RIB_UINT32 options,
               
       /* Read length value by reading all l number of bytes. */
       utmp = 0;
-      for ( w=0; w < l; w++ )
+      for ( w=0; (unsigned int)w < l; w++ )
       {
          c = RibGetChar( rib );
          CheckForEOFError(c);
-                 
+
          utmp = utmp << 8;
          utmp |= 0xff & c;
       }
@@ -1738,42 +1738,42 @@ int RibReadFloatingPointArray( RIB_HANDLE hrib, RIB_UINT32 options,
             goto Error;
          }
 
-         /* Read all <length> number of floats. */      
-         for ( w=0; w < l; w++ )
+         /* Read all <length> number of floats. */
+         for ( w=0; (int)w < l; w++ )
          {
             /* Assume all the floats in the array are IEEE single-precision. */
             /* Read float. */
             tmp = 0;
-            for ( i=0; i < sizeof(float); i++ )
+            for ( i=0; i < (int)sizeof(float); i++ )
             {
-               c = RibGetChar( rib ); 
+               c = RibGetChar( rib );
                CheckForEOFError(c);
 
                tmp = tmp << 8;
                tmp |= (0xff)&c;
             }
             p[w] = *( (float*)(void*)&tmp );
-         } /* for (i=0; ... */
+         } /* for (w=0; ... */
       }
       else
       {
-         /* Read all <length> number of floats. */      
-         for ( w=0; w < l; w++ )
+         /* Read all <length> number of floats. */
+         for ( w=0; (int)w < l; w++ )
          {
             /* Assume all the floats in the array are IEEE single-precision. */
             /* Read float. */
-            for ( i=0; i < sizeof(float); i++ )
+            for ( i=0; i < (int)sizeof(float); i++ )
             {
-               c = RibGetChar( rib ); 
+               c = RibGetChar( rib );
                CheckForEOFError(c);
             }
-         } /* for (i=0; ... */
+         } /* for (w=0; ... */
       }
 
       /* If sizes didn't match, read through extra trailing stuff. */
-      if (utmp > numberof)
+      if ((int)utmp > numberof)
       {
-         for ( i=numberof; i < utmp; i++ )
+         for ( i=numberof; i < (int)utmp; i++ )
          {
             c = RibGetChar( rib ); 
             CheckForEOFError(c);
@@ -2749,7 +2749,7 @@ int RibReadArrayAndLength( RIB_HANDLE hrib, RIB_UINT32 options,
          {
             p = (void*)_RibMalloc( sizeof(RtInt) );
             if (!p)
-              return kRIB_ERRRC_PTR;
+              return kRIB_ERRRC_INT;
             *((RtInt*)p) = i;
             *pp = (RtInt*)p;
          }
@@ -2817,7 +2817,7 @@ int RibReadArrayAndLength( RIB_HANDLE hrib, RIB_UINT32 options,
          {
             p = (void*)_RibMalloc( sizeof(RtFloat) );
             if (!p)
-              return kRIB_ERRRC_PTR;
+              return kRIB_ERRRC_INT;
             *((RtFloat*)p) = f;
             *pp = (RtFloat*)p;
          }
@@ -3318,7 +3318,7 @@ int RibReadRIBCallParameters( RIB_HANDLE hrib,
          }
          rc = RibUngetChar( rib, rc );
          CheckForError(rc);
-         /* else fall through and read data as a simple matrix */
+         /* falls through */
        case kRIB_CPARAMS_MATRIX:
          rc = RibReadFloatingPointArray( rib, kRIB_BRACKETS_REQUIRED, 
                                         16, (RtFloat**)p );

@@ -198,6 +198,8 @@ int WriteTiff( PBITMAP pBmp, char *filename )
                 /*            the size of the TIFF header.                */
    };
    
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-braces"
    static IFD_ENTRY  ifde[] = { /* array of IFD Entries to append to ifd */
       /* NOTE:  Things marked by "(set later)" can't be hardcoded here and
        *        are set during runtime.
@@ -314,11 +316,12 @@ int WriteTiff( PBITMAP pBmp, char *filename )
       0x00, 0x00,  /* bytes 8-11  Offset to string (set later).             */
       0x00, 0x00,  /*                                                       */
    };
+#pragma GCC diagnostic pop
    static char  ifd[2] = {  /* First part of IFD anyway. */
       0x00, sizeof(ifde)/sizeof(IFD_ENTRY),  /* Number of IFD Entries ().   */
    };
    FILE *fp;
-   int i;
+   unsigned long i;
    char *p;
 
    if ( !pBmp )

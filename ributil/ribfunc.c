@@ -3391,7 +3391,7 @@ STATIC int RibReadPointsV( PRIB_INSTANCE rib )
       {
        case kRIB_VARYINGCLASS:
        case kRIB_VERTEXCLASS:
-         if ( sizes[i] != npoints )
+         if ( sizes[i] != (unsigned int)npoints )
          {
             RibErrorNumberOfValues( rib, tokens[i], npoints, sizes[i] ); 
             /* The data is not correct and should be removed from the 
@@ -3654,7 +3654,7 @@ STATIC int RibReadPolygonV( PRIB_INSTANCE rib )
       {
        case kRIB_VARYINGCLASS:
        case kRIB_VERTEXCLASS:
-         if ( sizes[i] != nvertices )
+         if ( sizes[i] != (unsigned int)nvertices )
          {
             RibErrorNumberOfValues( rib, tokens[i], nvertices, sizes[i] ); 
             /* The data is not correct and should be removed from the 

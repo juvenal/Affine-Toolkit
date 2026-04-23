@@ -365,9 +365,8 @@ int TrimStoreEndBlock( PTRIMSTORE p )
 	 _RibFree( t->w );
       }
       tt = t;
-      _RibFree( t );
-
       t = tt->prev;
+      _RibFree( tt );
    }
    p->presentlevel--;
    if (p->last==NULL)

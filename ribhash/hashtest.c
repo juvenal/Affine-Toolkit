@@ -62,6 +62,7 @@
 
 int main(int argc, char **argv)
 {
+   (void)argc; (void)argv;
    RIB_HASHHND hash;
    PRIB_HASHATOM p;
    int i,j,rc;

@@ -542,13 +542,16 @@ void RibDumpHashTable( RIB_HASHHND hash )
 int RibFreeBasisMatrix( RtBasis p )
 {
    if ( p
-        && p != RiBezierBasis 
+        && p != RiBezierBasis
         && p != RiBSplineBasis
         && p != RiCatmullRomBasis
         && p != RiHermiteBasis
         && p != RiPowerBasis )
    {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfree-nonheap-object"
       _RibFree( p );
+#pragma GCC diagnostic pop
    }
 
    return 0;
@@ -612,16 +615,16 @@ PRIB_HASHATOM RibHash( RIB_HASHHND hash, int type, int code, char *s,
    {
       while ( p )
       {
-         if ( (p->type&kRIB_HASH_TYPEMASK) == type )
+         if ( (p->type&kRIB_HASH_TYPEMASK) == (RIB_UINT32)type )
          {
             if (s)
             {
                if ( strcmp( (char *)p->data, s ) == 0 )
                  break;
             }
-            else 
+            else
             {
-               if (p->code == code)
+               if (p->code == (unsigned int)code)
                  break;
             }
          }
@@ -846,7 +849,7 @@ PRIB_HASHATOM RibFindNextMatch( RIB_HASHHND hash, PRIB_HASHATOM patom )
 {
    register PRIB_HASHATOM  p = patom;
    auto RIB_UINT32  type;
-   auto int  code;
+   auto unsigned int  code;
 
 
    if (hash && p)
@@ -1379,7 +1382,7 @@ static void RibInitHashTable( RIB_HASHHND hash )
    /* The following was added for the RiDisplay call. */
    ADDITEM( RI_ORIGIN, INTPAIR );
    
-   for ( i=0; i<sizeof(variables)/sizeof(struct _variables); i++ )
+   for ( i=0; i<(int)(sizeof(variables)/sizeof(struct _variables)); i++ )
    {
       /* The flags kRIB_HASH_FREEDATA and kRIB_HASH_FREEEXTDATA 
        *    are not included because the strings are not stored

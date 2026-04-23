@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
             if ((i+1<argc) && argv[i][1]=='o' && argv[i][2]=='\0') {
                 i++;
                 if (edit) {
-                    fprintf(stderr, ErrorOutputAndEdit);
+                    fprintf(stderr, "%s", ErrorOutputAndEdit);
                     PrintHelp();
                     return 1;       
                 }
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
             }
             else if (!strcmp(&argv[i][1],"edit")) {
                 if (fpout!=stdout) {
-                    fprintf(stderr, ErrorOutputAndEdit);
+                    fprintf(stderr, "%s", ErrorOutputAndEdit);
                     PrintHelp();
                     return 1;
                 }

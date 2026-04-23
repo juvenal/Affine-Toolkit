@@ -112,7 +112,7 @@ int RibCacheVector( RIB_HANDLE hrib,
    }
    else if (tn<0)
    {
-      if (rib->vectorcache_nused >= tn)
+      if ((int)rib->vectorcache_nused >= tn)
       {
          rib->vectorcache_nused += tn;
       }
@@ -197,7 +197,7 @@ int RibCopyVectorCache( RIB_HANDLE hrib,
    if (!rib)
      return kRIB_ERRRC_INT;
 
-   if ( nparams > rib->vectorcache_nused )
+   if ( nparams > (RtInt)rib->vectorcache_nused )
    {
       nsize = rib->vectorcache_nused;
    }

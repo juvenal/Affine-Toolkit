@@ -246,8 +246,8 @@ int AttrEndBlock( PATTR p )
 	 _RibFree( a->name );
       }
       aa = a;
-      _RibFree( a );
       a = aa->prev;
+      _RibFree( aa );
    }
    p->presentlevel--;
    if (p->last==NULL)

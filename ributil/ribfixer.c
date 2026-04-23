@@ -280,7 +280,7 @@ RtVoid
  *  MacroModel RIB fixer function.
  *
  */
-int mmErrorHandler(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error);
+int mmErrorHandler(RIB_HANDLE hrib, int code, int severity, PRIB_ERROR error);
 
 
 int main(int argc, char **argv); 
@@ -2474,7 +2474,7 @@ if (vdiff==0.0) {printf("vdiff zero\n");
  * one of the strings "olor", "pacity" ot "urface" than call the 
  * corresponding parameter reading function.
  */
-int mmErrorHandler( RIB_HANDLE rib, int code, int severity, PRIB_ERROR error )
+int mmErrorHandler( RIB_HANDLE hrib, int code, int severity, PRIB_ERROR error )
 {
    /* The following table was originallu created with the command:
     *    tokentbl -s mmodel.asc MModel
@@ -2490,8 +2490,8 @@ int mmErrorHandler( RIB_HANDLE rib, int code, int severity, PRIB_ERROR error )
 
    if ( error->type == kRIB_ERRTYPE_SYNTAX )
    {
-      i = RibReadFileForToken( rib, MModel );
-      
+      i = RibReadFileForToken( hrib, MModel );
+
       /* Check for invalid token. */
       do
       {
@@ -2501,24 +2501,24 @@ int mmErrorHandler( RIB_HANDLE rib, int code, int severity, PRIB_ERROR error )
 	  case kRIB_OPACITY:
 	  case kRIB_SURFACE:
 	    /* Handle RI binding. */
-	    i = (*gRibReadTable[i])( (PRIB_INSTANCE)rib );
+	    i = (*gRibReadTable[i])( (PRIB_INSTANCE)hrib );
 	    if ( i )
 	    {
 	       if ( EOF==i )
 	       {
 		  error->type = kRIB_ERRTYPE_UNEXPECTED_EOF;
-		  RibSetError( rib, RIE_SYNTAX, RIE_SEVERE, error );
+		  RibSetError( hrib, RIE_SYNTAX, RIE_SEVERE, error );
 		  break;
 	       }
 	       else
 	       {
 		  error->type = kRIB_ERRTYPE_SYNTAX;
-		  RibSetError( rib, RIE_SYNTAX, RIE_ERROR, error );
+		  RibSetError( hrib, RIE_SYNTAX, RIE_ERROR, error );
 	       }
 	       return 0; /* Not a valid MacroModel file. */
 	    }
 	    /* Handle white spaces and any RI request or string definitions. */
-	    i = RibHandlePrefix( rib );
+	    i = RibHandlePrefix( hrib );
 	    if (EOF==i)
 	      return 0;
 
@@ -2528,18 +2528,18 @@ int mmErrorHandler( RIB_HANDLE rib, int code, int severity, PRIB_ERROR error )
 	       /* Go back and do the next statement too.  Don't let control
                 *    go back to the RibRead() function, because after it
                 *    encounters a syntax error it stops calling RibSetError()
-                *    until it finds something valid again.  
+                *    until it finds something valid again.
                 * RibRead() sets an internal variable 'GotLostInRib' and does
-                *    not call RibSetError() until it finds something 
+                *    not call RibSetError() until it finds something
                 *    identifiable again.  This behavior is done to prevent
-                *    hundreds of meaningless error messages. 
+                *    hundreds of meaningless error messages.
                 */
-	       i = RibReadFileForToken( rib, MModel );
+	       i = RibReadFileForToken( hrib, MModel );
 	       notdone = RI_TRUE;
 	    }
 	    else
 	    {
-	       RibUngetChar(rib,i);
+	       RibUngetChar(hrib,i);
 	       notdone = RI_FALSE;
 	    }
 	    break;
@@ -2547,12 +2547,12 @@ int mmErrorHandler( RIB_HANDLE rib, int code, int severity, PRIB_ERROR error )
 	    return 0; /* Not a valid MacroModel file. */
 	 }
       } while (notdone);
-            
+
       return 0;
    }
 
    /* Some other error, so pass it onto the default handler. */
-   RibDefaultErrorHandler( rib, code, severity, error );
+   RibDefaultErrorHandler( hrib, code, severity, error );
 
    return 0;
 }

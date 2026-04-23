@@ -1126,7 +1126,7 @@ RtObjectHandle RiObjectBegin( void )
 
    fprintf( fp, "ObjectBegin %u\n", gSRIBW.LastObjectHandle );
    
-   object = (RtObjectHandle)gSRIBW.LastObjectHandle++;
+   object = (RtObjectHandle)(uintptr_t)gSRIBW.LastObjectHandle++;
 
    return object;
 }
@@ -2572,7 +2572,7 @@ RtLightHandle RiLightSource( RtToken name, ... )
 
    CheckIfFirstLine();
 
-   light = (RtLightHandle)gSRIBW.LastLightHandle++;
+   light = (RtLightHandle)(uintptr_t)gSRIBW.LastLightHandle++;
    fprintf( fp, "LightSource \"%s\" %u ", name, (unsigned int)(size_t)light );
    va_start(ap,name);
    HandleParamList( ap, -1, NULL, NULL, 1, 1, 1 );
@@ -2592,7 +2592,7 @@ RtLightHandle RiLightSourceV( RtToken name,
 
    CheckIfFirstLine();
 
-   light = (RtLightHandle)gSRIBW.LastLightHandle++;
+   light = (RtLightHandle)(uintptr_t)gSRIBW.LastLightHandle++;
    fprintf( fp, "LightSource \"%s\" %u ", name, (unsigned int)(size_t)light );
    HandleParamList( noap, n, tokens, parms, 1, 1, 1 );
 
@@ -2610,7 +2610,7 @@ RtLightHandle RiAreaLightSource( RtToken name, ... )
 
    CheckIfFirstLine();
 
-   light = (RtLightHandle)gSRIBW.LastLightHandle++;
+   light = (RtLightHandle)(uintptr_t)gSRIBW.LastLightHandle++;
    fprintf( fp, "AreaLightSource \"%s\" %u ", name, 
 	    (unsigned int)(size_t)light );
    va_start(ap,name);
@@ -2631,7 +2631,7 @@ RtLightHandle RiAreaLightSourceV( RtToken name,
 
    CheckIfFirstLine();
 
-   light = (RtLightHandle)gSRIBW.LastLightHandle++;
+   light = (RtLightHandle)(uintptr_t)gSRIBW.LastLightHandle++;
    fprintf( fp, "AreaLightSource \"%s\" %u ", name, 
 	    (unsigned int)(size_t)light );
    HandleParamList( noap, n, tokens, parms, 1, 1, 1 );

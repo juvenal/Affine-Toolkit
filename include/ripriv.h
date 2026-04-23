@@ -72,8 +72,10 @@
 #ifndef RI_HEADER
 #define RI_HEADER
 
-typedef short      RtBoolean;
-typedef int        RtInt;
+#include <stdint.h>
+
+typedef int16_t    RtBoolean;
+typedef int32_t    RtInt;
 typedef float      RtFloat;
 typedef char       *RtToken;
 

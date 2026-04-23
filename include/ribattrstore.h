@@ -82,7 +82,7 @@ typedef struct _ATTRITEM {
     struct _ATTRITEM  *prev;
     struct _ATTRITEM  *next;
 } ATTRITEM;
-typedef (ATTRITEM *) PATTRITEM;
+typedef ATTRITEM *PATTRITEM;
 
 
 typedef struct _ATTR {

@@ -726,11 +726,11 @@ RIB_UINT32
 #define /*int*/ RibSetRITable( /*RIB_HANDLE*/ rib,       \
 			       /*int*/ ri_level,         \
 			       /*PRIB_RITABLE*/ table )  \
-     ( (rib)&&(table)                                    \
+     ( (rib)&&((uintptr_t)(void*)(table))                \
       ? ((((PRIB_INSTANCE)(rib))->ritable=(table)),      \
 	 (((PRIB_INSTANCE)(rib))->rilevel=(ri_level)),   \
-	 NULL)                                           \
-      : 1 /* Error */ ) 
+	 0)                                              \
+      : 1 /* Error */ )
 
 #define RibGetHintTableSize( /* RIB_HANDLE */ rib )  \
 			     ( (rib) ? ((PRIB_INSTANCE)(rib))->hintlevel : 0 )
@@ -741,11 +741,11 @@ RIB_UINT32
 #define /* int */ RibSetHintTable( /* RIB_HANDLE */ rib,        \
 				   /*int*/ hint_level,          \
                                   /* PRIB_HINTTABLE */ table )  \
-     ( (rib)&&(table)                                           \
+     ( (rib)&&((uintptr_t)(void*)(table))                       \
       ? ((((PRIB_INSTANCE)(rib))->hinttable=(table)),           \
 	 (((PRIB_INSTANCE)(rib))->hintlevel=(hint_level)),      \
-	 NULL)                                                  \
-      : 1 /* Error */ ) 
+	 0)                                                     \
+      : 1 /* Error */ )
 
 #define /* RtBoolean */ RibShouldFreeData( /* RIB_HANDLE */ rib )          \
      ( (rib)                                                               \
