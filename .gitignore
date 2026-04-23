@@ -36,6 +36,21 @@ Thumbs.db
 # Test outputs
 *.log
 *.tmp
+*.oct
+
+# Test executables built in-tree
+readrib/errtest
+readrib/hinttest
+readrib/readtest
+readrib/strmtest
+ribhash/cnsttest
+ribhash/cptest
+ribhash/hashtest
+ribhash/strtest
+
+# Generated test RIB files in ribdump/
+ribdump/dbltest.rib
+ribdump/flttest.rib
 
 # Dependencies
 zlib/
