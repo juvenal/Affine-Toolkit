@@ -37,6 +37,22 @@ Thumbs.db
 *.log
 *.tmp
 
+# In-tree test executables (built by old Makefile system)
+readrib/errtest
+readrib/hinttest
+readrib/readtest
+readrib/strmtest
+ribhash/cnsttest
+ribhash/cptest
+ribhash/hashtest
+ribhash/strtest
+
+# Generated test data files
+ribdump/dbltest.oct
+ribdump/dbltest.rib
+ribdump/flttest.oct
+ribdump/flttest.rib
+
 # Dependencies
 zlib/
 libtiff/
