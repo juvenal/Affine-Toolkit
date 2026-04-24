@@ -231,7 +231,7 @@ int RibReadParameterList( RIB_HANDLE hrib, int require,
 	     */
 	    goto ErrorCleanUpInlineList;
 	 }
-	 strcpy( c, name );
+	 memcpy( c, name, (size_t)l );
 	 _RibFree(s);
 	 s = c;
       }
