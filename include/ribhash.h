@@ -227,19 +227,19 @@ int
 #ifndef __FILE_HASH
 extern 
 #endif
-  void *RibMalloc( char *file, unsigned int line, unsigned int size );
+  void *RibMalloc( const char *file, unsigned int line, unsigned int size );
 
 
 #ifndef __FILE_HASH
 extern 
 #endif
-  void *RibRealloc( char *file, unsigned int line, void *p, 
+  void *RibRealloc( const char *file, unsigned int line, void *p,
                    unsigned int size );
 
 #ifndef __FILE_HASH
 extern 
 #endif
-  void RibFree( char *file, unsigned int line, void *p );
+  void RibFree( const char *file, unsigned int line, void *p );
 
 #define _RibMalloc(a)     RibMalloc(__FILE__,__LINE__,(a))
 #define _RibRealloc(a,b)  RibRealloc(__FILE__,__LINE__,(a),(b))
@@ -341,14 +341,14 @@ extern
 int 
    RibRemoveItem( RIB_HASHHND hash, PRIB_HASHATOM atom ),
    RibHashValueFromString( RIB_HASHHND hash, char* p ),
-   RibHashValueFromStringN( RIB_HASHHND hash, char *p, int n );
+   RibHashValueFromStringN( RIB_HASHHND hash, const char *p, int n );
 
 
 #ifndef __RIB_FILE_HASH
 extern 
 #endif
 RIB_UINT32
-   RibQueryClassType( RIB_HASHHND hash, char *variable, RIB_UINT32 *n );
+   RibQueryClassType( RIB_HASHHND hash, const char *variable, RIB_UINT32 *n );
 
 
 enum {
@@ -481,13 +481,13 @@ int RibMemoryTestStepOverAllowed( void );
 #ifndef __FILE_HASH
 extern 
 #endif
-int RibMemoryTestMalloc( char *file, unsigned int line,
+int RibMemoryTestMalloc( const char *file, unsigned int line,
                         void *p, unsigned int size );
 
 #ifndef __FILE_HASH
 extern 
 #endif
-int RibMemoryTestFree( char *file, unsigned int line, void *p );
+int RibMemoryTestFree( const char *file, unsigned int line, void *p );
 
 
 #ifndef __FILE_HASH

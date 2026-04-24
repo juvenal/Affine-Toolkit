@@ -94,7 +94,7 @@ static int HandleExpandInlineOption( PRIB_INSTANCE rib, PRIB_HASHATOM a )
    na = (char*)_RibMalloc( l );
    if (!na)
       return 1;
-   strcpy( na, a->data );
+   memcpy( na, a->data, l );
 
    /* Make a copy of the declaration string. */
    RibGetClassTypeNames( a->code, &cl, &ty );
@@ -110,9 +110,9 @@ static int HandleExpandInlineOption( PRIB_INSTANCE rib, PRIB_HASHATOM a )
    }
    
    if (a->with.n>1)
-      sprintf( de, "%s %s[%u]", cl, ty, a->with.n );
+      snprintf( de, l, "%s %s[%u]", cl, ty, a->with.n );
    else
-      sprintf( de, "%s %s", cl, ty );
+      snprintf( de, l, "%s %s", cl, ty );
 
    /* Send a Declare statement down the chain, so everyone knows
     *   what the new class and type is for the token.
@@ -379,7 +379,7 @@ PRIB_HASHATOM RibDeclare( RIB_HANDLE hrib, char *name, char *declaration )
       c = (char*)_RibMalloc( l );
       if (!c)
 	 goto Error;
-      strcpy( c, name );
+      memcpy( c, name, l );
       a->data = c;
    }
 

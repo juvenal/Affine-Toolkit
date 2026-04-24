@@ -149,7 +149,7 @@ int RibHashValueFromString( RIB_HASHHND hash, char *p )
 }
 
 
-int RibHashValueFromStringN( RIB_HASHHND hash, char *p, int n )
+int RibHashValueFromStringN( RIB_HASHHND hash, const char *p, int n )
 {
    auto int  hashvalue;
 
@@ -192,7 +192,7 @@ void RibFree( void *p )
 #else
 
 
-void *RibMalloc( char *file, unsigned int line, unsigned int size )
+void *RibMalloc( const char *file, unsigned int line, unsigned int size )
 {
    void *p;
 
@@ -213,7 +213,7 @@ void *RibMalloc( char *file, unsigned int line, unsigned int size )
 }
 
 
-void *RibRealloc( char *file, unsigned int line, void *p, unsigned int size )
+void *RibRealloc( const char *file, unsigned int line, void *p, unsigned int size )
 {
    void  *pp;
    PMEM_LIST  l;
@@ -256,7 +256,7 @@ void *RibRealloc( char *file, unsigned int line, void *p, unsigned int size )
 }
 
 
-void RibFree( char *file, unsigned int line, void *p )
+void RibFree( const char *file, unsigned int line, void *p )
 {
    if (!gPMemTest)
    {
@@ -381,7 +381,7 @@ int RibMemoryTestResults( PMEM_TEST p )
 }
 
 
-int RibMemoryTestMalloc( char *file, unsigned int line, 
+int RibMemoryTestMalloc( const char *file, unsigned int line, 
                         void *p, unsigned int size )
 {
    PMEM_LIST  l;
@@ -398,7 +398,7 @@ int RibMemoryTestMalloc( char *file, unsigned int line,
             l->line = line;
             l->size = size;
             l->p = p;
-            strcpy( l->file, file );
+            { size_t _lf = strlen(file)+1; memcpy( l->file, file, _lf ); }
             l->next = gPMemTest->memlist;
             gPMemTest->memlist = l;
             gPMemTest->nmalloc++;
@@ -415,7 +415,7 @@ int RibMemoryTestMalloc( char *file, unsigned int line,
 }
 
 
-int RibMemoryTestFree( char *file, unsigned int line, void *p )
+int RibMemoryTestFree( const char *file, unsigned int line, void *p )
 {
    PMEM_LIST  l,ll,lll;
    int first = 1;
@@ -457,7 +457,7 @@ int RibMemoryTestFree( char *file, unsigned int line, void *p )
                      lll->line = line;
                      lll->size = 0;
                      lll->p = p;
-                     strcpy( lll->file, file );
+                     { size_t _lf = strlen(file)+1; memcpy( lll->file, file, _lf ); }
                      lll->next = gPMemTest->stepoverlist;
                      gPMemTest->stepoverlist = lll;
                      gPMemTest->nstepovers++;
@@ -491,7 +491,7 @@ int RibMemoryTestFree( char *file, unsigned int line, void *p )
             l->line = line;
             l->size = 0;
             l->p = p;
-            strcpy( l->file, file );
+            { size_t _lf = strlen(file)+1; memcpy( l->file, file, _lf ); }
             l->next = gPMemTest->badfreelist;
             gPMemTest->badfreelist = l;
             gPMemTest->badfreecalls++;
@@ -941,7 +941,7 @@ int RibDestroyHashTableKeepData( RIB_HASHHND hash )
 }
 
 
-RIB_UINT32 RibQueryClassType( RIB_HASHHND hash, char *variable, 
+RIB_UINT32 RibQueryClassType( RIB_HASHHND hash, const char *variable, 
                              RIB_UINT32 *n )
 {
    register PRIB_HASHTABLE  h = (RIB_HASHHND)hash;

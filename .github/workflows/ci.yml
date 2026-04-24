@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build:
+    name: Build & Test (${{ matrix.os }}, ${{ matrix.compiler }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            compiler: gcc
+            cc: gcc
+            cxx: g++
+          - os: ubuntu-24.04
+            compiler: clang
+            cc: clang
+            cxx: clang++
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build \
+            zlib1g-dev libtiff-dev \
+            clang-tidy
+
+      - name: Configure (Release)
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          cmake -S . -B build/release \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build (Release)
+        run: cmake --build build/release --parallel
+
+      - name: Configure (Sanitizers)
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          cmake -S . -B build/asan \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DENABLE_SANITIZERS=ON
+
+      - name: Build (Sanitizers)
+        run: cmake --build build/asan --parallel
+
+  static-analysis:
+    name: Static Analysis (clang-tidy)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build zlib1g-dev libtiff-dev clang clang-tidy
+
+      - name: Configure
+        env:
+          CC: clang
+        run: |
+          cmake -S . -B build/tidy \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run clang-tidy
+        run: |
+          run-clang-tidy -p build/tidy \
+            -header-filter='include/.*\.h' \
+            $(find ribhash sribw readrib ributil ribdump tokentbl pcutil \
+                   examples -name '*.c' | sort) \
+            2>&1 | tee clang-tidy.log
+          # Fail if any warnings were emitted
+          ! grep -q "warning:" clang-tidy.log

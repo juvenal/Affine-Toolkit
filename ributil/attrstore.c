@@ -311,7 +311,7 @@ RtVoid AttrAttributeV( RtToken name,
       p->name = (char*)_RibMalloc(strlen(name)+1);
       if(!p->name)
 	return;
-      strcpy( p->name, name );
+      memcpy( p->name, name, strlen(name)+1 );
 
       p->property = (char*)_RibMalloc(strlen(tokens[i])+1);
       if(!p->property)
@@ -319,7 +319,7 @@ RtVoid AttrAttributeV( RtToken name,
 	 _RibFree(p->name);
 	 return;
       }
-      strcpy( p->property, tokens[i] );
+      memcpy( p->property, tokens[i], strlen(tokens[i])+1 );
 
       p->setting = (char*)_RibMalloc(strlen(parms[i])+1);
       if(!p->setting)
@@ -328,7 +328,7 @@ RtVoid AttrAttributeV( RtToken name,
 	 _RibFree(p->name);
 	 return;
       }
-      strcpy( (char*)p->setting, parms[i] );
+      memcpy( (char*)p->setting, parms[i], strlen(parms[i])+1 );
 
       p->prev = gAttr->last;
       p->next = NULL;
@@ -348,7 +348,7 @@ RtVoid AttrAttributeV( RtToken name,
 }
 
 
-void *AttrQueryAttribute( PATTR p, char *name, char *property )
+void *AttrQueryAttribute( PATTR p, const char *name, const char *property )
 {
    auto PATTRITEM  a;
 

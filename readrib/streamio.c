@@ -122,7 +122,7 @@
  *   Local Prototypes 
  *
  */
-static PRIB_INSTANCE RibOpenWith( char *filename, PRIB_INSTANCE prib, 
+static PRIB_INSTANCE RibOpenWith( const char *filename, PRIB_INSTANCE prib, 
                                  PRIB_INSTANCE parent, 
                                  PRIB_HASHTABLE hashtable );
 static int RibIncrementPchar( register PRIB_INSTANCE rib );
@@ -142,7 +142,7 @@ int  gRibNOpenSubfiles =  0; /* Number of presently opened subfiles. */
  * Refer to ribfunc.c's RibReadOptionV() for how archivesearchpath, 
  *    archivenamebuffer archivelmaxpath and archivelnamebuffer are set.
  */
-unsigned int RibFindFile( PRIB_INSTANCE prib, char *filename )
+unsigned int RibFindFile( PRIB_INSTANCE prib, const char *filename )
 {
 #ifndef WINDOWS_NT
    struct stat  statbuf;
@@ -198,7 +198,7 @@ unsigned int RibFindFile( PRIB_INSTANCE prib, char *filename )
       memcpy( b, filename, lfilename );
 
       if ( !stat( prib->archivenamebuffer, &statbuf )
-	   && !(statbuf.st_mode & S_IFDIR) )
+	   && !S_ISDIR(statbuf.st_mode) )
 	 return lfilename + lpath;
    } while (*p!='\0');
 
@@ -211,7 +211,7 @@ unsigned int RibFindFile( PRIB_INSTANCE prib, char *filename )
 }
 
 
-static PRIB_INSTANCE RibOpenWith( char *filename, 
+static PRIB_INSTANCE RibOpenWith( const char *filename, 
                                  PRIB_INSTANCE prib,
                                  PRIB_INSTANCE parent, 
                                  PRIB_HASHTABLE hashtable )
@@ -540,7 +540,7 @@ static PRIB_INSTANCE RibOpenWith( char *filename,
 }
 
 
-RIB_HANDLE RibOpen( char *filename, int rilevel, PRIB_RITABLE table )
+RIB_HANDLE RibOpen( const char *filename, int rilevel, PRIB_RITABLE table )
 {
    PRIB_INSTANCE  prib;
 
@@ -567,7 +567,7 @@ RIB_HANDLE RibOpen( char *filename, int rilevel, PRIB_RITABLE table )
 }
 
 
-RIB_HANDLE RibOpenSubfile( RIB_HANDLE hrib, char *filename )
+RIB_HANDLE RibOpenSubfile( RIB_HANDLE hrib, const char *filename )
 {
    auto PRIB_INSTANCE  rib = (PRIB_INSTANCE)hrib;
    auto PRIB_INSTANCE  prib;
@@ -589,7 +589,7 @@ RIB_HANDLE RibOpenSubfile( RIB_HANDLE hrib, char *filename )
 }
 
 
-RIB_HANDLE RibOpenWithHashTable( char *filename, PRIB_HASHTABLE hashtable )
+RIB_HANDLE RibOpenWithHashTable( const char *filename, PRIB_HASHTABLE hashtable )
 {
    auto PRIB_INSTANCE  prib;
 

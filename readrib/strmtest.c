@@ -389,7 +389,7 @@ int main( void )
       printf( "Called:  RibClose( rib ).\n" );
    }
 
-   strcpy( b, "./tests/#.asc" );
+   snprintf( b, sizeof(b), "%s", "./tests/#.asc" );
    s = strrchr( b, '#' );
    count = max+7;
    for ( i=0; i<count; i++ )

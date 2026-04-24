@@ -75,9 +75,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <stddef.h>
 
 
 #define MAX_COLUMN 8
+/* Safe append into the comment buffer s[], respecting remaining capacity. */
+#define SCAT(fmt, ...) \
+    do { int _n = snprintf(p, (size_t)(s + sizeof(s) - p), fmt, ##__VA_ARGS__); \
+         if (_n > 0 && p + _n < s + (ptrdiff_t)sizeof(s)) p += _n; } while(0)
 void PrintHelp( void );
 void PrintError( char *file );
 int PrintRIB( void );                    
@@ -89,7 +95,7 @@ int main(int argc, char **argv);
 
 /* globals */
 int   column;
-char  s[80];
+char  s[256];
 char  *p;
 int   OctalOnly;
 FILE  *fp;
@@ -271,7 +277,7 @@ int PrintRIB( void )
                   *p = '\0';
                }
                /* Print the 0314. */ 
-               p += sprintf( p, "<defreq " );
+               SCAT( "<defreq " );
                fprintf( fout, "%03o  ", c );
                column++; 
                PrintCommentColumn();        
@@ -283,7 +289,7 @@ int PrintRIB( void )
                  goto EndOfFile;
                
                /* Print the <code>. */   
-               p += sprintf( p, "%#3o ", c );
+               SCAT( "%#3o ", c );
                fprintf( fout, "%03o  ", c );
                column++;          
                PrintCommentColumn();
@@ -304,7 +310,7 @@ int PrintRIB( void )
                   *p++ = ' '; 
                   *p = '\0';
                }
-               p += sprintf( p, "<defstr " );
+               SCAT( "<defstr " );
                fprintf( fout, "%03o  ", c );
                column++; 
                PrintCommentColumn();           
@@ -338,7 +344,7 @@ int PrintRIB( void )
                
                tmp |= c;
                
-               p += sprintf( p, "%d ", tmp );
+               SCAT( "%d ", tmp );
                
                /* Print the string followed by a '>'. */
                if (PrintString(fp))
@@ -368,7 +374,7 @@ int PrintRIB( void )
                   *p++ = ' '; 
                   *p = '\0';
                }
-               p += sprintf( p, "<str " );
+               SCAT( "<str " );
                fprintf( fout, "%03o  ", c );
                column++; 
                PrintCommentColumn();           
@@ -387,7 +393,7 @@ int PrintRIB( void )
                   tmp = tmp << 8;
                   tmp |= c;
                }
-               p += sprintf( p, "%d>", tmp );
+               SCAT( "%d>", tmp );
             }
             /* Handle referencing defined RI request. */
             /* 0246 | <code> */
@@ -399,7 +405,7 @@ int PrintRIB( void )
                   *p++ = ' '; 
                   *p = '\0';
                }
-               p += sprintf( p, "<req " );
+               SCAT( "<req " );
                fprintf( fout, "%03o  ", c );
                column++; 
                PrintCommentColumn();           
@@ -409,7 +415,7 @@ int PrintRIB( void )
                if (EOF == c)
                  goto EndOfFile;
                fprintf( fout, "%03o  ", c );
-               p += sprintf( p, "%#o>", c );
+               SCAT( "%#o>", c );
                column++; 
                PrintCommentColumn();           
             }
@@ -458,7 +464,7 @@ int PrintRIB( void )
                if ( d ) 
                {
                   flt = (double)tmp / (double)( 1 << (d * 8) );        
-                  p += sprintf( p, "%g", flt );
+                  SCAT( "%g", flt );
                }
                else 
                {
@@ -466,7 +472,7 @@ int PrintRIB( void )
                    *    the decimal and the value is just an integer.
                    * So get the extra accuracy of using %d and not %g.
                    */
-                  p += sprintf( p, "%d", tmp );
+                  SCAT( "%d", tmp );
                }
                PrintCommentColumn();           
             }
@@ -541,7 +547,7 @@ int PrintRIB( void )
                }
                
                /* Read all <length> number of floats. */
-               p += sprintf( p, " [" );
+               SCAT( " [" );
                
                for ( i=0; i < utmp; i++ )
                {
@@ -554,12 +560,12 @@ int PrintRIB( void )
                   if (PrintEncodedFloatingPoint( fp , sizeof(float) ))
                     goto EndOfFile;
                }
-               p += sprintf( p, "]" );
+               SCAT( "]" );
                PrintCommentColumn();
             }
             else
             {            
-               p += sprintf( p, "*" );
+               SCAT( "*" );
                fprintf( fout, "%3o  ", c );
                column++;
             }
@@ -728,47 +734,47 @@ int PrintCharacter( char c )
    switch (c)
    {
     case '\0':
-      p += sprintf( p, "*" );
+      SCAT( "*" );
       fprintf( fout, " \\0  " );
       column++;
       break;
     case '\n':
-      p += sprintf( p, "\\n" );
+      SCAT( "\\n" );
       fprintf( fout, " \\n  " );
       column++;
       break;
     case '\r':
-      p += sprintf( p, "\\r" );
+      SCAT( "\\r" );
       fprintf( fout, " \\r  " );
       column++;
       break;
     case '\b':
-      p += sprintf( p, "\\b" );
+      SCAT( "\\b" );
       fprintf( fout, " \\b  " );
       column++;
       break;
     case '\t':
-      p += sprintf( p, "\\t" );
+      SCAT( "\\t" );
       fprintf( fout, " \\t  " );
       column++;
       break;
     case '\f':
-      p += sprintf( p, "\\f" );
+      SCAT( "\\f" );
       fprintf( fout, " \\f  " );
       column++;
       break;
     case '\\':
-      p += sprintf( p, "\\" );
+      SCAT( "\\" );
       fprintf( fout, "  \\  " );
       column++;
       break;
     case '\"':
-      p += sprintf( p, "\"" );
+      SCAT( "\"" );
       fprintf( fout, "  \"  " );
       column++;
       break;
     case ' ':
-      p += sprintf( p, " " );
+      SCAT( " " );
       fprintf( fout, "%03o  ", c );
       column++;
       break;
@@ -833,7 +839,7 @@ int PrintEncodedFloatingPoint( FILE *fp, int size )
       }
    }
 
-   p += sprintf( p, "%g", dbl );
+   SCAT( "%g", dbl );
 
    return 0;
 }

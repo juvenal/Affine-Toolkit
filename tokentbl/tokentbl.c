@@ -235,7 +235,7 @@ int main(int argc, char **argv)
 	    vars++;
 	    c = s[0];
 	 }
-	 strcpy( &t[NameIndex][0], s ); 
+	 snprintf( &t[NameIndex][0], 255, "%s", s );
 	 NameIndex++;
       } while (EOF!=ReadLine(fp,255,s));
       printf( "\nchar %s_%c[] = {\n", TableName, (c!=' ' ? c : '_') );
@@ -259,7 +259,7 @@ int main(int argc, char **argv)
 
       do
       {
-	 strcpy( &t[NameIndex][0], s ); 
+	 snprintf( &t[NameIndex][0], 255, "%s", s );
 	 NameIndex++;
       } while (EOF!=ReadLine(fp,255,s));
 

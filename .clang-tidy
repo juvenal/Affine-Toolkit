@@ -1,0 +1,41 @@
+---
+# Clang-tidy configuration for Affine Toolkit (C17 codebase)
+#
+# Run: clang-tidy --config-file=.clang-tidy <file> -- -std=c17 -I include -D_POSIX_C_SOURCE=200809L
+# Or via cmake: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..  && run-clang-tidy
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  bugprone-*,
+  cert-*,
+  misc-*,
+  performance-*,
+  portability-*,
+  readability-identifier-naming,
+  -bugprone-easily-swappable-parameters,
+  -cert-err34-c,
+  -misc-no-recursion,
+
+# Treat all enabled checks as errors except informational ones
+WarningsAsErrors: ''
+
+HeaderFilterRegex: 'include/.*\.(h|hpp)$'
+
+CheckOptions:
+  # Naming conventions (match existing codebase style: PascalCase for types,
+  # camelCase for functions, kPrefix for constants)
+  - key: readability-identifier-naming.TypedefCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+
+  # bugprone thresholds
+  - key: bugprone-sizeof-expression.WarnOnSizeOfIntegerExpression
+    value: 'true'
+  - key: bugprone-too-small-loop-variable.MagnitudeBitsUpperLimit
+    value: '16'
+...

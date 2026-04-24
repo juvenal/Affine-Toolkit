@@ -145,12 +145,12 @@ int main(int argc, char **argv) {
     if (i < argc) {
         while (i < argc) {
             if (edit) {
-                strcpy(tmpfilename, argv[i]);
                 j = strlen(argv[i]);
                 if (j >= FILENAME_MAX) {
                     fprintf(stderr, "Error: File name too long: %s\n", argv[i]);
                     return 1;
                 }
+                snprintf(tmpfilename, sizeof(tmpfilename), "%s", argv[i]);
                 tmpfilename[j] = '~';
                 tmpfilename[j+1] = '\0';
                 if (rename(argv[i], tmpfilename)) {

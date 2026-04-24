@@ -465,10 +465,11 @@ static void AddToHashTable( char *name, int classNtype, int n )
    if (!h)
      return;
    
-   p = (char*)malloc(strlen(name)+1);
+   { size_t _l = strlen(name)+1;
+   p = (char*)malloc(_l);
    if (!p)
       return;
-   strcpy( p, name );
+   memcpy( p, name, _l ); }
 
    h->name = p;
    h->next = hashtable[hashvalue];

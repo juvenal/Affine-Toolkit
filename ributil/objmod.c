@@ -332,11 +332,12 @@ RtVoid AttributeV( RtToken name,
 	 {
 	    if (nupatchname)
 	      _RibFree(nupatchname);
-	    nupatchname = (char*)_RibMalloc( strlen(*(char**)parms[i]) + 1 );
+	    { size_t _l = strlen(*(char**)parms[i]) + 1;
+	    nupatchname = (char*)_RibMalloc( _l );
 	    if (!nupatchname)
 	      return;
 	    NameMatchLevel = presentlevel;
-	    strcpy( nupatchname, *(char**)parms[i] );
+	    memcpy( nupatchname, *(char**)parms[i], _l ); }
 	 }
       }
    }

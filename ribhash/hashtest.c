@@ -344,7 +344,7 @@ int main(int argc, char **argv)
 
    /* Add a variable with an array declaration and a malloced string. */
    s = (char*)malloc(sizeof(str));
-   strcpy( s, str );
+   memcpy( s, str, sizeof(str) );
    p = RibAddItem( hash, kRIB_HASH_VARIABLE | kRIB_HASH_FREEDATA, 
                    kRIB_VERTEXCLASS | kRIB_POINTTYPE | kRIB_ARRAY_DECLARED,
                    s, 12 );

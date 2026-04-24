@@ -313,7 +313,7 @@ char *gRibRITokenTables[] = {
 };
 
 
-int RibGetRIFromString( char *s )
+int RibGetRIFromString( const char *s )
 {
    char      *p;
    auto int  c;

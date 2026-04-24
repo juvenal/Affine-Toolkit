@@ -2005,8 +2005,9 @@ char *ReplacementFilePathName( char *name )
       /* Replace entire name if match. */
       if (!strcmp( pfn->oldname, name ))
       {
-	 s = (char*)_RibMalloc( strlen(pfn->newname)+1 );
-	 strcpy( s, pfn->newname );
+	 { size_t _l = strlen(pfn->newname)+1;
+	 s = (char*)_RibMalloc( _l );
+	 memcpy( s, pfn->newname, _l ); }
       }
       break;
     default:
@@ -2014,10 +2015,11 @@ char *ReplacementFilePathName( char *name )
       l = (int)strlen(pfn->oldname);
       if (!strncmp( pfn->oldname, name, l ))
       {
-	 s = (char*)_RibMalloc( strlen(pfn->newname)+(strlen(name)-l)+1);
-	 p = s + strlen(pfn->newname);
-	 strcpy( s, pfn->newname );
-	 strcpy( p, name+l );
+	 { size_t _nl = strlen(pfn->newname); size_t _rl = strlen(name)-l;
+	 s = (char*)_RibMalloc( _nl + _rl + 1);
+	 p = s + _nl;
+	 memcpy( s, pfn->newname, _nl );
+	 memcpy( p, name+l, _rl + 1 ); }
       }
    }
 

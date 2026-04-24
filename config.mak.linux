@@ -93,5 +93,12 @@ COPTS=-DRIB_ZLIB
 
 AR= ar rc
 
+# Optional sanitizer flags — set SANITIZE=1 to enable AddressSanitizer and
+# UndefinedBehaviorSanitizer: make SANITIZE=1 toolkit
+ifeq ($(SANITIZE),1)
+CFLAGS += -fsanitize=address,undefined -fno-omit-frame-pointer
+LFLAGS += -fsanitize=address,undefined
+endif
+
 .c.o:
-	${CC} -c $< ${CFLAGS} ${CFLAGS32} ${COPTS} ${INCPATH} 
+	${CC} -c $< ${CFLAGS} ${CFLAGS32} ${COPTS} ${INCPATH}

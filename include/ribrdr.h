@@ -649,17 +649,17 @@ char *RibGetLibraryVersionName( void );
 #ifndef  __RIB_FILE_RIBTBL
 extern
 #endif
-int RibGetRIFromString( char *s );
+int RibGetRIFromString( const char *s );
 
 #ifndef __RIB_FILE_STREAMIO
 extern  
 #endif
-unsigned int RibFindFile( PRIB_INSTANCE prib, char *filename );
+unsigned int RibFindFile( PRIB_INSTANCE prib, const char *filename );
 
 #ifndef __RIB_FILE_STREAMIO
 extern  
 #endif
-RIB_HANDLE RibOpen( char *filename, int ri_level, PRIB_RITABLE table );
+RIB_HANDLE RibOpen( const char *filename, int ri_level, PRIB_RITABLE table );
 
 /* The following two calls are internal and are exported for testing. */
 #ifndef __RIB_FILE_STREAMIO
@@ -672,13 +672,13 @@ int
 #ifndef __RIB_FILE_STREAMIO
 extern  
 #endif
-RIB_HANDLE RibOpenWithHashTable( char *filename, PRIB_HASHTABLE hashtable );
+RIB_HANDLE RibOpenWithHashTable( const char *filename, PRIB_HASHTABLE hashtable );
 
 /* The following is for recursive opening such as for ##include hints. */
 #ifndef __RIB_FILE_STREAMIO
 extern  
 #endif
-RIB_HANDLE RibOpenSubfile( RIB_HANDLE rib, char *filename );
+RIB_HANDLE RibOpenSubfile( RIB_HANDLE rib, const char *filename );
 
 #ifndef __RIB_FILE_READRIB
 extern  

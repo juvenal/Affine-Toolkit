@@ -82,7 +82,7 @@ typedef struct _ATTRITEM {
     struct _ATTRITEM  *prev;
     struct _ATTRITEM  *next;
 } ATTRITEM;
-typedef (ATTRITEM *) PATTRITEM;
+typedef ATTRITEM *PATTRITEM;
 
 
 typedef struct _ATTR {
@@ -127,7 +127,7 @@ EXTERN int AttrSetFlags(PATTR p,
 EXTERN RIB_UINT32 AttrGetFlags(PATTR p);
 EXTERN PATTRITEM AttrGetFirstAttribute(PATTR p);
 EXTERN PATTRITEM AttrGetLastAttribute(PATTR p);
-EXTERN void *AttrQueryAttribute(PATTR p, char *name, char *property);
+EXTERN void *AttrQueryAttribute(PATTR p, const char *name, const char *property);
 EXTERN int AttrBeginBlock(PATTR p);
 EXTERN int AttrEndBlock(PATTR p);
 EXTERN int AttrDestroy(PATTR p);
