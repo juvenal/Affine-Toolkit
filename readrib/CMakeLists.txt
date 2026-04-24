@@ -32,4 +32,29 @@ foreach(test strmtest errtest readtest hinttest)
     endif()
 endforeach()
 
-install(TARGETS ribrdr ARCHIVE DESTINATION lib)
+install(TARGETS ribrdr sribrdr ARCHIVE DESTINATION lib)
+
+# CTest — all tests need WORKING_DIRECTORY to resolve ./tests/*.asc paths
+# strmtest always exits 0; filter its output for obvious failure strings
+if(TARGET strmtest)
+    add_test(NAME readrib_strmtest COMMAND strmtest)
+    set_tests_properties(readrib_strmtest PROPERTIES
+        FAIL_REGULAR_EXPRESSION "^Error|FAIL"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+# errtest intentionally prints ERROR: messages to exercise the error handler;
+# those are expected output, not failures — rely on exit code only
+if(TARGET errtest)
+    add_test(NAME readrib_errtest COMMAND errtest)
+    set_tests_properties(readrib_errtest PROPERTIES
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+foreach(t readtest hinttest)
+    if(TARGET ${t})
+        add_test(NAME readrib_${t} COMMAND ${t})
+        set_tests_properties(readrib_${t} PROPERTIES
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+endforeach()

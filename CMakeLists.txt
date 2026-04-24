@@ -35,12 +35,32 @@ if(ENABLE_SANITIZERS)
     add_link_options(-fsanitize=address,undefined)
 endif()
 
+# ── Optional code coverage ─────────────────────────────────────────────────────
+option(ENABLE_COVERAGE "Build with gcov/lcov code coverage instrumentation" OFF)
+if(ENABLE_COVERAGE)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+        add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
+        add_link_options(--coverage)
+    endif()
+endif()
+
+# ── Optional fuzzing ───────────────────────────────────────────────────────────
+option(ENABLE_FUZZING "Build libFuzzer fuzz targets" OFF)
+if(ENABLE_FUZZING)
+    if(NOT CMAKE_C_COMPILER_ID MATCHES "Clang|AppleClang")
+        message(FATAL_ERROR "ENABLE_FUZZING requires Clang (libFuzzer is Clang-only)")
+    endif()
+endif()
+
 # ── Dependencies ───────────────────────────────────────────────────────────────
 find_package(ZLIB REQUIRED)
 find_package(TIFF)          # Optional — only needed for pixNtiff tools
 
 # ── Include paths ──────────────────────────────────────────────────────────────
 include_directories(${CMAKE_SOURCE_DIR}/include)
+
+# ── Testing — must be enabled before add_subdirectory ─────────────────────────
+enable_testing()
 
 # ── Subdirectories ─────────────────────────────────────────────────────────────
 add_subdirectory(ribhash)
@@ -54,6 +74,10 @@ if(TIFF_FOUND)
     add_subdirectory(pixNtiff)
 endif()
 add_subdirectory(examples)
+add_subdirectory(tests)
+if(ENABLE_FUZZING)
+    add_subdirectory(fuzz)
+endif()
 
 # ── Installation layout ────────────────────────────────────────────────────────
 include(GNUInstallDirs)

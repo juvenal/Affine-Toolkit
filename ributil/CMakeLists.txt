@@ -44,3 +44,20 @@ target_link_libraries(ribobjmod PRIVATE ributil)
 
 install(TARGETS ributil ribattrstore ribtrimstore ribnop ARCHIVE DESTINATION lib)
 install(TARGETS typerib ribbish ribfixer RUNTIME DESTINATION bin)
+
+# ── Test executables ───────────────────────────────────────────────────────────
+
+add_executable(attrtest attrtest.c)
+target_link_libraries(attrtest PRIVATE ributil ribattrstore)
+
+add_executable(trimtest trimtest.c)
+target_link_libraries(trimtest PRIVATE ributil ribtrimstore)
+
+add_test(NAME ributil_attrtest COMMAND attrtest)
+set_tests_properties(ributil_attrtest PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_test(NAME ributil_trimtest COMMAND trimtest)
+set_tests_properties(ributil_trimtest PROPERTIES
+    FAIL_REGULAR_EXPRESSION "[Ee]rror|FAIL"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

@@ -47,6 +47,9 @@ jobs:
       - name: Build (Release)
         run: cmake --build build/release --parallel
 
+      - name: Test (Release)
+        run: ctest --test-dir build/release --output-on-failure --parallel 4
+
       - name: Configure (Sanitizers)
         env:
           CC: ${{ matrix.cc }}
@@ -59,6 +62,53 @@ jobs:
 
       - name: Build (Sanitizers)
         run: cmake --build build/asan --parallel
+
+      - name: Test (Sanitizers)
+        run: ctest --test-dir build/asan --output-on-failure --parallel 4
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build zlib1g-dev lcov
+
+      - name: Configure (Coverage)
+        run: |
+          cmake -S . -B build/cov \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DENABLE_COVERAGE=ON
+
+      - name: Build
+        run: cmake --build build/cov --parallel
+
+      - name: Run tests
+        run: ctest --test-dir build/cov --output-on-failure --parallel 4
+
+      - name: Generate coverage report
+        run: |
+          lcov --capture \
+               --directory build/cov \
+               --output-file build/cov/coverage.info \
+               --no-external
+          lcov --remove build/cov/coverage.info \
+               '*/tests/*' \
+               --output-file build/cov/coverage_filtered.info
+          genhtml build/cov/coverage_filtered.info \
+                  --output-directory build/cov/html
+          lcov --summary build/cov/coverage_filtered.info
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/cov/html/
 
   static-analysis:
     name: Static Analysis (clang-tidy)
@@ -86,7 +136,27 @@ jobs:
           run-clang-tidy -p build/tidy \
             -header-filter='include/.*\.h' \
             $(find ribhash sribw readrib ributil ribdump tokentbl pcutil \
-                   examples -name '*.c' | sort) \
+                   examples tests -name '*.c' | sort) \
             2>&1 | tee clang-tidy.log
           # Fail if any warnings were emitted
           ! grep -q "warning:" clang-tidy.log
+
+  docs:
+    name: Documentation (Doxygen)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends doxygen graphviz
+
+      - name: Generate docs
+        run: doxygen Doxyfile
+
+      - name: Upload docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-docs
+          path: docs/html/

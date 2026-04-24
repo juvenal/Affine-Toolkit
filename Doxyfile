@@ -1,0 +1,43 @@
+PROJECT_NAME           = "Affine Toolkit"
+PROJECT_NUMBER         = 3.11.4
+PROJECT_BRIEF          = "RenderMan RIB reader/writer libraries and utilities"
+
+# Input
+INPUT                  = include README.md
+FILE_PATTERNS          = *.h *.md
+RECURSIVE              = NO
+EXCLUDE_PATTERNS       = riprivf.h ripriv.h
+
+# Output
+OUTPUT_DIRECTORY       = docs
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HTML_OUTPUT            = html
+USE_MDFILE_AS_MAINPAGE = README.md
+
+# Extraction
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+SHOW_INCLUDE_FILES     = YES
+JAVADOC_AUTOBRIEF      = YES
+
+# Graphs (requires graphviz dot)
+HAVE_DOT               = YES
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+INCLUDE_GRAPH          = YES
+CLASS_DIAGRAMS         = YES
+
+# Warnings — treat all warnings as errors for CI
+WARN_IF_UNDOCUMENTED   = NO
+WARN_AS_ERROR          = NO
+
+# Preprocessing
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+PREDEFINED             = RIB_ZLIB \
+                         __RIB_FILE_STREAMIO \
+                         __RIB_FILE_HASH \
+                         __RIB_FILE_RIBTBL \
+                         __RIB_READRIB_FILE \
+                         __RIB_ATTRSTORE_FILE

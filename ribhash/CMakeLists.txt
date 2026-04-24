@@ -37,4 +37,18 @@ target_link_libraries(cptest PRIVATE ribhash)
 add_executable(isaprime isaprime.c)
 target_link_libraries(isaprime PRIVATE m)
 
-install(TARGETS ribhash ARCHIVE DESTINATION lib)
+install(TARGETS ribhash sribhash ARCHIVE DESTINATION lib)
+
+# CTest registrations
+# hashtest/strtest/cnsttest print "Error" prefixed messages on failure
+foreach(t hashtest strtest cnsttest)
+    add_test(NAME ribhash_${t} COMMAND ${t})
+    set_tests_properties(ribhash_${t} PROPERTIES
+        FAIL_REGULAR_EXPRESSION "^Error"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endforeach()
+
+# cptest outputs Ri function names including RiError* — don't filter on "Error"
+add_test(NAME ribhash_cptest COMMAND cptest)
+set_tests_properties(ribhash_cptest PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
