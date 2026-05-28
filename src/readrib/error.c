@@ -187,13 +187,13 @@ int RibDefaultErrorHandler( RIB_HANDLE hrib, int code, int severity,
       {
          if (rib->status & kRIB_STATUS_ENCODEDDATA)
          {
-            fprintf( stderr, "%s: \"%s\", line %u: byte offset %u: %s.\n",
+            fprintf( stderr, "%s: \"%s\", line %zu: byte offset %zu: %s.\n",
                     severities[severity], rib->filename, rib->linecount, 
                     rib->byteoffset-1, s );
          }
          else
          {
-            fprintf( stderr, "%s: \"%s\", line %u: %s.\n",
+            fprintf( stderr, "%s: \"%s\", line %zu: %s.\n",
                     severities[severity], rib->filename, rib->linecount, s );
          }
       }

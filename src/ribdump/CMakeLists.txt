@@ -4,6 +4,7 @@ set(RIBDUMP_SOURCES
 
 add_executable(ribdump ${RIBDUMP_SOURCES})
 target_include_directories(ribdump PRIVATE .)
+install(TARGETS ribdump RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Utilities mentioned in Makefile.unix
 set(UTILS
@@ -20,4 +21,5 @@ set(UTILS
 
 foreach(UTIL ${UTILS})
     add_executable(${UTIL} ${UTIL}.c)
+    install(TARGETS ${UTIL} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()

@@ -128,16 +128,20 @@ int main(int argc, char **argv)
       {
 	 n = tiff->yres * tiff->rowbytes;
 	 p8 = tiff->pbits;
-	 for ( j=0; j<n; j++ )
-	    *p8++ = 0xff - *p8;	 
+	 for ( j=0; j<n; j++ ) {
+	    *p8 = 0xff - *p8;
+	    p8++;
+	 }
       }
       else /* tiff->sampleformat==BITMAP_UINT16 */
       {
 	 n = tiff->xres * tiff->nsamples;
 	 p16 = (uint16*)tiff->pbits;
 	 for ( y=0; y<tiff->yres; y++ )
-	    for ( x=0; x<n; x++ )
-	       *p16++ = 0xffff - *p16;	 
+	    for ( x=0; x<n; x++ ) {
+	       *p16 = 0xffff - *p16;
+	       p16++;
+	    }
       }
 
       if (WriteTiff( tiff, argv[i] ))

@@ -1,8 +1,7 @@
-add_library(sribw STATIC
+add_affine_library(sribw
     write.c
     constant.c
 )
-target_include_directories(sribw PUBLIC . ${CMAKE_SOURCE_DIR}/include)
 
 # testrib
 add_executable(testrib
@@ -10,3 +9,4 @@ add_executable(testrib
     test3_7.c
 )
 target_link_libraries(testrib sribw)
+install(TARGETS testrib RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

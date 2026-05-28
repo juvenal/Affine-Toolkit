@@ -29,16 +29,59 @@ configure_file(
     "${CMAKE_CURRENT_BINARY_DIR}/config.h"
 )
 
+include(GNUInstallDirs)
+
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/include")
+
+macro(add_affine_library target_name)
+    # Static version
+    add_library(${target_name}_static STATIC ${ARGN})
+    set_target_properties(${target_name}_static PROPERTIES OUTPUT_NAME ${target_name})
+    
+    # Shared/Dynamic version
+    add_library(${target_name}_shared SHARED ${ARGN})
+    set_target_properties(${target_name}_shared PROPERTIES 
+        OUTPUT_NAME ${target_name}
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+        MACHO_COMPATIBILITY_VERSION ${PROJECT_VERSION_MAJOR}.0.0
+        MACHO_CURRENT_VERSION ${PROJECT_VERSION}
+    )
+    if(APPLE)
+        set_target_properties(${target_name}_shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    endif()
+    
+    target_include_directories(${target_name}_static PUBLIC . "${CMAKE_SOURCE_DIR}/src/include")
+    target_include_directories(${target_name}_shared PUBLIC . "${CMAKE_SOURCE_DIR}/src/include")
+    
+    # Install both
+    install(TARGETS ${target_name}_static ${target_name}_shared
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    
+    # Default alias for internal linking
+    add_library(${target_name} ALIAS ${target_name}_shared)
+endmacro()
+
+macro(affine_target_link_libraries target_name)
+    target_link_libraries(${target_name}_static ${ARGN})
+    target_link_libraries(${target_name}_shared ${ARGN})
+endmacro()
+
 
 add_subdirectory(src/3dtorib)
-add_subdirectory(ribdump)
-add_subdirectory(ribhash)
-add_subdirectory(sribw)
-add_subdirectory(readrib)
-add_subdirectory(ributil)
-add_subdirectory(tokentbl)
-add_subdirectory(pcutil)
-add_subdirectory(examples)
-add_subdirectory(pixNtiff)
+add_subdirectory(src/ribdump)
+add_subdirectory(src/ribhash)
+add_subdirectory(src/sribw)
+add_subdirectory(src/readrib)
+add_subdirectory(src/ributil)
+add_subdirectory(src/tokentbl)
+add_subdirectory(src/pcutil)
+add_subdirectory(src/pixNtiff)
+add_subdirectory(docs/examples)
+
+install(DIRECTORY src/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/affine)
+install(DIRECTORY docs/ DESTINATION ${CMAKE_INSTALL_DOCDIR})
+install(FILES README.md LICENSE DESTINATION ${CMAKE_INSTALL_DOCDIR})

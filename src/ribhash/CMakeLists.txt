@@ -9,8 +9,7 @@ set(RIBHASH_SOURCES
     tables.c
 )
 
-add_library(ribhash STATIC ${RIBHASH_SOURCES})
-target_include_directories(ribhash PUBLIC . ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+add_affine_library(ribhash ${RIBHASH_SOURCES})
 
 # SRIBHASH (subset)
 set(SRIBHASH_SOURCES
@@ -22,18 +21,22 @@ set(SRIBHASH_SOURCES
     names.c
     tables.c
 )
-add_library(sribhash STATIC ${SRIBHASH_SOURCES})
-target_include_directories(sribhash PUBLIC . ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+add_affine_library(sribhash ${SRIBHASH_SOURCES})
 
 # Individual libs
-add_library(ribconst STATIC constant.c)
-add_library(ribtables STATIC tables.c)
-add_library(ribmsg STATIC errormsg.c)
-add_library(ribcparm STATIC cparams.c names.c)
+add_affine_library(ribconst constant.c)
+
+# Link sribhash against ribconst to resolve symbols for shared library
+affine_target_link_libraries(sribhash PUBLIC ribconst)
+
+add_affine_library(ribtables tables.c)
+add_affine_library(ribmsg errormsg.c)
+add_affine_library(ribcparm cparams.c names.c)
 
 # Binary
 add_executable(isaprime isaprime.c)
 target_link_libraries(isaprime m) # Link math library
+install(TARGETS isaprime RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Tests
 add_executable(hashtest hashtest.c)

@@ -6,6 +6,7 @@ add_executable(3dtorib
 )
 
 target_include_directories(3dtorib PRIVATE .)
+install(TARGETS 3dtorib RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Add tests
 enable_testing()

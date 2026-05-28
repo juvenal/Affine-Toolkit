@@ -239,7 +239,7 @@ PBITMAP ReadIff( char *filename, unsigned int iffflags )
       }
       else
       {
-	 printf( ErrSampleFormat );
+	 printf( "%s", ErrSampleFormat );
 	 goto Error;
       }
 
@@ -265,13 +265,13 @@ PBITMAP ReadIff( char *filename, unsigned int iffflags )
 
       if (bytes!=0)
       {
-	 printf( ErrSampleFormat );
+	 printf( "%s", ErrSampleFormat );
 	 goto Error;
       }
    }
    else
    {
-      printf( ErrSampleFormat );
+      printf( "%s", ErrSampleFormat );
       goto Error;
    }
 

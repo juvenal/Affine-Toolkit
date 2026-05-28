@@ -245,7 +245,7 @@ PBITMAP DetectEdges( int n, char *filenames[], float threshold )
 			      1, BITMAP_UINT8, 8 );
 	 if (!pBmp)
          {
-	    printf( MemError );
+	    printf( "%s", MemError );
             return NULL;
          }
          memset( pBmp->pbits, 0, pBmp->xres*pBmp->yres*sizeof(char) );
@@ -273,14 +273,14 @@ PBITMAP DetectEdges( int n, char *filenames[], float threshold )
 				    1, BITMAP_UINT8, 8 );
             if (!rgba[i])
             {
-               printf( MemError );
+               printf( "%s", MemError );
                return NULL;
             }
 	    tmp[i] = CreateBitmap( tiff->xres, tiff->yres, 0, 0, 
 				   1, BITMAP_UINT8, 8 );
             if (!tmp[i])
             {
-               printf( MemError );
+               printf( "%s", MemError );
                return NULL;
             }
             /* Copy channel to greyscale bitmap. */
@@ -329,7 +329,7 @@ PBITMAP DetectEdges( int n, char *filenames[], float threshold )
 				1, BITMAP_UINT8, 8 );
          if (!tmp[0])
          {
-            printf( MemError );
+            printf( "%s", MemError );
             return NULL;
          }
          

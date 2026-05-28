@@ -16,35 +16,36 @@ set(TABLEOBJS ritable.c)
 set(ERROROBJS error.c)
 
 # libribrdr
-add_library(ribrdr STATIC 
+add_affine_library(ribrdr 
     ${RDROBJS} 
     ${TABLEOBJS} 
     ${ERROROBJS}
 )
-target_link_libraries(ribrdr PUBLIC ribhash sribw ZLIB::ZLIB)
-target_include_directories(ribrdr PUBLIC . ${CMAKE_SOURCE_DIR}/include)
-
-# libsribrdr
-add_library(sribrdr STATIC ${RDROBJS})
-target_include_directories(sribrdr PUBLIC . ${CMAKE_SOURCE_DIR}/include)
+affine_target_link_libraries(ribrdr PUBLIC ribhash sribw ZLIB::ZLIB)
 
 # libribtable
-add_library(ribtable STATIC ${TABLEOBJS})
-target_include_directories(ribtable PUBLIC . ${CMAKE_SOURCE_DIR}/include)
+add_affine_library(ribtable ${TABLEOBJS})
 
 # libriberror
-add_library(riberror STATIC ${ERROROBJS})
-target_include_directories(riberror PUBLIC . ${CMAKE_SOURCE_DIR}/include)
+add_affine_library(riberror ${ERROROBJS})
+
+# libsribrdr
+add_affine_library(sribrdr ${RDROBJS})
+affine_target_link_libraries(sribrdr PUBLIC ribhash sribw ZLIB::ZLIB)
 
 # Tests
 add_executable(strmtest strmtest.c)
 target_link_libraries(strmtest ribrdr ribhash ZLIB::ZLIB)
+install(TARGETS strmtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_executable(readtest readtest.c)
 target_link_libraries(readtest ribrdr sribhash sribw ZLIB::ZLIB)
+install(TARGETS readtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_executable(hinttest hinttest.c)
 target_link_libraries(hinttest ribrdr sribhash sribw ZLIB::ZLIB)
+install(TARGETS hinttest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_executable(errtest errtest.c)
 target_link_libraries(errtest riberror ribmsg)
+install(TARGETS errtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

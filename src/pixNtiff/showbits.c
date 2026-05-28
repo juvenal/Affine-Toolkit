@@ -367,7 +367,7 @@ int GetFileType( char *filename )
       if ( fread( b, 1, 4, fp ) == 4 )
       {
          if ( b[2]==0 && b[3]==0x2A 
-             && ((b[0]=='M'&&b[1]=='M')||(b[0]=='II'&&b[1]=='I')) )
+             && ((b[0]=='M'&&b[1]=='M')||(b[0]=='I'&&b[1]=='I')) )
          {
             filetype = TIFF_FILETYPE;
          }
