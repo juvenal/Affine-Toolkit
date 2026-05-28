@@ -49,22 +49,31 @@
 #include "bitmap.h"
 #include "rtiff.h"
 #include "wiff.h"
+#include "config.h"
 
 
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 int main(int argc, char **argv);
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
-   printf( "tiff2iff [-d] [-8] [-16] tiff_filename tiff_filename\n"           \
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s [-d] [-8] [-16] tiff_filename iff_filename\n"           \
+          "  -v, --version        Show version information\n"                 \
+          "  -h, --help           Show this help message\n"                   \
 	   "   -d                   Do not compress data (RLE is default).\n" \
 	   "   -8                   Convert 16 bit TIFF to 8 bit IFF.\n"      \
 	   "   -16                  Convert 8 bit TIFF to 16 bit IFF.\n"      \
 	   "   tiff_filename        TIFF file to read from.\n"                \
-	   "   iff_filename         IFF file to write to.\n" );
+	   "   iff_filename         IFF file to write to.\n", toolname );
 }
 
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+}
 
 int main(int argc, char **argv) 
 {
@@ -72,11 +81,22 @@ int main(int argc, char **argv)
    int           rle = 1;
    int           i, s, t;
    unsigned int  flags = 0;
+   const char *toolname = "tiff2iff";
 
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    if ( argc < 3 )
    {
-      PrintHelp();
+      PrintHelp(toolname);
       return 1;
    }
 
@@ -99,7 +119,7 @@ int main(int argc, char **argv)
          }
          else
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
       }

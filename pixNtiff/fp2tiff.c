@@ -47,14 +47,39 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "config.h"
 #include "bitmap.h"
 #include "wtiff.h"
 
 
-void PrintHelp( void );
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 void PrintError( char *file );
 int ConvertToTiff( FILE *fp, char *outputfilename, int xres, int yres );
 int main(int argc, char **argv);
+
+
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s -x X -y Y tiff_filename [fp_inputfile1 ...]\n"           \
+          "   -x X                  Resulting TIFF file is X pixels across.\n"  \
+          "   -y Y                  Resulting TIFF file is Y pixels high.\n"    \
+          "   tiff_filename         TIFF file to write to.\n"                   \
+          "   [fp_inputfile1 ...]   Input files that contain ASCII written floating\n" \
+          "                         point values.  If no names are given then stdin\n" \
+          "                         is used.\n", toolname);
+}
 
 
 int main(int argc, char **argv) 
@@ -64,6 +89,18 @@ int main(int argc, char **argv)
    int      xres = 0;
    int      yres = 0;
    int      i,n;
+
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion("fp2tiff");
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp("fp2tiff");
+         return 0;
+      }
+   }
 
 
    i = 1;
@@ -81,7 +118,7 @@ int main(int argc, char **argv)
             else
             {
                printf( "Error: Option -o specified more than once.\n" );
-               PrintHelp();
+               PrintHelp("fp2tiff");
                return 1;
             }
          }
@@ -90,7 +127,7 @@ int main(int argc, char **argv)
             if (xres)
             {
                printf( "Error:  X resolution specified more than once.\n" );
-               PrintHelp();
+               PrintHelp("fp2tiff");
                return 1;
             }
             i++;
@@ -188,21 +225,8 @@ int main(int argc, char **argv)
    return 0;
    
  CommandLineError:
-   PrintHelp();
+   PrintHelp("fp2tiff");
    return 1;
-}
-
-
-void PrintHelp( void )
-{
-  printf( 
-"fp2tiff -x X -y Y tiff_filename [fp_inputfile1 ...]\n"                      \
-"   -x X                  Resulting TIFF file is X pixels across.\n"         \
-"   -y Y                  Resulting TIFF file is Y pixels high.\n"           \
-"   tiff_filename         TIFF file to write to.\n"                          \
-"   [fp_inputfile1 ...]   Input files that contain ASCII written floating\n" \
-"                         point values.  If no names are given then stdin\n" \
-"                         is used.\n" );
 }
 
 
@@ -222,7 +246,7 @@ int ConvertToTiff( FILE *fp, char *outputfilename, int xres, int yres )
    if(!pBmp)
    {
       printf( "Memory allocation error.\n" );
-      return NULL;
+      return 1;
    }
 
    pp = p = (float*)pBmp->pbits;

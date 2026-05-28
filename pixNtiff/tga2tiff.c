@@ -46,24 +46,57 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 #include "bitmap.h"
 #include "rtga.h"
 #include "wtiff.h"
 
 
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int main(int argc, char **argv);
+
+
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s tga_filename tiff_filename\n"                      \
+          "   tga_filename        TGA file to read.\n"     \
+          "   tiff_filename       TIFF file to write to.\n", toolname);
+}
 
 
 int main(int argc, char **argv) 
 {
    PBITMAP  tga;
 
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion("tga2tiff");
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp("tga2tiff");
+         return 0;
+      }
+   }
+
+
    if ( argc < 3 || (argc > 1 && argv[1][0]=='-') )
    {
       /* User tried to specify an option, so just print help text. */
-      printf( "tga2tiff tga_filename tiff_filename\n"                      \
-          "   tga_filename        TGA file to read.\n"     \
-          "   tiff_filename       TIFF file to write to.\n" );
+      PrintHelp("tga2tiff");
       return 1;
    }
    

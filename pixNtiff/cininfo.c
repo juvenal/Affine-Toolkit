@@ -73,30 +73,65 @@
  *                 with Alias or PRMan.
  */
 #include <stdio.h>
+#include <string.h>
+#include "config.h"
 #include "cineon.h"
 
-static char *NotNullTermString = 
-   "Error with %s %s header field:\n   Expected a null terminated string.\n";
+static char *NotNullTermString = "Warning: String not null terminated.\n";
 static char *ReservedAreaNotZeroed = 
    "Warning: Reservered %d byte buffer has data in it.\n";
 
 
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int CheckString( char *filename, int l, char *s );
 int cininfo( char *filename, int multiplefiles );
 int main(int argc, char **argv);
+
+
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s cin_filename . . .\n"                          \
+          "   cin_filename . . .  List of Kodak Cineon files to read.\n", toolname);
+}
+
 
 int main(int argc, char **argv) 
 {
    int multiplefiles;
    register int  i;
 
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion("cininfo");
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp("cininfo");
+         return 0;
+      }
+   }
+
+
    if ( argc < 2 || (argc > 1 && argv[1][0]=='-') )
    {
       /* User tried to specify an option, so just print help text. */
-      printf( "cininfo cin_filename . . .\n"                          \
-      "   cin_filename . . .  List of Kodak Cineon files to read.\n" );
+      PrintHelp("cininfo");
       return 1;
    }
+
 
    if ( 2 < argc )
       multiplefiles = TRUE;

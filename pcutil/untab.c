@@ -46,18 +46,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "config.h"
 
-void PrintHelp(void);
+void PrintVersion(const char* toolname) {
+    printf("%s version %s\n", toolname, AFFINE_VERSION);
+    printf("%s\n", RAT_COPYRIGHT_STATEMENT);
+    printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+void PrintHelp(const char* toolname);
 void PrintError(char *file);
 int untab(FILE *fpin, FILE *fpout, int nspaces);
-int main(int argc, char **argv);
 
 /* Strings */
 static char ErrorOutputAndEdit[] = 
 "Error: Option -o and -edit both specified.\n";
 
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
     FILE      *fpin;
     FILE      *fpout;
     char      tmpfilename[FILENAME_MAX+1];
@@ -66,16 +72,26 @@ int main(int argc, char **argv) {
     int       edit = 0;
     auto int  i,j;
 
+    if (argc > 1) {
+        if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+            PrintVersion(argv[0]);
+            exit(0);
+        }
+        if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+            PrintHelp(argv[0]);
+            exit(0);
+        }
+    }
    
     fpout = stdout;
     i = 1;
     while (i < argc) {
         if (argv[i][0]=='-') {
-            if ((i+1<argc) && argv[i][1]=='o' && argv[i][2]=='\0') {
+            if ((i + 1 < argc) && argv[i][1] == 'o' && argv[i][2] == '\0') {
                 i++;
                 if (edit) {
                     fprintf(stderr, ErrorOutputAndEdit);
-                    PrintHelp();
+                    PrintHelp(argv[0]);
                     return 1;       
                 }
                 if (fpout == stdout) {
@@ -84,7 +100,7 @@ int main(int argc, char **argv) {
                 }
                 else {
                     fprintf(stderr, "Error: Option -o specified more than once.\n");
-                    PrintHelp();
+                    PrintHelp(argv[0]);
                     return 1;
                 }
                 if (!fpout) {
@@ -92,27 +108,27 @@ int main(int argc, char **argv) {
                     return 1;
                 }
             }
-            else if (!strcmp(&argv[i][1],"edit")) {
-                if (fpout!=stdout) {
+            else if (!strcmp(&argv[i][1], "edit")) {
+                if (fpout != stdout) {
                     fprintf(stderr, ErrorOutputAndEdit);
-                    PrintHelp();
+                    PrintHelp(argv[0]);
                     return 1;
                 }
                 edit = 1;
             }
-            else if (!strcmp(&argv[i][1],"t")) {
+            else if (!strcmp(&argv[i][1], "t")) {
                 i++;
                 if (i < argc) {
                     nspaces = atoi(argv[i]);
                 }
                 else {
                     fprintf(stderr, "Need number of spaces.\n");
-                    PrintHelp();
+                    PrintHelp(argv[0]);
                     return 1;
                 }
             }
             else {
-                PrintHelp();
+                PrintHelp(argv[0]);
                 return 1;
             }
         }
@@ -133,10 +149,10 @@ int main(int argc, char **argv) {
     if (i < argc && outputfilename) {
         j = i;
         while (j < argc) {
-            if (!strcmp(argv[j],outputfilename)) {
+            if (!strcmp(argv[j], outputfilename)) {
                 fprintf( stderr, "Output filename %s matches an input filename.\n", argv[j]);
-                PrintHelp();
-                return 1;            
+                PrintHelp(argv[0]);
+                return 1;    
             }
             j++;
         }
@@ -157,26 +173,26 @@ int main(int argc, char **argv) {
                     fprintf(stderr, "Error: Could not create back-up file: %s\n", argv[i]);
                     return 1;
                 }              
-                fpin = fopen(tmpfilename,"rb");
+                fpin = fopen(tmpfilename, "rb");
                 if (!fpin) {
                     PrintError(tmpfilename);
                     return 1;
                 }
-                fpout = fopen(argv[i],"wb");
+                fpout = fopen(argv[i], "wb");
                 if (!fpout) {
                     PrintError(argv[i]);
                     return 1;
                 }
-                untab(fpin,fpout,nspaces);
+                untab(fpin, fpout, nspaces);
                 fclose(fpout);
             }
             else {
-                fpin = fopen(argv[i],"rb");
+                fpin = fopen(argv[i], "rb");
                 if (!fpin) {
                     PrintError(argv[i]);
                     return 1;
                 }
-                untab(fpin,fpout,nspaces);
+                untab(fpin, fpout, nspaces);
             }
             fclose(fpin);
             i++;
@@ -193,10 +209,9 @@ int untab(FILE *fpin, FILE *fpout, int nspaces) {
     static char spaces[25];
     int   c;
 
-
-    memset(spaces,' ',nspaces);
-    spaces[nspaces]='\0';
-    while (EOF != (c=fgetc(fpin))) {
+    memset(spaces, ' ', nspaces);
+    spaces[nspaces] = '\0';
+    while (EOF != (c = fgetc(fpin))) {
         if ('\t' == c) {
             fprintf(fpout, "%s", spaces);
         }
@@ -208,19 +223,22 @@ int untab(FILE *fpin, FILE *fpout, int nspaces) {
 }
 
 
-void PrintHelp(void) {
-    fprintf(stderr,
-            "untab [-t n] [-o outputfile|-edit] [filename . . .]\n"         \
+void PrintHelp(const char* toolname) {
+    printf("%s\n", toolname);
+    printf("%s\n", RAT_COPYRIGHT_STATEMENT);
+    printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
+    printf(
+            "Usage: %s [-t n] [-o outputfile|-edit] [filename . . .]\n"         \
             "   [-t n]            Replace each tab with n number of\n"      \
             "                     spaces.  Default is 8.  Maximum is 25.\n" \
             "   [filename . . .]  If no file names are given then\n"        \
-            "                     untab will use standard input.\n"         \
+            "                     %s will use standard input.\n"         \
             "   [-o outputfile    File to write to.\n"                      \
             "                     If no output file name is given then\n"   \
-            "                     untab will use standard output.\n"        \
+            "                     %s will use standard output.\n"        \
             "     | -edit]        Create a temporary file of the form\n"    \
-            "                     filename~ and edit the given file.\n\n");
-    fprintf(stderr,
+            "                     filename~ and edit the given file.\n\n", toolname, toolname, toolname);
+    printf(
             "   Note:  Don't use this on UNIX Makefiles.\n");
 }
 

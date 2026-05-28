@@ -1,0 +1,6 @@
+# Compiled artifacts
+*.o
+*.a
+*.so
+*.dylib
+

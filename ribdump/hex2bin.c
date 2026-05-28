@@ -45,12 +45,14 @@
  *    References:
  *
  */
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 
 
 int ReadHexNumbers( FILE *fp );
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 void PrintError( char *file );
 int main(int argc, char **argv);
 
@@ -63,7 +65,21 @@ int main(int argc, char **argv)
    char  *outputfilename = NULL;
    FILE  *fp;
    int   i,n;
+   char  *toolname = argv[0];
 
+   if ( argc > 1 )
+   {
+      if ( !strcmp(argv[1], "-v") || !strcmp(argv[1], "--version") )
+      {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if ( !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") )
+      {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    fout = stdout;
    i = 1;
@@ -83,7 +99,7 @@ int main(int argc, char **argv)
             else
             {
                printf( "Error: Option -o specified more than once.\n" );
-               PrintHelp();
+               PrintHelp(toolname);
                return 1;
             }
             if (!fout)
@@ -94,7 +110,7 @@ int main(int argc, char **argv)
          }
          else
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
       }
@@ -116,7 +132,7 @@ int main(int argc, char **argv)
             fprintf( stderr, 
                     "Output filename \"%s\" matches an input filename.\n\n",
                     argv[n] );
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
          n++;
@@ -159,14 +175,25 @@ int ReadHexNumbers( FILE *fp )
 }
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
+   printf( "%s\n", toolname );
+   printf( RAT_COPYRIGHT_STATEMENT );
+   printf( RENDERMAN_COPYRIGHT_STATEMENT );
    printf( 
-"hex2bin [-o file] [filename . . .]\n"                                    \
+"\nUsage: %s [-o file] [filename . . .]\n"                                 \
 "   [-o file]          Output file name.  If not given, stdout is used.\n"\
-"   [filename . . .]   If no file names are given then hex2bin\n"         \
-"                      will use standard input.\n" );
+"   [filename . . .]   If no file names are given then %s\n"              \
+"                      will use standard input.\n", toolname, toolname );
    return;
+}
+
+
+void PrintVersion( const char *toolname )
+{
+   printf( "%s %s\n", toolname, AFFINE_VERSION );
+   printf( RAT_COPYRIGHT_STATEMENT );
+   printf( RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

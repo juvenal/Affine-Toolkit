@@ -62,6 +62,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "config.h"
+
+void PrintHelp( const char *toolname )
+{
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s [-v] [-h] [min] max\n"
+          "  -v, --version    Show version information\n"
+          "  -h, --help       Show this help message\n", toolname );
+}
+
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+}
 
 /* Compile with the macro TABLE defined and the following table is printed
  *    when using isaprime and max value as a parameter:
@@ -138,10 +152,22 @@
 int main(int argc, char *argv[]) {
    int     i,j,s,prime;
    float   f,v;
+   const char *toolname = "isaprime";
 #ifdef TABLE
    int     min;
    int     max;
 #endif
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    i = 1;
 

@@ -61,21 +61,35 @@
  *
  */
 #include <stdio.h>
+#include <string.h>
 #include "tga.h"
+#include "config.h"
 
 
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 int tgainfo( char *filename );
 int main(int argc, char **argv);
 
 int main(int argc, char **argv) 
 {
    register int  i;
+   const char *toolname = "tgainfo";
 
-   if ( argc < 2 || (argc > 1 && argv[1][0]=='-') )
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
+
+   if ( argc < 2 )
    {
-      /* User tried to specify an option, so just print help text. */
-      printf( "tgainfo tga_filename . . .\n"                             \
-          "   tga_filename . . .  TGA format files to read.\n" );
+      PrintHelp(toolname);
       return 1;
    }
 
@@ -87,6 +101,22 @@ int main(int argc, char **argv)
    }
    
    return 0;
+}
+
+
+void PrintHelp( const char *toolname )
+{
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s tga_filename . . .\n"
+          "  -v, --version    Show version information\n"
+          "  -h, --help       Show this help message\n"
+          "  tga_filename . . .  TGA format files to read.\n", toolname );
+}
+
+
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

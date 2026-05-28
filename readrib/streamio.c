@@ -1213,7 +1213,7 @@ int RibCreateStringsFromBuffer( RIB_HANDLE hrib, RtInt n, RtString **r )
 
    
    if ( !(rib && rib->pbuf && r) )
-     return kRIB_ERRRC_PTR; /* Error */
+     return kRIB_ERRRC_INT; /* Error */
 
    pbuf = rib->pbuf;
    p = pbuf->plist;
@@ -1222,7 +1222,7 @@ int RibCreateStringsFromBuffer( RIB_HANDLE hrib, RtInt n, RtString **r )
    /* NULLs were already added into the buffer to terminate each string. */
    ar = (RtString*)_RibMalloc( sizeof(RtString)*n + l );
    if ( !ar )
-     return kRIB_ERRRC_PTR;
+     return kRIB_ERRRC_INT;
 
    /* Block of memory ar has n char*'s followed by n NULL terminated 
     *    strings.  Use ar to access the array of RtString's (the char*'s)

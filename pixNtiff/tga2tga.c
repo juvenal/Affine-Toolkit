@@ -46,12 +46,35 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 #include "bitmap.h"
 #include "rtga.h"
 #include "wtga.h"
 
 
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int main(int argc, char **argv);
+
+
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s [-rle] tga_filename1 tga_filename2\n"            \
+          "   [-rle]             Compress image using RLE.\n"           \
+          "   tga_filename1      TGA file to read from.\n"              \
+          "   tga_filename2      TGA to write to.\n", toolname);
+}
 
 
 int main(int argc, char **argv) 
@@ -61,14 +84,23 @@ int main(int argc, char **argv)
    int  i = 1;
 
 
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion("tga2tga");
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp("tga2tga");
+         return 0;
+      }
+   }
+
+
    if ( argc < 3 || (argc > 1 && argv[1][0]=='-'
        && !(i++,rle=!strcmp("rle",&argv[1][1])) ) )
    {
       /* User tried to specify an option, so just print help text. */
-      printf( "tga2ga [-rle] tga_filename1 tga_filename2\n"             \
-          "   [-rle]             Compress image using RLE.\n"           \
-          "   tga_filename1      TGA file to read from.\n"              \
-          "   tga_filename2      TGA to write to.\n" );
+      PrintHelp("tga2tga");
       return 1;
    }
    

@@ -46,12 +46,28 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 #include "bitmap.h"
 #include "rtiff.h"
 
 
-void PrintHelp( void );
-int main(int argc, char **argv);
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf("%s", RAT_COPYRIGHT_STATEMENT);
+   printf("%s", RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf("%s", RAT_COPYRIGHT_STATEMENT);
+   printf("%s", RENDERMAN_COPYRIGHT_STATEMENT);
+   printf( "\nUsage: %s [-o outputfilename] tiff_filename\n"                  \
+             "   fp_filename       ASCII floating point file to write to.\n" \
+             "                     If not given, stdout is used.\n"          \
+             "   tiff_filename     TIFF file to read from.\n", toolname);
+}
 
 
 int main(int argc, char **argv) 
@@ -63,11 +79,24 @@ int main(int argc, char **argv)
    FILE            *fout = stdout;
    char            *outputfilename = NULL;
    unsigned int    i,column;
+   const char      *toolname = argv[0];
+
+
+   if (argc > 1) {
+      if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    
    if (argc!=2 && argc!=4)
    {
-      PrintHelp();
+      PrintHelp(toolname);
       return 1;            
    }
 
@@ -75,7 +104,7 @@ int main(int argc, char **argv)
    {
       if (argc!=4)
       {
-         PrintHelp();
+         PrintHelp(toolname);
          return 1;            
       }
       outputfilename = argv[2];
@@ -91,7 +120,7 @@ int main(int argc, char **argv)
    {
       if ( argc != 2 || argv[1][0] == '-' )
       {
-         PrintHelp();
+         PrintHelp(toolname);
          return 1;            
       }
       i = 1;
@@ -102,7 +131,7 @@ int main(int argc, char **argv)
    {
       fprintf( stderr, "Filenames can not refer to the same file: \"%s\".\n", 
               outputfilename );
-      PrintHelp();
+      PrintHelp(toolname);
       return 1;            
    }
 
@@ -191,6 +220,7 @@ Error:
 }
 
 
+#if 0
 void PrintHelp( void )
 {
       printf( "tiff2fp [-o outputfilename] tiff_filename\n"                  \
@@ -198,3 +228,4 @@ void PrintHelp( void )
              "                     If not given, stdout is used.\n"          \
              "   tiff_filename     TIFF file to read from.\n");
 }
+#endif

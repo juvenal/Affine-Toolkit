@@ -49,9 +49,11 @@
 #include "bitmap.h"
 #include "rtiff.h"
 #include "wtiff.h"
+#include "config.h"
 
 
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 void PrintError( char *file );
 int Orient( char *filename, int setflags, int orientation );
 int main(int argc, char **argv);
@@ -62,6 +64,18 @@ int main(int argc, char **argv)
    int  orientation = 0;
    int  setflags = 0;
    int  i;
+   const char *toolname = "tifforient";
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    i = 1;
    while ( i < argc )
@@ -85,13 +99,13 @@ int main(int argc, char **argv)
 	       orientation = argv[i][1] - '0';
 	       break;
 	     default:
-	       PrintHelp();
+	       PrintHelp(toolname);
 	       return 1;
 	    }
          }
          else
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
       }
@@ -104,7 +118,7 @@ int main(int argc, char **argv)
  
    if (i==argc)
    {
-      PrintHelp();
+      PrintHelp(toolname);
       return 1;
    }
 
@@ -118,10 +132,12 @@ int main(int argc, char **argv)
 }
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
-   printf( 
-"tifforient [-k] [-0|-1|-2|-3|-4|-5|-6|-7|-8] tiff_filename1 ...\n"  \
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s [-k] [-0|-1|-2|-3|-4|-5|-6|-7|-8] tiff_filename1 ...\n"  \
+"  -v, --version Show version information\n" \
+"  -h, --help    Show this help message\n" \
 "  [-k]  Keep the image the same, just set the orientation flags.\n" \
 " [-0    BITMAP_TOPLEFT,  -- Top is row 0.     Left is column 0.\n"  \
 "  -1    BITMAP_TOPRIGHT, -- Top is row 0.     Right is column 0.\n" \
@@ -132,7 +148,12 @@ void PrintHelp( void )
 "  -6    BITMAP_RIGHTBOT, -- Right is row 0.   Bottom is column 0.\n"\
 "  -7]   BITMAP_LEFTBOT,  -- Left is row 0.    Bottom is column 0.\n"\
 "By default -0 is assumed.\n"\
-"  tiff_filename1 ...   TIFF file(s) to reorient.\n" );
+"  tiff_filename1 ...   TIFF file(s) to reorient.\n", toolname );
+}
+
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

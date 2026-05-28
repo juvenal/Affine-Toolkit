@@ -46,21 +46,34 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 #include "bitmap.h"
 #include "riff.h"
 #include "wtiff.h"
 
 
-void PrintHelp( void );
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int main(int argc, char **argv);
 
 
-void PrintHelp( void )
+void PrintVersion(const char* toolname)
 {
-   printf( "iff2tiff [-8] iff_filename tiff_filename\n"                 \
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s [-8] iff_filename tiff_filename\n"                 \
 	   "   -8                  Convert 16 bit IFF to 8 bit TIFF.\n" \
 	   "   iff_filename        IFF file to read from.\n"            \
-	   "   tiff_filename       TIFF file to write to.\n" );
+	   "   tiff_filename       TIFF file to write to.\n", toolname);
 }
 
 
@@ -69,11 +82,23 @@ int main(int argc, char **argv)
    PBITMAP       iff;
    int           s, t;
    unsigned int  flags;
+   const char *toolname = "iff2tiff";
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
 
    if ( argc < 3 )
    {
-      PrintHelp();
+      PrintHelp("iff2tiff");
       return 1;
    }
    if ( argv[1][0]=='-' )
@@ -84,7 +109,7 @@ int main(int argc, char **argv)
       }
       else
       {
-	 PrintHelp();
+	 PrintHelp(toolname);
 	 return 1;
       }
       s = 2;

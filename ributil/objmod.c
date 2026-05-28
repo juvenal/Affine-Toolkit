@@ -79,6 +79,7 @@
 #include <math.h>
 #include <ributil.h>
 #include <ribnop.h>
+#include "config.h"
 
 
 enum {
@@ -88,7 +89,8 @@ enum {
 };
 
 
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 void PrintError( char *file );
 int WriteSurf( char *file );
 RtVoid AttributeBegin( void );
@@ -130,7 +132,19 @@ int main(int argc, char **argv)
 {
    int   i, n;
    char  *p;
+   const char *toolname = "ribobjmod";
    
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
+
    i = 1;
    while ( i < argc )
    {
@@ -193,19 +207,24 @@ int main(int argc, char **argv)
    return 0;
    
  CommandLineError:
-   PrintHelp();
+   PrintHelp(toolname);
    return 1;
 }
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
-  printf( 
-	 "ribobjmod [-o output] [rib_file . . .]\n\n"                        \
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s [-o output] [rib_file . . .]\n\n"                        \
          "   Takes nonperiodic NuPatch surfaces defined in world space\n"    \
          "   and converts them into WaveFront OBJ format.\n\n"               \
 	 "   [rib_file . . .]   If no file names are given then ribobjmod\n"\
-	 "                      will use standard input.\n" );
+	 "                      will use standard input.\n", toolname );
+}
+
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

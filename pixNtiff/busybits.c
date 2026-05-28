@@ -48,24 +48,35 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "config.h"
 #include "bitmap.h"
 #include "wtiff.h"
 
 
-void PrintHelp( void );
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int main(int argc, char **argv);
 
 
-void PrintHelp( void )
+void PrintVersion(const char* toolname)
 {
-   printf( "Test application that creates an image of a given\n" \
-	   "resolution that is difficult to rle compress.\n\n" );
-   printf( "busybits xres yres bitdepth nchannels tiff_filename\n"      \
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s xres yres bitdepth nchannels tiff_filename\n"      \
 	   "   xres            Test image width.\n"                     \
 	   "   yres            Test image height.\n"                    \
 	   "   bitdepth        Number of bits per channel (8 or 16).\n" \
 	   "   nchannels       Number of channels (1,3, or 4).\n"       \
-	   "   tiff_filename   Output TIFF file name.\n" );
+	   "   tiff_filename   Output TIFF file name.\n", toolname);
 }
 
 
@@ -78,6 +89,18 @@ int main(int argc, char **argv)
    unsigned int   nchannels;
    unsigned int   x,y;
    unsigned char  *p;
+
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion("busybits");
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp("busybits");
+         return 0;
+      }
+   }
 
 
    if ( argc < 6 )
@@ -130,7 +153,7 @@ int main(int argc, char **argv)
    return 0;
 
  Error:
-   PrintHelp();
+   PrintHelp("busybits");
  Exit:
    if (tiff)
       DestroyBitmap( tiff );

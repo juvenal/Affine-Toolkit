@@ -54,12 +54,14 @@
  *             Renderman (R) is a registered trademark of Pixar
  *
  */
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 void PrintError( char *file );
 char *HandleASCIIEscChar( char *s );
 unsigned int PrepareString( char *s );
@@ -76,10 +78,25 @@ int   column;
 int main(int argc, char **argv) 
 {
    int  i,o;
+   char *toolname = argv[0];
+
+   if ( argc > 1 )
+   {
+      if ( !strcmp(argv[1], "-v") || !strcmp(argv[1], "--version") )
+      {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if ( !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") )
+      {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    if (argc < 2)
    {
-      PrintHelp();
+      PrintHelp(toolname);
       return 1;
    }
 
@@ -105,13 +122,13 @@ int main(int argc, char **argv)
                }
                else
                {
-                  PrintHelp();
+                  PrintHelp(toolname);
                   return 1;                  
                }
                i++;
                if ( PrintStringDefAndRef( argv[i], o ) )
                {
-                  PrintHelp();
+                  PrintHelp(toolname);
                   return 1;
                }
                if (column)
@@ -130,7 +147,7 @@ int main(int argc, char **argv)
                else
                {
                   printf( "Error: Option -o specified more than once.\n" );
-                  PrintHelp();
+                  PrintHelp(toolname);
                   return 1;
                }
                if (!fout)
@@ -141,13 +158,13 @@ int main(int argc, char **argv)
             }
             else
             {
-               PrintHelp();
+               PrintHelp(toolname);
                return 1;
             }
          }
          else
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
       }
@@ -155,7 +172,7 @@ int main(int argc, char **argv)
       {
          if ( PrintString( argv[i] ) )
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
          if (column)
@@ -171,21 +188,32 @@ int main(int argc, char **argv)
 }
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
+   printf( "%s\n", toolname );
+   printf( RAT_COPYRIGHT_STATEMENT );
+   printf( RENDERMAN_COPYRIGHT_STATEMENT );
    printf( 
-"str2oct [-o file] {\"string\"|-s### \"string\"} . . .\n"                   \
+"\nUsage: %s [-o file] {\"string\"|-s### \"string\"} . . .\n"                   \
 "   [-o file]     Output file name.  If not given, stdout is used.\n"       \
 "   string        An ASCII string to encode.  If you need to start the\n"   \
 "                 string with a '-' which normally marks a command line\n"  \
 "                 option, simply place a '\\' in front.  For example the\n" \
 "                 to encode the string \"-supposedstring\" type\n"          \
-"                            str2oct \"\\-supposedstring\"\n"               \
+"                            %s \"\\-supposedstring\"\n"                    \
 "                 The RenderMan Spec states that a '\\' not marking the\n"  \
 "                 characters 'n', 'r', 't', 'b', 'f', '\\', \", 0-7, or\n"  \
 "                 a newline character is simply ignored.\n"                 \
 "   -s### string  Use a definition and reference encoding with ### as\n"    \
-"                 the octal string token.\n" ); 
+"                 the octal string token.\n", toolname, toolname ); 
+}
+
+
+void PrintVersion( const char *toolname )
+{
+   printf( "%s %s\n", toolname, AFFINE_VERSION );
+   printf( RAT_COPYRIGHT_STATEMENT );
+   printf( RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

@@ -46,6 +46,7 @@
  *    References:
  *
  */
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,7 +55,8 @@
 #include <float.h>
 
 
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 void PrintError( char *file );
 int PrintFloat( float flt, int ieee );
 int GetIntegerFixedPoint( float flt, unsigned char *v );
@@ -71,7 +73,21 @@ int main(int argc, char **argv)
    int     ieee = 0;
    float   flt;
    int     i;
+   char    *toolname = argv[0];
 
+   if ( argc > 1 )
+   {
+      if ( !strcmp(argv[1], "-v") || !strcmp(argv[1], "--version") )
+      {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if ( !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") )
+      {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    fout = stdout;
    i = 1;
@@ -90,7 +106,7 @@ int main(int argc, char **argv)
             else
             {
                printf( "Error: Option -o specified more than once.\n" );
-               PrintHelp();
+               PrintHelp(toolname);
                return 1;
             }
             if (!fout)
@@ -111,7 +127,7 @@ int main(int argc, char **argv)
          }
          else
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
       }
@@ -141,15 +157,26 @@ int main(int argc, char **argv)
 }
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
+  printf( "%s\n", toolname );
+  printf( RAT_COPYRIGHT_STATEMENT );
+  printf( RENDERMAN_COPYRIGHT_STATEMENT );
   printf( 
-"flt2oct [-o file] [-IEEE|-ieee|-i] [float . . .]\n"                        \
+"\nUsage: %s [-o file] [-IEEE|-ieee|-i] [float . . .]\n"                        \
 "   [-o file]         Output file name.  If not given, stdout is used.\n"   \
 "   [-IEEE|-ieee|-i]  Use only IEEE encoding.\n"                            \
 "   [float . . .]     A number to be represented as an IEEE single-\n"      \
 "                     precision or fixed point number.  If no floats are\n" \
-"                     given then flt2oct will use standard input.\n" );
+"                     given then %s will use standard input.\n", toolname, toolname );
+}
+
+
+void PrintVersion( const char *toolname )
+{
+   printf( "%s %s\n", toolname, AFFINE_VERSION );
+   printf( RAT_COPYRIGHT_STATEMENT );
+   printf( RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

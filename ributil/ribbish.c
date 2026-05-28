@@ -63,10 +63,12 @@
 #include <string.h>
 #include <ributil.h>
 #include <ribnop.h>
+#include "config.h"
 
 
 int main(int argc, char **argv); 
-void PrintHelp( void );
+void PrintHelp( const char* toolname );
+void PrintVersion( const char* toolname );
 void PrintError( char *file );
 int PrintRIB( char *input, char* output, RtBoolean binary );
 
@@ -78,6 +80,19 @@ int main(int argc, char **argv)
    RtBoolean  binary = RI_FALSE;
    int        i,n;
 
+   if (argc > 1) 
+   {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) 
+      {
+         PrintVersion(argv[0]);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) 
+      {
+         PrintHelp(argv[0]);
+         return 0;
+      }
+   }
 
    i = 1;
    while ( i < argc )
@@ -165,15 +180,26 @@ int main(int argc, char **argv)
    return 0;
    
  CommandLineError:
-   PrintHelp();
+   PrintHelp(argv[0]);
    return 1;
 }
 
 
-void PrintHelp( void )
+void PrintVersion( const char* toolname )
 {
+   printf( "%s %s\n", toolname, AFFINE_VERSION );
+   printf( "%s", RAT_COPYRIGHT_STATEMENT );
+   printf( "%s", RENDERMAN_COPYRIGHT_STATEMENT );
+}
+
+
+void PrintHelp( const char* toolname )
+{
+  fprintf( stderr, "%s\n", toolname );
+  fprintf( stderr, "%s", RAT_COPYRIGHT_STATEMENT );
+  fprintf( stderr, "%s", RENDERMAN_COPYRIGHT_STATEMENT );
   fprintf( stderr, 
-"ribbish [-o file] [-binary] [-RIBcall1 [-RIBcall2] ...] [filename ...]\n\n"  \
+"Usage: %s [-o file] [-binary] [-RIBcall1 [-RIBcall2] ...] [filename ...]\n\n" \
 
 " Utility to print out a RIB file without a given set of RIB statements\n"    \
 " listed by the user.\n\n"                                                    \
@@ -182,8 +208,10 @@ void PrintHelp( void )
 "                              used.\n"                                       \
 " [-binary]                    Print output in encoded format.\n"             \
 " [-RIBcall1 [-RIBcall2] ...]  Name of RIB statement(s) to remove.\n"         \
+" [-v, --version]              Print version information.\n"                  \
+" [-h, --help]                 Print this help message.\n"                    \
 " [filename ...]               If no file names are given then ribbish\n"     \
-"                              will use standard input.\n\n" );
+"                              will use standard input.\n\n", toolname );
   fprintf( stderr, 
 " Note:  Many modelers include extra RIB calls that are not needed or\n"   \
 "        that represent settings that were too annoying in the GUI to\n"     \

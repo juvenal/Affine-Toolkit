@@ -57,22 +57,40 @@
 #include <ripriv.h>
 #include <ributil.h>
 #include <ribattrstore.h>
+#include "config.h"
 
+void PrintHelp( const char *toolname )
+{
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s\n", toolname );
+}
 
-int main(int argc, char **argv);
-
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+}
 
 RtToken tokens1[] = { "tokens1" };
 RtToken tokens2[] = { "tokens2a", "tokens2b" };
 RtToken parms1[] = { "parms1" };
 RtToken parms2[] = { "parms2a", "parms2b" };
 
-
-
 int main(int argc, char **argv) 
 {
    PATTR      a;
    PATTRITEM  item;
+   const char *toolname = "attrtest";
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    printf( "# Gravity Tests For attrstore.c\n" );
    printf( "# -----------------------------\n" );

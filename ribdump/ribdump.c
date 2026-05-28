@@ -75,10 +75,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "config.h"
 
 
 #define MAX_COLUMN 8
-void PrintHelp( void );
+void PrintHelp( const char* toolname );
+void PrintVersion( const char* toolname );
 void PrintError( char *file );
 int PrintRIB( void );                    
 int PrintCommentColumn( void );
@@ -105,12 +107,37 @@ int main(int argc, char **argv)
    
    OctalOnly = 0;
    fout = stdout;
+
+   if (argc > 1)
+   {
+      if (!strcmp(argv[1],"-v") || !strcmp(argv[1],"--version"))
+      {
+         PrintVersion(argv[0]);
+         return 0;
+      }
+      else if (!strcmp(argv[1],"-h") || !strcmp(argv[1],"--help"))
+      {
+         PrintHelp(argv[0]);
+         return 0;
+      }
+   }
+
    i = 1;
    while ( i < argc )
    {
       if ( argv[i][0]=='-' )
       {
-         if ( (i+1<argc) && argv[i][1]=='o' && argv[i][2]=='\0' )
+         if (!strcmp(&argv[i][1],"v") || !strcmp(&argv[i][1],"-version"))
+         {
+            PrintVersion(argv[0]);
+            return 0;
+         }
+         else if (!strcmp(&argv[i][1],"h") || !strcmp(&argv[i][1],"-help"))
+         {
+            PrintHelp(argv[0]);
+            return 0;
+         }
+         else if ( (i+1<argc) && argv[i][1]=='o' && argv[i][2]=='\0' )
          {
             i++;
             if ( fout == stdout )
@@ -121,7 +148,7 @@ int main(int argc, char **argv)
             else
             {
                printf( "Error: Option -o specified more than once.\n" );
-               PrintHelp();
+               PrintHelp(argv[0]);
                return 1;
             }
             if (!fout)
@@ -144,13 +171,13 @@ int main(int argc, char **argv)
             else
             {
                printf( "Need offset value.\n" );
-               PrintHelp();
+               PrintHelp(argv[0]);
                return 1;
             }
          }
          else
          {
-            PrintHelp();
+            PrintHelp(argv[0]);
             return 1;
          }
       }
@@ -215,21 +242,34 @@ int main(int argc, char **argv)
    return 0;
    
  CommandLineError:
-   PrintHelp();
+   PrintHelp(argv[0]);
    return 1;
 }
 
 
-void PrintHelp( void )
+void PrintVersion( const char* toolname )
 {
+  printf( "%s version %s\n", toolname, AFFINE_VERSION );
+  printf( "%s\n", RAT_COPYRIGHT_STATEMENT );
+  printf( "%s\n", RENDERMAN_COPYRIGHT_STATEMENT );
+}
+
+
+void PrintHelp( const char* toolname )
+{
+  printf( "%s\n", toolname );
+  printf( "%s\n", RAT_COPYRIGHT_STATEMENT );
+  printf( "%s\n", RENDERMAN_COPYRIGHT_STATEMENT );
   printf( 
-"ribdump [-o file] [-octal] [filename . . .]\n"                            \
+"Usage: %s [-o file] [-octal] [-offset n] [-v] [-h] [filename . . .]\n" \
 "   [-o file]          Output file name.  If not given, stdout is used.\n" \
 "   [-octal]           Print octal values only (no comments).\n"           \
 "   [-offset n]        Print octal values starting at zero based\n"        \
 "                      offset n.\n"                                        \
-"   [filename . . .]   If no file names are given then ribdump will\n"     \
-"                      use standard input.\n" );
+"   [-v, --version]    Show version information.\n"                        \
+"   [-h, --help]       Show this help message.\n"                          \
+"   [filename . . .]   If no file names are given then %s will\n"     \
+"                      use standard input.\n", toolname, toolname );
 }
 
 

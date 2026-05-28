@@ -166,13 +166,17 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include "config.h"
 
 #define MAXBUFFER 2
 
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 int main(int argc, char **argv);
 int ReadLine( FILE *fp, int n, char *s );
 int SetUpTree( char t[255][255], int BaseIndex, int UpTo, int InToString, 
-	      char *Output );
+              char *Output );
 int PrintTree( char *T, int i );
 
 
@@ -190,13 +194,24 @@ int main(int argc, char **argv)
    int   StandAlone = 0;
    int   i = 1;
    char  c;
+   const char *toolname = "tokentbl";
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    if ( argc < 3 || argc > 4)
    {
-      printf( "tabletbl [-s] file tablename\n" );
+      PrintHelp(toolname);
       return 1;
    }
-
    if ( !strcmp("-s",argv[1]) )
    {
       StandAlone = 1;
@@ -274,6 +289,21 @@ int main(int argc, char **argv)
    fclose(fp);
    
    return 0;
+}
+
+
+void PrintHelp( const char *toolname )
+{
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s [-s] file tablename\n"
+          "  -v, --version    Show version information\n"
+          "  -h, --help       Show this help message\n", toolname );
+}
+
+
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

@@ -2749,7 +2749,7 @@ int RibReadArrayAndLength( RIB_HANDLE hrib, RIB_UINT32 options,
          {
             p = (void*)_RibMalloc( sizeof(RtInt) );
             if (!p)
-              return kRIB_ERRRC_PTR;
+              return kRIB_ERRRC_INT;
             *((RtInt*)p) = i;
             *pp = (RtInt*)p;
          }
@@ -2817,7 +2817,7 @@ int RibReadArrayAndLength( RIB_HANDLE hrib, RIB_UINT32 options,
          {
             p = (void*)_RibMalloc( sizeof(RtFloat) );
             if (!p)
-              return kRIB_ERRRC_PTR;
+              return kRIB_ERRRC_INT;
             *((RtFloat*)p) = f;
             *pp = (RtFloat*)p;
          }

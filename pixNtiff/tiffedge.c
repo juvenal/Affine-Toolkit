@@ -62,12 +62,33 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "config.h"
 #include "bitmap.h"
 #include "rtiff.h"
 #include "wtiff.h"
 
 
-void PrintHelp( void );
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf("%s", RAT_COPYRIGHT_STATEMENT);
+   printf("%s", RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf("%s", RAT_COPYRIGHT_STATEMENT);
+   printf("%s", RENDERMAN_COPYRIGHT_STATEMENT);
+   printf( 
+"\nUsage: %s [-t threshold] -o tiff_output tiff_input1 [tiff_input2 ...]\n" \
+"   -t threshold     Threshold value from 0.0 to 1.0 indicating edge.\n" \
+"                    sensitivity.  Default is 1.0\n"                     \
+"   -o tiff_output   TIFF file to write to.\n"                           \
+"   tiff_input1...   TIFF files to read from.\n", toolname );
+}
+
+
 PBITMAP DetectEdges( int n, char *filenames[], float threshold );
 int Sobel8( PBITMAP original, PBITMAP target, float threshold );
 int SobelIEEEFP( PBITMAP original, PBITMAP target, float threshold );
@@ -82,6 +103,19 @@ int main(int argc, char **argv)
    int      n;
    int      i = 1;
    float    threshold = 1.0;
+   const char *toolname = argv[0];
+
+
+   if (argc > 1) {
+      if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
 
    while ( i < argc )
@@ -175,19 +209,8 @@ int main(int argc, char **argv)
    return 0;
 
  CommandLineError:
-   PrintHelp();
+   PrintHelp(toolname);
    return 1;
-}
-
-
-void PrintHelp( void )
-{
-   printf( 
-"tiffedge [-t threshold] -o tiff_output tiff_input1 [tiff_input2 ...]\n" \
-"   -t threshold     Threshold value from 0.0 to 1.0 indicating edge.\n" \
-"                    sensitivity.  Default is 1.0\n"                     \
-"   -o tiff_output   TIFF file to write to.\n"                           \
-"   tiff_input1...   TIFF files to read from.\n" );
 }
 
 

@@ -46,22 +46,35 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 #include "bitmap.h"
 #include "riff.h"
 #include "wiff.h"
 
 
-void PrintHelp( void );
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int main(int argc, char **argv);
 
 
-void PrintHelp( void )
+void PrintVersion(const char* toolname)
 {
-   printf( "iff2iff [-d] [-8] iff_filename1 iff_filename2\n"                 \
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s [-d] [-8] iff_filename1 iff_filename2\n"                 \
 	   "   -d                  Do not compress data (RLE is default).\n" \
 	   "   -8                  Convert 16 bit per sample IFF to 8.\n"    \
 	   "   iff_filename1       Maya IFF file to read from.\n"            \
-	   "   iff_filename2       Maya IFF file to write to.\n" );
+	   "   iff_filename2       Maya IFF file to write to.\n", toolname);
 }
 
 
@@ -71,11 +84,24 @@ int main(int argc, char **argv)
    int           rle = 1;
    int           i, s, t;
    unsigned int  flags = 0;
+   const char *toolname = "iff2iff";
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
+
 
 
    if ( argc < 3 )
    {
-      PrintHelp();
+      PrintHelp("iff2iff");
       return 1;
    }
 
@@ -94,7 +120,7 @@ int main(int argc, char **argv)
          }
          else
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
       }

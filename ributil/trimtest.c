@@ -57,14 +57,23 @@
 #include <ripriv.h>
 #include <ributil.h>
 #include <ribtrimstore.h>
+#include "config.h"
 
+void PrintHelp( const char *toolname )
+{
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s\n", toolname );
+}
+
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+}
 
 RtVoid TestTrimCurve( RtInt nloops, 
 		     RtInt ncurves[], RtInt order[], RtFloat knot[],
 		     RtFloat min[], RtFloat max[], RtInt n[],
 		     RtFloat u[], RtFloat v[], RtFloat w[] );
-int main(int argc, char **argv);
-
 
 RtInt   ncurves[] = { 1 };
 RtInt   order[] = { 2 };
@@ -84,6 +93,18 @@ int main(int argc, char **argv)
 {
    PTRIMSTORE  t;
    PTRIMCURVE  tt,curve;
+   const char *toolname = "trimtest";
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
 
    printf( "# Gravity Tests For trimstore.c\n" );

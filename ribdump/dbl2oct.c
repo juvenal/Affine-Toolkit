@@ -45,13 +45,15 @@
  *    References:
  *
  */
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
 
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 void PrintError( char *file );
 int PrintDouble( double dbl );
 int main(int argc, char **argv);
@@ -65,7 +67,21 @@ int main(int argc, char **argv)
    char    *outputfilename = NULL;
    double  dbl;
    int     i,n;
+   char    *toolname = argv[0];
 
+   if ( argc > 1 )
+   {
+      if ( !strcmp(argv[1], "-v") || !strcmp(argv[1], "--version") )
+      {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if ( !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") )
+      {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    fout = stdout;
    i = 1;
@@ -84,7 +100,7 @@ int main(int argc, char **argv)
             else
             {
                printf( "Error: Option -o specified more than once.\n" );
-               PrintHelp();
+               PrintHelp(toolname);
                return 1;
             }
             if (!fout)
@@ -99,7 +115,7 @@ int main(int argc, char **argv)
          }
          else
          {
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
       }
@@ -121,7 +137,7 @@ int main(int argc, char **argv)
             fprintf( stderr, 
                     "Output filename \"%s\" matches an input filename.\n\n",
                     argv[n] );
-            PrintHelp();
+            PrintHelp(toolname);
             return 1;
          }
          n++;
@@ -147,14 +163,25 @@ int main(int argc, char **argv)
 }
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
-      printf( 
-"dbl2oct [-o file] [double . . .]\n"                                     \
+   printf( "%s\n", toolname );
+   printf( RAT_COPYRIGHT_STATEMENT );
+   printf( RENDERMAN_COPYRIGHT_STATEMENT );
+   printf( 
+"\nUsage: %s [-o file] [double . . .]\n"                                     \
 "   [-o file]        Output file name.  If not given, stdout is used.\n" \
 "   [double . . .]   A number to be represented as a IEEE double-\n"     \
 "                    precision number.  If no doubles are given\n"       \
-"                    then dbl2oct will use standard input.\n" );
+"                    then %s will use standard input.\n", toolname, toolname );
+}
+
+
+void PrintVersion( const char *toolname )
+{
+   printf( "%s %s\n", toolname, AFFINE_VERSION );
+   printf( RAT_COPYRIGHT_STATEMENT );
+   printf( RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

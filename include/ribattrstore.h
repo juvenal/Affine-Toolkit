@@ -54,6 +54,8 @@
  *             Renderman (R) is a registered trademark of Pixar
  */
 
+#include "ripriv.h"
+
 #ifndef __ATTRSTORE_HEADER__
 #define __ATTRSTORE_HEADER__
 
@@ -82,7 +84,7 @@ typedef struct _ATTRITEM {
     struct _ATTRITEM  *prev;
     struct _ATTRITEM  *next;
 } ATTRITEM;
-typedef (ATTRITEM *) PATTRITEM;
+typedef ATTRITEM* PATTRITEM;
 
 
 typedef struct _ATTR {
@@ -92,7 +94,7 @@ typedef struct _ATTR {
     PATTRITEM      last;
     PRIB_RIPROC    ricalls[ATTR_LAST];
 } ATTR;
-typedef ATTR  *PATTR;
+typedef ATTR* PATTR;
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

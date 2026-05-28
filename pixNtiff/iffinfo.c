@@ -79,6 +79,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "config.h"
 
 
 #ifndef LITTLE_ENDIAN
@@ -266,7 +268,39 @@ typedef GROUP  *PGROUP;
 
 static char *readerr = "Error reading %s\n";
 
+void PrintVersion(const char* toolname)
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+}
+
+
+void PrintHelp(const char* toolname)
+{
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s iff_filename . . .\n"
+          "  -v, --version    Show version information\n"
+          "  -h, --help       Show this help message\n"
+          "  iff_filename . . .  List of Maya IFF files to read.\n", toolname );
+}
+
 void countbytes( PGROUP groups, unsigned int nbytes );
+int groupid( char *tag, int *alignment );
+int grouptype( char *tag );
+int datatype( char *tag );
+unsigned int alignsize( unsigned int size, int alignment );
+PGROUP newgroup( PGROUP groups, int alignment );
+PGROUP checkgroups( PGROUP groups );
+void freegroups( PGROUP groups );
+int readtag( FILE *iff, char *tag[4] );
+void indent( PGROUP groups );
+int handlechunk( FILE *iff, PGROUP groups, char tag[4], int id );
+int handlegroup( FILE *iff, PGROUP groups, char tag[4], int id );
+int iffinfo( char *filename );
+int main(int argc, char **argv);
+
+
+void countbytes( PGROUP groups, unsigned int nbytes ) 
+;
 int groupid( char *tag, int *alignment );
 int grouptype( char *tag );
 int datatype( char *tag );
@@ -1163,21 +1197,29 @@ int iffinfo( char *filename )
 int main(int argc, char **argv) 
 {
    auto int  i;
+   const char *toolname = "iffinfo";
 
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
-   if ( argc < 2 || (argc > 1 && argv[1][0]=='-') )
+   if ( argc < 2 )
    {
-      /* User tried to specify an option, so just print help text. */
-      printf( "iffinfo iff_filename . . .\n"                          \
-      "   iff_filename . . .  List of Maya IFF files to read.\n" );
+      PrintHelp(toolname);
       return 1;
    }
 
    i = 1;
-   if ( i < argc )
+   while ( i < argc )
    {
-      while ( i < argc )
-        iffinfo( argv[i++] );
+      iffinfo( argv[i++] );
    }
    
    return 0;

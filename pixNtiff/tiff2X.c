@@ -47,24 +47,50 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 #include "bitmap.h"
 #include "rtiff.h"
 #include "wX.h"
 
 
-int main(int argc, char **argv);
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf("%s", RAT_COPYRIGHT_STATEMENT);
+   printf("%s", RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf("%s", RAT_COPYRIGHT_STATEMENT);
+   printf("%s", RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s tiff_filename X_filename\n"                      \
+          "   tiff_filename     TIFF file to read from.\n"               \
+          "   X_filename        X windows bitmap file.\n", toolname);
+}
 
 
 int main(int argc, char **argv) 
 {
    PBITMAP  tiff;
+   const char *toolname = argv[0];
 
-   if ( argc < 3 || (argc > 1 && argv[1][0]=='-') )
+   if (argc > 1) {
+      if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
+
+   if ( argc < 3 )
    {
-      /* User tried to specify an option, so just print help text. */
-      printf( "tiff2pix tiff_filename X_filename\n"                      \
-          "   tiff_filename     TIFF file to read from.\n"               \
-          "   X_filename        X windows bitmap file.\n" );
+      /* User didn't provide enough arguments, so just print help text. */
+      PrintHelp(toolname);
       return 1;
    }
    

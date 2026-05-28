@@ -52,20 +52,49 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "config.h"
 
+void PrintVersion(const char* toolname) {
+    printf("%s version %s\n", toolname, AFFINE_VERSION);
+    printf("%s\n", RAT_COPYRIGHT_STATEMENT);
+    printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+void PrintHelp(const char* toolname) {
+    printf("%s\n", toolname);
+    printf("%s\n", RAT_COPYRIGHT_STATEMENT);
+    printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
+    printf( "Usage: %s [-o outputfile] files . . .\n"                      \
+            "   [filename . . .]   If no file names are given then\n"     \
+            "                      %s will use standard input.\n"   \
+            "   [-o outputfile]    UNIX file to write to.\n"              \
+            "                      If no output file name is given then\n"\
+            "                      %s will use standard output.\n", toolname, toolname, toolname );
+}
 
 int ibm2unix(void);
-
-int main(int argc, char **argv);
 
 FILE *fpin;
 FILE *fpout;
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
     int i;
 
-    if (argc > 1 && argv[1][0]=='-') {
-        if (argv[1][1]=='o' && argv[1][2]=='\0') {
+    if (argc > 1) {
+        if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+            PrintVersion(argv[0]);
+            exit(0);
+        }
+        if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+            PrintHelp(argv[0]);
+            exit(0);
+        }
+    }
+
+    if (argc > 1 && argv[1][0] == '-') {
+        if (argv[1][1] == 'o' && argv[1][2] == '\0') {
             fpout = fopen(argv[2], "wb");
             if (!fpout) {
                 printf("Can't open %s\n", argv[2]);
@@ -74,23 +103,18 @@ int main(int argc, char **argv) {
             i = 3;
         }
         else {
-            printf( "ibm2unix [-o outputfile] files . . .\n"                     \
-                    "   [filename . . .]   If no file names are given then\n"     \
-                    "                      ibm2unix will use standard input.\n"   \
-                    "   [-o outputfile]    UNIX file to write to.\n"              \
-                    "                      If no output file name is given then\n"\
-                    "                      ibm2unix will use standard output.\n" );
+            PrintHelp(argv[0]);
             return 1;
         }
     }
     else {
         fpout = stdout;
-        i=1;
+        i = 1;
     }
 
     if (i < argc) {
         while (i < argc) {
-            fpin = fopen(argv[i],"rb");
+            fpin = fopen(argv[i], "rb");
             if (!fpin) {
                 printf( "Can't open %s\n", argv[i] );
                 return 1;
@@ -110,7 +134,7 @@ int main(int argc, char **argv) {
 int ibm2unix(void) {
     int c;
 
-    while ( EOF != (c=fgetc(fpin))) {
+    while ( EOF != (c = fgetc(fpin))) {
         if (13 != c) {
             fputc( c, fpout );
         }

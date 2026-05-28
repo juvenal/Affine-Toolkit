@@ -1,0 +1,20 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define AFFINE_VERSION_MAJOR @AFFINE_VERSION_MAJOR@
+#define AFFINE_VERSION_MINOR @AFFINE_VERSION_MINOR@
+#define AFFINE_VERSION_PATCH @AFFINE_VERSION_PATCH@
+#define AFFINE_VERSION "@AFFINE_VERSION_MAJOR@.@AFFINE_VERSION_MINOR@.@AFFINE_VERSION_PATCH@"
+
+#define RAT_COPYRIGHT_STATEMENT \
+"The Affine Libraries and Tools are:\n" \
+"Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge\n" \
+"Copyright (C) 2022-2026 (portions) Juvenal A. Silva Jr.\n" \
+"All Rights Reserved\n"
+
+#define RENDERMAN_COPYRIGHT_STATEMENT \
+"The RenderMan (R) Interface Procedures and RIB Protocol are:\n" \
+"Copyright 1988, 1989, Pixar. All rights reserved.\n" \
+"RenderMan (R) is a registered trademark of Pixar\n"
+
+#endif // CONFIG_H

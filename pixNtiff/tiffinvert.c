@@ -47,12 +47,34 @@
 #include <stdio.h>
 #include <string.h>
 #include <tiffio.h>
+#include "config.h"
 #include "bitmap.h"
 #include "rtiff.h"
 #include "wtiff.h"
 
 
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int main(int argc, char **argv);
+
+
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s tiff_filename1 ...\n"                         \
+          "   tiff_filename1 ...   TIFF file(s) to overwrite with an\n" \
+          "                        an inverted version of their image.\n", toolname);
+}
 
 
 int main(int argc, char **argv) 
@@ -64,12 +86,22 @@ int main(int argc, char **argv)
    auto uint32  i,j,x,y;
 
 
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion("tiffinvert");
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp("tiffinvert");
+         return 0;
+      }
+   }
+
+
    if ( argc < 2 || (argc > 1 && argv[1][0]=='-') )
    {
       /* User tried to specify an option, so just print help text. */
-      printf( "tiffinvert tiff_filename1 ...\n"                         \
-          "   tiff_filename1 ...   TIFF file(s) to overwrite with an\n" \
-          "                        an inverted version of their image.\n" );
+      PrintHelp("tiffinvert");
       return 1;
    }
 

@@ -729,7 +729,7 @@ RIB_UINT32
      ( (rib)&&(table)                                    \
       ? ((((PRIB_INSTANCE)(rib))->ritable=(table)),      \
 	 (((PRIB_INSTANCE)(rib))->rilevel=(ri_level)),   \
-	 NULL)                                           \
+	 0)                                              \
       : 1 /* Error */ ) 
 
 #define RibGetHintTableSize( /* RIB_HANDLE */ rib )  \

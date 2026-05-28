@@ -71,6 +71,7 @@
 #include <ributil.h>
 #include <ribattrstore.h>
 #include <ribtrimstore.h>
+#include "config.h"
 
 
 typedef struct _HPOINT {
@@ -284,7 +285,8 @@ int mmErrorHandler(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error);
 
 
 int main(int argc, char **argv); 
-void PrintHelp( void );
+void PrintHelp( const char* toolname );
+void PrintVersion( const char* toolname );
 void PrintError( char *file );
 void MissingNameAttribute( int ricall );
 RtBoolean NegateZCoordinate( int nvertices, 
@@ -339,6 +341,19 @@ int main(int argc, char **argv)
    RtBoolean       binary = RI_FALSE;
    int             i,j;
 
+   if (argc > 1) 
+   {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) 
+      {
+         PrintVersion(argv[0]);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) 
+      {
+         PrintHelp(argv[0]);
+         return 0;
+      }
+   }
    
    i = 1;
    while ( i < argc )
@@ -644,21 +659,35 @@ int main(int argc, char **argv)
    return 0;
    
  CommandLineError:
-   PrintHelp();
-   return 1;
-}
+    PrintHelp(argv[0]);
+    return 1;
+ }
 
 
-void PrintHelp( void )
-{
+ void PrintVersion( const char* toolname )
+ {
+   printf( "%s %s\n", toolname, AFFINE_VERSION );
+   printf( "%s", RAT_COPYRIGHT_STATEMENT );
+   printf( "%s", RENDERMAN_COPYRIGHT_STATEMENT );
+ }
+
+
+ void PrintHelp( const char* toolname )
+ {
+  fprintf( stderr, "%s\n", toolname );
+  fprintf( stderr, "%s", RAT_COPYRIGHT_STATEMENT );
+  fprintf( stderr, "%s", RENDERMAN_COPYRIGHT_STATEMENT );
   fprintf( stderr, 
-"ribfixer [-o file] [-binary] [-<fixname>. . .] [filename . . .]\n\n"      \
-" [-o file]                 Output file name.  If not given, stdout is\n"  \
-"                           used.\n"                                       \
-" [-binary]                 Print RIB in encoded format.\n"                \
-" [-<fixname>. . .]         See below for list of fixes.\n"                \
-" [filename . . .]          If no file names are given then ribfixer\n"    \
-"                           will use standard input.\n\n" );
+ "Usage: %s [-o file] [-binary] [-<fixname>. . .] [filename . . .]\n\n"      \
+ " [-o file]                 Output file name.  If not given, stdout is\n"  \
+ "                           used.\n"                                       \
+ " [-binary]                 Print RIB in encoded format.\n"                \
+ " [-<fixname>. . .]         See below for list of fixes.\n"                \
+ " [-v, --version]           Print version information.\n"                  \
+ " [-h, --help]              Print this help message.\n"                    \
+ " [filename . . .]          If no file names are given then ribfixer\n"    \
+ "                           will use standard input.\n\n", toolname );
+
   fprintf( stderr, 
 " RIB Fixes:\n"                                                             \
 " Several \"fixes\" and touch-ups are provided with ribfixer.  Please note,\n"\

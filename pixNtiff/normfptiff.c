@@ -51,9 +51,11 @@
 #include "bitmap.h"
 #include "rtiff.h"
 #include "wtiff.h"
+#include "config.h"
 
 
-void PrintHelp( void );
+void PrintHelp( const char *toolname );
+void PrintVersion( const char *toolname );
 int NormalizeFPData( char *fin, char *fout, 
                     int ZeroMin, int ZeroOutInf, float Infinity,
                     int Verbose,
@@ -72,7 +74,18 @@ int main(int argc, char **argv)
    float  Maximum = (float)1.0e38;
    float  Infinity = (float)1.0e38;
    int    i = 1;
+   const char *toolname = "normfptiff";
 
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion(toolname);
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp(toolname);
+         return 0;
+      }
+   }
 
    while ( i < argc )
    {
@@ -181,30 +194,37 @@ int main(int argc, char **argv)
    return 0;
    
  CommandLineError:
-   PrintHelp();
+   PrintHelp(toolname);
    return 1;
 }
 
 
-void PrintHelp( void )
+void PrintHelp( const char *toolname )
 {
-   printf( 
-"normfptiff [-ZeroMin] [-ZeroOutInf] [-Infinity n] [-Verbose|-v]\n"          \
+  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+  printf( "Usage: %s [-ZeroMin] [-ZeroOutInf] [-Infinity n] [-Verbose|-v]\n"          \
 "           [-Minimum n|min n] [-Maximum n|max n]\n"                         \
 "           tiff_input tiff_output\n"                                        \
+"   [-v, --version] Show version information\n"                              \
+"   [-h, --help]    Show this help message\n"                                \
 "   [-ZeroMin]      Translate data range so min is zero.  This affects \n"   \
 "                   the mapping of the data's values to the range 0 to 1.\n" \
 "                   The default is to map 0 to 0 and map max to 1.\n"        \
 "   [-ZeroOutInf]   Take all values at Inf and set them to zero.\n"          \
 "   [-Infinity n]   Default Inf is 1.0e38.  Z files appear to have Inf\n"    \
 "                   at 1.0E30.\n"                                            \
-"   [-Verbose|-v]   Print min, max values found.\n"                          \
+"   [-Verbose]      Print min, max values found.\n"                          \
 "   [-Minimum n     Clip data to n if it is less than or equal to n.\n"      \
 "   | -min n]       Default min value is -1.0e38\n"                          \
 "   [-Maximum n     Clip data to n if it is greater than or equal to n.\n"   \
 "   | -max n]       Default min value is 1.0e38\n"                           \
 "   tiff_input      IEEE floating point TIFF file to read from.\n"           \
-"   tiff_output     IEEE floating point TIFF file to write to.\n" );
+"   tiff_output     IEEE floating point TIFF file to write to.\n", toolname );
+}
+
+void PrintVersion( const char *toolname )
+{
+  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
 }
 
 

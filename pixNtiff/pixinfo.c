@@ -45,19 +45,55 @@
  *
  */
 #include <stdio.h>
+#include <string.h>
+#include "config.h"
 
+
+void PrintVersion(const char* toolname);
+void PrintHelp(const char* toolname);
 int pixinfo( char *filename );
 int main(int argc, char **argv);
+
+
+void PrintVersion(const char* toolname)
+{
+   printf("%s version %s\n", toolname, AFFINE_VERSION);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+}
+
+
+void PrintHelp(const char* toolname)
+{
+   printf("%s\n", toolname);
+   printf(RAT_COPYRIGHT_STATEMENT);
+   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+   printf("\nUsage: %s pix_filename . . .\n"                          \
+          "   pix_filename . . .  List of Alias/Wavefront pix files to read.\n", toolname);
+}
+
 
 int main(int argc, char **argv) 
 {
    register int  i;
 
+
+   if (argc > 1) {
+      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+         PrintVersion("pixinfo");
+         return 0;
+      }
+      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+         PrintHelp("pixinfo");
+         return 0;
+      }
+   }
+
+
    if ( argc < 2 || (argc > 1 && argv[1][0]=='-') )
    {
       /* User tried to specify an option, so just print help text. */
-      printf( "pixinfo pix_filename . . .\n"                          \
-      "   pix_filename . . .  List of Alias/Wavefront pix files to read.\n" );
+      PrintHelp("pixinfo");
       return 1;
    }
 
