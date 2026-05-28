@@ -1130,7 +1130,8 @@ RtObjectHandle RiObjectBegin( void )
 
    fprintf( fp, "ObjectBegin %u\n", gSRIBW.LastObjectHandle );
    
-   object = (RtObjectHandle)gSRIBW.LastObjectHandle++;
+   object = (RtObjectHandle)((size_t)gSRIBW.LastObjectHandle);
+   gSRIBW.LastObjectHandle++;
 
    return object;
 }

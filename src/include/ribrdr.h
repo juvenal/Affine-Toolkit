@@ -744,7 +744,7 @@ RIB_UINT32
      ( (rib)&&(table)                                           \
       ? ((((PRIB_INSTANCE)(rib))->hinttable=(table)),           \
 	 (((PRIB_INSTANCE)(rib))->hintlevel=(hint_level)),      \
-	 NULL)                                                  \
+	 0)                                                     \
       : 1 /* Error */ ) 
 
 #define /* RtBoolean */ RibShouldFreeData( /* RIB_HANDLE */ rib )          \

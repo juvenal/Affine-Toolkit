@@ -169,7 +169,7 @@ int cininfo( char *filename, int multiplefiles )
    static CINEON_IMAGEDESC   imgdesc;
    FILE               *cin;
    int                bigendian;
-   char               *p;
+   unsigned char      *p;
    register int       i;
 
 
@@ -191,7 +191,7 @@ int cininfo( char *filename, int multiplefiles )
     *    actually fixed at {0x80,0x2a,0x5f,0xd7}.  
     * [CINE99] indicates that the magic number is reversed for little endian.
     */
-   p = (char*)&header.magicnumber;
+   p = (unsigned char*)&header.magicnumber;
    if (p[0]!=0x80 || p[1]!=0x2a || p[2]!=0x5f || p[3]!=0xd7 )
    {
       if (p[0]!=0xd7 || p[1]!=0x5f || p[2]!=0x2a || p[3]!=0x80 )
@@ -279,34 +279,34 @@ int cininfo( char *filename, int multiplefiles )
    
    switch ( imgdesc.orientation ) {
     case CINEON_LEFTTOP: 
-      p = "Left is row 0 / Top is column 0";
+      p = (unsigned char*)"Left is row 0 / Top is column 0";
       break;
     case CINEON_LEFTBOT: 
-      p = "Left is row 0 / Bottom is column 0";
+      p = (unsigned char*)"Left is row 0 / Bottom is column 0";
       break;
     case CINEON_RIGHTTOP: 
-      p = "Right is row 0 / Top is column 0";
+      p = (unsigned char*)"Right is row 0 / Top is column 0";
       break;
     case CINEON_RIGHTBOT: 
-      p = "Right is row 0 / Bottom is column 0";
+      p = (unsigned char*)"Right is row 0 / Bottom is column 0";
       break;
     case CINEON_TOPLEFT:  
-      p = "Top is row 0 / Left is column 0";
+      p = (unsigned char*)"Top is row 0 / Left is column 0";
       break;
     case CINEON_TOPRIGHT: 
-      p = "Top is row 0 / Right is column 0";
+      p = (unsigned char*)"Top is row 0 / Right is column 0";
       break;
     case CINEON_BOTLEFT: 
-      p = "Bottom is row 0 / Left is column 0";
+      p = (unsigned char*)"Bottom is row 0 / Left is column 0";
       break;
     case CINEON_BOTRIGHT:  
-      p = "Bottom is row 0 / Right is column 0";
+      p = (unsigned char*)"Bottom is row 0 / Right is column 0";
       break;
     default:
-      p = "Unkown orientation value.";
+      p = (unsigned char*)"Unkown orientation value.";
    }
    printf( "  Orientation: (%s)\n  Channels/Pixel: %u\n", 
-	   p, (unsigned int)imgdesc.nchannels );
+	   (char*)p, (unsigned int)imgdesc.nchannels );
 
    if (!CheckString( filename, 200, &imgdesc.label[0] ))
    {

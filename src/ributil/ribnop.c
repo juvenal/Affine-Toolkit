@@ -193,7 +193,7 @@ RtLightHandle RiNopAreaLightSourceV( RtToken name,
    (void)name; (void)n; (void)tokens; (void)parms;
    
    /* Fake it. */
-   return (RtLightHandle)LastLightHandle++;
+   return (RtLightHandle)((size_t)LastLightHandle++);
 }
 
 
@@ -490,7 +490,7 @@ RtLightHandle RiNopLightSourceV( RtToken name,
    (void)name; (void)n; (void)tokens; (void)parms;
 
    /* Fake it. */
-   return (RtLightHandle)LastLightHandle++;
+   return (RtLightHandle)((size_t)LastLightHandle++);
 }
 
 
@@ -600,7 +600,7 @@ RtVoid RiNopNuPatchV( RtInt nu, RtInt uorder, RtFloat uknot[],
 RtObjectHandle RiNopObjectBegin( void )
 {
    /* Fake it. */
-   return (RtObjectHandle)LastObjectHandle++;
+   return (RtObjectHandle)((size_t)LastObjectHandle++);
 }
 
 
