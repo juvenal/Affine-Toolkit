@@ -37,18 +37,3 @@ add_affine_library(ribcparm cparams.c names.c)
 add_executable(isaprime isaprime.c)
 target_link_libraries(isaprime m) # Link math library
 install(TARGETS isaprime RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-# Tests
-add_executable(hashtest hashtest.c)
-target_link_libraries(hashtest ribhash)
-
-add_executable(strtest strtest.c)
-target_link_libraries(strtest ribhash)
-
-add_executable(cptest cptest.c)
-target_link_libraries(cptest ribcparm)
-
-add_executable(cnsttest cnsttest.c)
-target_link_libraries(cnsttest ribconst)
-# Need basistbl.o too according to Makefile
-target_sources(cnsttest PRIVATE basistbl.c)

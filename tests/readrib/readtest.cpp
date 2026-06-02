@@ -66,33 +66,33 @@
 #define GRAVITY_TESTS
 
 
-char defref_bfile[]="./tests/defref.bin";
-char read_nfile[]="./tests/numbers.asc";
-char read_ifile[]="./tests/integers.asc";
-char read_zfile[]="./tests/zeros.asc";
-char read_sfile[]="./tests/strings.asc";
-char read_uli[]="./tests/uli.asc";
-char read_ulf[]="./tests/ulf.asc";
-char read_uls[]="./tests/uls.asc";
-char read_afile[]="./tests/read.asc";
-char read_bfile[]="./tests/read.bin";
-char read_s1file[]="./tests/strings.bin";
-char read_commentEOF[]="./tests/commentEOF.asc";
-char read_int1[]="./tests/int1.asc";
-char read_int1EOF[]="./tests/int1EOF.asc";
-char read_flt1[]="./tests/flt1.asc";
-char read_flt1EOF[]="./tests/flt1EOF.asc";
-char read_minus[]="./tests/minus.asc";
-char read_flt1E[]="./tests/flt1E.asc";
-char read_str1[]="./tests/str1.asc";
-char read_strEOF[]="./tests/strEOF.asc";
-char read_int3[]="./tests/int3.asc";
-char read_flt3[]="./tests/flt3.asc";
-char read_int3B[]="./tests/int3B.asc";
-char read_flt3B[]="./tests/flt3B.asc";
+char defref_bfile[]="./data/defref.bin";
+char read_nfile[]="./data/numbers.asc";
+char read_ifile[]="./data/integers.asc";
+char read_zfile[]="./data/zeros.asc";
+char read_sfile[]="./data/strings.asc";
+char read_uli[]="./data/uli.asc";
+char read_ulf[]="./data/ulf.asc";
+char read_uls[]="./data/uls.asc";
+char read_afile[]="./data/read.asc";
+char read_bfile[]="./data/read.bin";
+char read_s1file[]="./data/strings.bin";
+char read_commentEOF[]="./data/commentEOF.asc";
+char read_int1[]="./data/int1.asc";
+char read_int1EOF[]="./data/int1EOF.asc";
+char read_flt1[]="./data/flt1.asc";
+char read_flt1EOF[]="./data/flt1EOF.asc";
+char read_minus[]="./data/minus.asc";
+char read_flt1E[]="./data/flt1E.asc";
+char read_str1[]="./data/str1.asc";
+char read_strEOF[]="./data/strEOF.asc";
+char read_int3[]="./data/int3.asc";
+char read_flt3[]="./data/flt3.asc";
+char read_int3B[]="./data/int3B.asc";
+char read_flt3B[]="./data/flt3B.asc";
 
-char read_int3brackets[]="./tests/int3brackets.asc";
-char read_flt3brackets[]="./tests/flt3brackets.asc";
+char read_int3brackets[]="./data/int3brackets.asc";
+char read_flt3brackets[]="./data/flt3brackets.asc";
 
 
 int ExpectedAnError = RI_TRUE;

@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
-#include "../catch.hpp"
-#include "../3dtorib.hpp"
+#include "catch.hpp"
+#include "3dtorib.hpp"
 
 using namespace threedtorib;
 

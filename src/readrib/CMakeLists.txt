@@ -32,20 +32,3 @@ add_affine_library(riberror ${ERROROBJS})
 # libsribrdr
 add_affine_library(sribrdr ${RDROBJS})
 affine_target_link_libraries(sribrdr PUBLIC ribhash sribw ZLIB::ZLIB)
-
-# Tests
-add_executable(strmtest strmtest.c)
-target_link_libraries(strmtest ribrdr ribhash ZLIB::ZLIB)
-install(TARGETS strmtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-add_executable(readtest readtest.c)
-target_link_libraries(readtest ribrdr sribhash sribw ZLIB::ZLIB)
-install(TARGETS readtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-add_executable(hinttest hinttest.c)
-target_link_libraries(hinttest ribrdr sribhash sribw ZLIB::ZLIB)
-install(TARGETS hinttest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-add_executable(errtest errtest.c)
-target_link_libraries(errtest riberror ribmsg)
-install(TARGETS errtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

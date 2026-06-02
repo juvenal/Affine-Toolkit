@@ -31,6 +31,8 @@ configure_file(
 
 include(GNUInstallDirs)
 
+enable_testing()
+
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/include")
 
@@ -81,6 +83,7 @@ add_subdirectory(src/tokentbl)
 add_subdirectory(src/pcutil)
 add_subdirectory(src/pixNtiff)
 add_subdirectory(docs/examples)
+add_subdirectory(tests)
 
 install(DIRECTORY src/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/affine)
 install(DIRECTORY docs/ DESTINATION ${CMAKE_INSTALL_DOCDIR})

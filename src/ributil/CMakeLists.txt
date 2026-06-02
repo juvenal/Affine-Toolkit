@@ -29,12 +29,3 @@ install(TARGETS ribfixer RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 add_executable(ribobjmod objmod.c)
 target_link_libraries(ribobjmod ributil ribnop)
 install(TARGETS ribobjmod RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-# Tests
-add_executable(trimtest trimtest.c)
-target_link_libraries(trimtest ribtrimstore ributil)
-install(TARGETS trimtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-add_executable(attrtest attrtest.c)
-target_link_libraries(attrtest ribattrstore ributil)
-install(TARGETS attrtest RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

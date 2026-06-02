@@ -60,9 +60,9 @@
 #include <ribrdr.h>
 
 
-char abc_file[]="./tests/abc.asc";
-char sb_file[]="./tests/sb.asc";
-char gz123_file[]="./tests/123.asc.gz";
+char abc_file[]="./data/abc.asc";
+char sb_file[]="./data/sb.asc";
+char gz123_file[]="./data/123.asc.gz";
 
 
 int main( void );
@@ -389,7 +389,7 @@ int main( void )
       printf( "Called:  RibClose( rib ).\n" );
    }
 
-   strcpy( b, "./tests/#.asc" );
+   strcpy( b, "./data/#.asc" );
    s = strrchr( b, '#' );
    count = max+7;
    for ( i=0; i<count; i++ )
