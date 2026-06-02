@@ -1,33 +1,33 @@
-/* 
- * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
- * 
+/*
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
+ *
  * Affine (R) is a registered trademark of Thomas E. Burge
  *
  * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
- * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
- * PARTICULAR PURPOSE.  
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * In no event shall Thomas E. Burge be liable for any indirect or
- * consequential damages or loss of data resulting from use or performance 
+ * consequential damages or loss of data resulting from use or performance
  * of this software.
- * 
+ *
  * Permission is granted to include compiled versions of this code in
  * noncommercially sold software provided the following copyrights and
  * notices appear in all software and any related documentation:
  *
- *                 The Affine (R) Libraries and Tools are 
- *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                 The Affine (R) Libraries and Tools are
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.
  *                          All rights reserved.
  *         Affine (R) is a registered trademark of Thomas E. Burge.
  *
- * Also refer to any additional requirements presently set by Pixar 
+ * Also refer to any additional requirements presently set by Pixar
  * in regards to the RenderMan (R) Interface Procedures and Protocol.
  *
- * Those wishing to distribute this software commercially and those wishing 
- * to redistribute the source code must get written permission from the 
- * author, Thomas E. Burge.  
+ * Those wishing to distribute this software commercially and those wishing
+ * to redistribute the source code must get written permission from the
+ * author, Thomas E. Burge.
  *
- * Basically for now, I would like folks to get the source code directly 
+ * Basically for now, I would like folks to get the source code directly
  * from me rather than to have a bunch of different versions circulating
  * about.
  *
@@ -37,11 +37,11 @@
  * FILE:  mac2unix.c
  *
  * DESCRIPTION:  Utility to convert ASCII files from Macs to follow the
- *               end-of-line conventions of UNIX ASCII files.  
- *   
+ *               end-of-line conventions of UNIX ASCII files.
+ *
  *
  *    Contains:
- * 
+ *
  *    References:
  *
  */
@@ -51,22 +51,23 @@
 #include <string.h>
 #include "config.h"
 
-void PrintVersion(const char* toolname) {
+void PrintVersion(const char *toolname) {
     printf("%s version %s\n", toolname, AFFINE_VERSION);
     printf("%s\n", RAT_COPYRIGHT_STATEMENT);
     printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
 }
 
-void PrintHelp(const char* toolname) {
+void PrintHelp(const char *toolname) {
     printf("%s\n", toolname);
     printf("%s\n", RAT_COPYRIGHT_STATEMENT);
     printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
-    printf( "Usage: %s [-o outputfile] files . . .\n"                      \
-            "   [filename . . .]   If no file names are given then\n"     \
-            "                      %s will use standard input.\n"   \
-            "   [-o outputfile]    UNIX file to write to.\n"              \
-            "                      If no output file name is given then\n"\
-            "                      %s will use standard output.\n", toolname, toolname, toolname );
+    printf("Usage: %s [-o outputfile] files . . .\n"
+           "   [filename . . .]   If no file names are given then\n"
+           "                      %s will use standard input.\n"
+           "   [-o outputfile]    UNIX file to write to.\n"
+           "                      If no output file name is given then\n"
+           "                      %s will use standard output.\n",
+           toolname, toolname, toolname);
 }
 
 int mac2unix(void);
@@ -136,7 +137,7 @@ int main(int argc, char *argv[]) {
 int mac2unix(void) {
     int c;
 
-    while (EOF != (c=fgetc(fpin))) {
+    while (EOF != (c = fgetc(fpin))) {
         if (13 == c) {
             fputc(10, fpout);
         }

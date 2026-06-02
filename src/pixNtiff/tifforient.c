@@ -1,33 +1,33 @@
-/* 
- * Copyright (c) 1998 Thomas E. Burge.  All rights reserved.  
- * 
+/*
+ * Copyright (c) 1998 Thomas E. Burge.  All rights reserved.
+ *
  * Affine (R) is a registered trademark of Thomas E. Burge
  *
  * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
- * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
- * PARTICULAR PURPOSE.  
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * In no event shall Thomas E. Burge be liable for any indirect or
- * consequential damages or loss of data resulting from use or performance 
+ * consequential damages or loss of data resulting from use or performance
  * of this software.
- * 
+ *
  * Permission is granted to include compiled versions of this code in
  * noncommercially sold software provided the following copyrights and
  * notices appear in all software and any related documentation:
  *
- *                 The Affine (R) Libraries and Tools are 
- *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                 The Affine (R) Libraries and Tools are
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.
  *                          All rights reserved.
  *         Affine (R) is a registered trademark of Thomas E. Burge.
  *
- * Also refer to any additional requirements presently set by Pixar 
+ * Also refer to any additional requirements presently set by Pixar
  * in regards to the RenderMan (R) Interface Procedures and Protocol.
  *
- * Those wishing to distribute this software commercially and those wishing 
- * to redistribute the source code must get written permission from the 
- * author, Thomas E. Burge.  
+ * Those wishing to distribute this software commercially and those wishing
+ * to redistribute the source code must get written permission from the
+ * author, Thomas E. Burge.
  *
- * Basically for now, I would like folks to get the source code directly 
+ * Basically for now, I would like folks to get the source code directly
  * from me rather than to have a bunch of different versions circulating
  * about.
  *
@@ -37,10 +37,10 @@
  * FILE:  tiffinvert.c
  *
  * DESCRIPTION:  Test application.
- *   
+ *
  *
  *    Contains:
- * 
+ *
  *    References:
  *
  */
@@ -52,161 +52,136 @@
 #include "config.h"
 
 
-void PrintHelp( const char *toolname );
-void PrintVersion( const char *toolname );
-void PrintError( char *file );
-int Orient( char *filename, int setflags, int orientation );
+void PrintHelp(const char *toolname);
+void PrintVersion(const char *toolname);
+void PrintError(char *file);
+int Orient(char *filename, int setflags, int orientation);
 int main(int argc, char **argv);
 
+int main(int argc, char **argv) {
+    int orientation = 0;
+    int setflags = 0;
+    int i;
+    const char *toolname = "tifforient";
 
-int main(int argc, char **argv) 
-{
-   int  orientation = 0;
-   int  setflags = 0;
-   int  i;
-   const char *toolname = "tifforient";
-
-   if (argc > 1) {
-      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
-         PrintVersion(toolname);
-         return 0;
-      }
-      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
-         PrintHelp(toolname);
-         return 0;
-      }
-   }
-
-   i = 1;
-   while ( i < argc )
-   {
-      if ( argv[i][0]=='-' )
-      {
-         if ( argv[i][1]!='\0' && argv[i][2]=='\0' )
-         {
-	    switch (argv[i][1]) {
-	     case 'k':
-	       setflags = 1;
-	       break;
-	     case '0':
-	     case '1':
-	     case '2':
-	     case '3':
-	     case '4':
-	     case '5':
-	     case '6':
-	     case '7':
-	       orientation = argv[i][1] - '0';
-	       break;
-	     default:
-	       PrintHelp(toolname);
-	       return 1;
-	    }
-         }
-         else
-         {
+    if (argc > 1) {
+        if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+            PrintVersion(toolname);
+            return 0;
+        }
+        if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
             PrintHelp(toolname);
-            return 1;
-         }
-      }
-      else
-      {
-         break;
-      }
-      i++;
-   }
- 
-   if (i==argc)
-   {
-      PrintHelp(toolname);
-      return 1;
-   }
+            return 0;
+        }
+    }
 
-   while ( i < argc )
-   {
-      Orient( argv[i], setflags, orientation );
-      i++;
-   }     
-   
-   return 0;
+    i = 1;
+    while (i < argc) {
+        if (argv[i][0] == '-') {
+            if (argv[i][1] != '\0' && argv[i][2] == '\0') {
+                switch (argv[i][1]) {
+                    case 'k':
+                        setflags = 1;
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                        orientation = argv[i][1] - '0';
+                        break;
+                    default:
+                        PrintHelp(toolname);
+                        return 1;
+                }
+            }
+            else {
+                PrintHelp(toolname);
+                return 1;
+            }
+        }
+        else {
+            break;
+        }
+        i++;
+    }
+
+    if (i == argc) {
+        PrintHelp(toolname);
+        return 1;
+    }
+
+    while (i < argc) {
+        Orient(argv[i], setflags, orientation);
+        i++;
+    }
+
+    return 0;
 }
 
-
-void PrintHelp( const char *toolname )
-{
-  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
-  printf( "Usage: %s [-k] [-0|-1|-2|-3|-4|-5|-6|-7|-8] tiff_filename1 ...\n"  \
-"  -v, --version Show version information\n" \
-"  -h, --help    Show this help message\n" \
-"  [-k]  Keep the image the same, just set the orientation flags.\n" \
-" [-0    BITMAP_TOPLEFT,  -- Top is row 0.     Left is column 0.\n"  \
-"  -1    BITMAP_TOPRIGHT, -- Top is row 0.     Right is column 0.\n" \
-"  -2    BITMAP_BOTRIGHT, -- Bottom is row 0.  Right is column 0.\n" \
-"  -3    BITMAP_BOTLEFT,  -- Bottom is row 0.  Left is column 0.\n"  \
-"  -4    BITMAP_LEFTTOP,  -- Left is row 0.    Top is column 0.\n"   \
-"  -5    BITMAP_RIGHTTOP, -- Right is row 0.   Top is column 0.\n"   \
-"  -6    BITMAP_RIGHTBOT, -- Right is row 0.   Bottom is column 0.\n"\
-"  -7]   BITMAP_LEFTBOT,  -- Left is row 0.    Bottom is column 0.\n"\
-"By default -0 is assumed.\n"\
-"  tiff_filename1 ...   TIFF file(s) to reorient.\n", toolname );
+void PrintHelp(const char *toolname) {
+    printf("%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT);
+    printf("Usage: %s [-k] [-0|-1|-2|-3|-4|-5|-6|-7|-8] tiff_filename1 ...\n"
+           "  -v, --version Show version information\n"
+           "  -h, --help    Show this help message\n"
+           "  [-k]  Keep the image the same, just set the orientation flags.\n"
+           " [-0    BITMAP_TOPLEFT,  -- Top is row 0.     Left is column 0.\n"
+           "  -1    BITMAP_TOPRIGHT, -- Top is row 0.     Right is column 0.\n"
+           "  -2    BITMAP_BOTRIGHT, -- Bottom is row 0.  Right is column 0.\n"
+           "  -3    BITMAP_BOTLEFT,  -- Bottom is row 0.  Left is column 0.\n"
+           "  -4    BITMAP_LEFTTOP,  -- Left is row 0.    Top is column 0.\n"
+           "  -5    BITMAP_RIGHTTOP, -- Right is row 0.   Top is column 0.\n"
+           "  -6    BITMAP_RIGHTBOT, -- Right is row 0.   Bottom is column 0.\n"
+           "  -7]   BITMAP_LEFTBOT,  -- Left is row 0.    Bottom is column 0.\n"
+           "By default -0 is assumed.\n"
+           "  tiff_filename1 ...   TIFF file(s) to reorient.\n",
+           toolname);
 }
 
-void PrintVersion( const char *toolname )
-{
-  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+void PrintVersion(const char *toolname) {
+    printf("%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT);
 }
 
-
-void PrintError( char *file )
-{
-   printf( "Error:  Couldn't open file: %s\n", file );
+void PrintError(char *file) {
+    printf("Error:  Couldn't open file: %s\n", file);
 }
 
+int Orient(char *filename, int setflags, int orientation) {
+    PBITMAP tiff;
 
-int Orient( char *filename, int setflags, int orientation )
-{
-   PBITMAP        tiff;
+    tiff = ReadTiff(filename, 0);
 
+    if (!tiff) {
+        fprintf(stderr, "Can't read %s\n", filename);
+        return 1;
+    }
 
-   tiff = ReadTiff( filename, 0 );
-   
-   if ( !tiff )
-   {
-      fprintf( stderr, "Can't read %s\n", filename );
-      return 1;
-   }
-   
-   if ( tiff->sampleformat!=BITMAP_UINT8 
-	&& tiff->sampleformat!=BITMAP_UINT16
-	&& tiff->sampleformat!=BITMAP_IEEE )
-   {
-      fprintf( stderr, 
-            "TIFF file %s is not a \"r\", \"rgb\", \"rgba\" or IEEE image\n", 
-            filename );
-      goto Error;
-   }
-   
-   if (setflags)
-   {
-      tiff->orientation = orientation;
-   }
-   else
-   {
-      tiff = OrientBitmap( tiff, orientation );
-   }
+    if (tiff->sampleformat != BITMAP_UINT8 && tiff->sampleformat != BITMAP_UINT16 && tiff->sampleformat != BITMAP_IEEE) {
+        fprintf(stderr,
+                "TIFF file %s is not a \"r\", \"rgb\", \"rgba\" or IEEE image\n",
+                filename);
+        goto Error;
+    }
 
-   if (WriteTiff( tiff, filename ))
-   {
-      fprintf( stderr, "Can't write file: \"%s\"\n", filename );
-      goto Error;
-   }
-   
-   DestroyBitmap( tiff );
-   return 0;
+    if (setflags) {
+        tiff->orientation = orientation;
+    }
+    else {
+        tiff = OrientBitmap(tiff, orientation);
+    }
 
- Error:
-   DestroyBitmap( tiff );
-   return 1;
+    if (WriteTiff(tiff, filename)) {
+        fprintf(stderr, "Can't write file: \"%s\"\n", filename);
+        goto Error;
+    }
+
+    DestroyBitmap(tiff);
+    return 0;
+
+Error:
+    DestroyBitmap(tiff);
+    return 1;
 }
-
-

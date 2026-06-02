@@ -32,7 +32,7 @@ TEST_CASE("Geometry Transformations: RHS Z-up to LHS Y-up", "[transform]") {
     // If we want LHS Y-up:
     // RHS Y-up: (x, y, z) -> (x, y, -z) [and flip winding]
     // RHS Z-up: (x, y, z) -> (x, z, y)  [and flip winding?]
-    
+
     mesh.points = {{1.0f, 2.0f, 3.0f}}; // X=1, Y=2 (forward), Z=3 (up)
     mesh.faces = {{{0, 1, 2}}};
 
@@ -43,13 +43,13 @@ TEST_CASE("Geometry Transformations: RHS Z-up to LHS Y-up", "[transform]") {
     REQUIRE(mesh.points[0].x == 1.0f);
     REQUIRE(mesh.points[0].y == 3.0f);
     REQUIRE(mesh.points[0].z == 2.0f);
-    
+
     // For RHS Z-up to LHS Y-up, we'll see if winding needs flip.
     // Standard conversion involves an odd number of reflections usually.
 }
 
-#include <fstream>
 #include <cstdio>
+#include <fstream>
 
 TEST_CASE("STL Parser: ASCII", "[stl]") {
     const std::string filename = "test_ascii.stl";
@@ -69,7 +69,7 @@ TEST_CASE("STL Parser: ASCII", "[stl]") {
     REQUIRE(mesh.points.size() == 3);
     REQUIRE(mesh.faces.size() == 1);
     REQUIRE(mesh.faces[0].indices.size() == 3);
-    
+
     // Check points
     REQUIRE(mesh.points[0].x == 0.0f);
     REQUIRE(mesh.points[1].x == 1.0f);
@@ -81,31 +81,31 @@ TEST_CASE("STL Parser: ASCII", "[stl]") {
 TEST_CASE("STL Parser: Binary", "[stl]") {
     const std::string filename = "test_binary.stl";
     std::ofstream ofs(filename, std::ios::binary);
-    
+
     char header[80] = {0};
     ofs.write(header, 80);
-    
+
     uint32_t num_facets = 1;
-    ofs.write(reinterpret_cast<const char*>(&num_facets), 4);
-    
+    ofs.write(reinterpret_cast<const char *>(&num_facets), 4);
+
     float normal[3] = {0, 0, 1};
     float v1[3] = {0, 0, 0};
     float v2[3] = {1, 0, 0};
     float v3[3] = {0, 1, 0};
     uint16_t attribute_byte_count = 0;
-    
-    ofs.write(reinterpret_cast<const char*>(normal), 12);
-    ofs.write(reinterpret_cast<const char*>(v1), 12);
-    ofs.write(reinterpret_cast<const char*>(v2), 12);
-    ofs.write(reinterpret_cast<const char*>(v3), 12);
-    ofs.write(reinterpret_cast<const char*>(&attribute_byte_count), 2);
-    
+
+    ofs.write(reinterpret_cast<const char *>(normal), 12);
+    ofs.write(reinterpret_cast<const char *>(v1), 12);
+    ofs.write(reinterpret_cast<const char *>(v2), 12);
+    ofs.write(reinterpret_cast<const char *>(v3), 12);
+    ofs.write(reinterpret_cast<const char *>(&attribute_byte_count), 2);
+
     ofs.close();
 
     Mesh mesh = parseSTL(filename);
     REQUIRE(mesh.points.size() == 3);
     REQUIRE(mesh.faces.size() == 1);
-    
+
     std::remove(filename.c_str());
 }
 
@@ -135,11 +135,11 @@ TEST_CASE("RIB Generation", "[rib]") {
     mesh.faces = {{{0, 1, 2}}};
 
     std::string rib = generateRIB(mesh, "test_mesh");
-    
+
     REQUIRE(rib.find("AttributeBegin") != std::string::npos);
     REQUIRE(rib.find("Attribute \"identifier\" \"string name\" [\"test_mesh\"]") != std::string::npos);
     REQUIRE(rib.find("PointsPolygons") != std::string::npos);
-    REQUIRE(rib.find("[3]") != std::string::npos); // nvertices
+    REQUIRE(rib.find("[3]") != std::string::npos);     // nvertices
     REQUIRE(rib.find("[0 1 2]") != std::string::npos); // vertices
     REQUIRE(rib.find("\"P\" [0 0 0 1 0 0 0 1 0]") != std::string::npos);
     REQUIRE(rib.find("AttributeEnd") != std::string::npos);

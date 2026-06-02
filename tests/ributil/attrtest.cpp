@@ -9,8 +9,8 @@ extern "C" {
 }
 
 TEST_CASE("Attribute store tests", "[ributil]") {
-   PATTR attr;
-   attr = AttrInitRITable(NULL, 0);
-   REQUIRE(attr != NULL);
-   AttrDestroy(attr);
+    PATTR attr;
+    attr = AttrInitRITable(NULL, 0);
+    REQUIRE(attr != NULL);
+    AttrDestroy(attr);
 }

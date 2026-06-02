@@ -9,8 +9,8 @@ extern "C" {
 }
 
 TEST_CASE("Trim store tests", "[ributil]") {
-   PTRIMSTORE trim;
-   trim = TrimStoreInitRITable(NULL, 0);
-   REQUIRE(trim != NULL);
-   TrimStoreDestroy(trim);
+    PTRIMSTORE trim;
+    trim = TrimStoreInitRITable(NULL, 0);
+    REQUIRE(trim != NULL);
+    TrimStoreDestroy(trim);
 }

@@ -1,33 +1,33 @@
-/* 
+/*
  * Copyright (c) 1993-1998 Thomas E. Burge.  All rights reserved.
- * 
+ *
  * Affine (R) is a registered trademark of Thomas E. Burge
  *
  * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
- * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
- * PARTICULAR PURPOSE.  
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * In no event shall Thomas E. Burge be liable for any indirect or
- * consequential damages or loss of data resulting from use or performance 
+ * consequential damages or loss of data resulting from use or performance
  * of this software.
- * 
+ *
  * Permission is granted to include compiled versions of this code in
  * noncommercially sold software provided the following copyrights and
  * notices appear in all software and any related documentation:
  *
- *                 The Affine (R) Libraries and Tools are 
- *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                 The Affine (R) Libraries and Tools are
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.
  *                          All rights reserved.
  *         Affine (R) is a registered trademark of Thomas E. Burge.
  *
- * Also refer to any additional requirements presently set by Pixar 
+ * Also refer to any additional requirements presently set by Pixar
  * in regards to the RenderMan (R) Interface Procedures and Protocol.
  *
- * Those wishing to distribute this software commercially and those wishing 
- * to redistribute the source code must get written permission from the 
- * author, Thomas E. Burge.  
+ * Those wishing to distribute this software commercially and those wishing
+ * to redistribute the source code must get written permission from the
+ * author, Thomas E. Burge.
  *
- * Basically for now, I would like folks to get the source code directly 
+ * Basically for now, I would like folks to get the source code directly
  * from me rather than to have a bunch of different versions circulating
  * about.
  *
@@ -36,7 +36,7 @@
  *
  * FILE:  ribtree.c
  *
- * DESCRIPTION:  Old program that creates very simplistic, toy-like trees 
+ * DESCRIPTION:  Old program that creates very simplistic, toy-like trees
  *               up to very large trees that look more like a pile of leaves
  *               with a stick under'em.
  *
@@ -46,19 +46,19 @@
  *
  *        NOTE:  Ten iterations creates a 48mb RIB file -- so don't get too
  *               carried away with the number of iterations.  Six to eight
- *               iterations seems to create the better trees -- but this 
- *               varies with the hard coded numbers in the program.    
+ *               iterations seems to create the better trees -- but this
+ *               varies with the hard coded numbers in the program.
  *
- *    History: 
+ *    History:
  *     11-05-96  The program was written before I had a RIB writer library,
  *               So printf()'s were used to create the RIB files.  Have now
- *               changed over to the Ri calls.  
+ *               changed over to the Ri calls.
  *
  *    Contains:
- * 
+ *
  *    References:
- *          [PIXA89]  Pixar, The RenderMan Interface, Version 3.1, 
- *                    Richmond, CA, pp. 160-165, September 1989.  
+ *          [PIXA89]  Pixar, The RenderMan Interface, Version 3.1,
+ *                    Richmond, CA, pp. 160-165, September 1989.
  *
  *
  *         The RenderMan (R) Interface Procedures and Protocol are:
@@ -76,63 +76,61 @@
 
 /* Some C compilers have stdlib.h with TRUE and FALSE already defined. */
 #ifndef TRUE
-# define TRUE     1
+#define TRUE 1
 #endif
 #ifndef FALSE
-# define FALSE    0
+#define FALSE 0
 #endif
 
-#define DEG2RAD  (3.1415927/180)
+#define DEG2RAD (3.1415927 / 180)
 
 typedef int BOOLEAN;
 typedef int *PBOOLEAN;
 
 typedef struct _TREENODE {
-    RtFloat twist;
-    RtFloat angle;
-    RtFloat totalangle;
-    RtFloat length;
-    RtFloat radius;
-    BOOLEAN leaf;
-    int level;
-    struct _TREENODE *sibling;
-    struct _TREENODE *child;
-    struct _TREENODE *parent;
-    struct _TREENODE *next;
+        RtFloat twist;
+        RtFloat angle;
+        RtFloat totalangle;
+        RtFloat length;
+        RtFloat radius;
+        BOOLEAN leaf;
+        int level;
+        struct _TREENODE *sibling;
+        struct _TREENODE *child;
+        struct _TREENODE *parent;
+        struct _TREENODE *next;
 } TREENODE;
-typedef TREENODE * PTREENODE;
+typedef TREENODE *PTREENODE;
 
 int depth;
 int procedural = 0;
 
-void PrintHelp( const char *toolname );
-void PrintVersion( const char *toolname );
+void PrintHelp(const char *toolname);
+void PrintVersion(const char *toolname);
 int main(int argc, char **argv);
 int GrowTree(PTREENODE pTreeRoot);
 int PrintTreeNode(PTREENODE pTreeRoot, int angle);
 
-void PrintHelp( const char *toolname )
-{
-  printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
-  printf( "Usage: %s #OfIterations\n"
-          "  -v, --version    Show version information\n"
-          "  -h, --help       Show this help message\n"
-          "   #OfIterations  How many levels of iterations performed to make a tree.\n"
-          "                  Note:  10 iterations and up make huge RIB files.  For\n"
-          "                  example \"%s 10\" outputs 48mb of data.\n", toolname, toolname );
+void PrintHelp(const char *toolname) {
+    printf("%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT);
+    printf("Usage: %s #OfIterations\n"
+           "  -v, --version    Show version information\n"
+           "  -h, --help       Show this help message\n"
+           "   #OfIterations  How many levels of iterations performed to make a tree.\n"
+           "                  Note:  10 iterations and up make huge RIB files.  For\n"
+           "                  example \"%s 10\" outputs 48mb of data.\n",
+           toolname, toolname);
 }
 
-
-void PrintVersion( const char *toolname )
-{
-  printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+void PrintVersion(const char *toolname) {
+    printf("%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT);
 }
 
 int GrowTree(PTREENODE pTreeRoot) {
     register PTREENODE p;
-    PTREENODE pt;               /* ptr to a new tree node */
+    PTREENODE pt; /* ptr to a new tree node */
     PTREENODE pn;
-    float rn;                   /* random number of branches */
+    float rn; /* random number of branches */
     int i;
 
     p = pTreeRoot;
@@ -145,14 +143,14 @@ int GrowTree(PTREENODE pTreeRoot) {
             rn = rand() % 4 + 2;
             p->leaf = FALSE;
             for (i = 0; i < rn; i++) {
-                pt = (PTREENODE) malloc(sizeof(TREENODE));
+                pt = (PTREENODE)malloc(sizeof(TREENODE));
                 if (!pt) {
                     printf("MEMORY ERROR\n");
                     return 1;
                 }
                 pt->twist = (p->child
-                             ? rand() % (int)(180 / rn) + 90 + p->child->twist
-                             : rand() % 359);
+                                 ? rand() % (int)(180 / rn) + 90 + p->child->twist
+                                 : rand() % 359);
                 pt->angle = rand() % 35 + (p->level > 1 ? 35 : 30);
                 pt->length = p->length * 0.66;
                 pt->radius = p->radius * 0.44;
@@ -180,12 +178,11 @@ int GrowTree(PTREENODE pTreeRoot) {
     return 0;
 }
 
-
 int PrintTreeNode(PTREENODE pTreeRoot, int angle) {
     register PTREENODE p = pTreeRoot;
     int i, depth = 0;
-    RtColor brown = { 165.0 / 255.0, 42.0 / 255.0, 42.0 / 255.0 };
-    RtColor green = { 0.0, 1.0, 0.5 };
+    RtColor brown = {165.0 / 255.0, 42.0 / 255.0, 42.0 / 255.0};
+    RtColor green = {0.0, 1.0, 0.5};
 
     (void)angle;
 
@@ -198,7 +195,7 @@ int PrintTreeNode(PTREENODE pTreeRoot, int angle) {
             /*
              * printf( "Rotate %g 0 0 1\n", p->twist );
              * printf( "Translate %g %g %g\n", 0.0, 0.0, p->parent->length );
-             * printf( "Rotate %g 1 0 0\n", p->angle );                     
+             * printf( "Rotate %g 1 0 0\n", p->angle );
              */
             RiRotate(p->twist, 0.0, 0.0, 1.0);
             RiTranslate(0.0, 0.0, p->parent->length);
@@ -206,11 +203,12 @@ int PrintTreeNode(PTREENODE pTreeRoot, int angle) {
         }
 
         if (p->leaf) {
-            /* 
+            /*
              * printf( "Surface \"plastic\"\n" );
              * printf( "Color   [0 1 0.5]\n" );
-             * printf( "Disk 0 1.5 360\n" ); 
-             *//* TO-DO: use angle for leaf's pos */
+             * printf( "Disk 0 1.5 360\n" );
+             */
+            /* TO-DO: use angle for leaf's pos */
 
             RiSurface("plastic", RI_NULL);
             RiColor(green);
@@ -244,7 +242,6 @@ int PrintTreeNode(PTREENODE pTreeRoot, int angle) {
     return 0;
 }
 
-
 int main(int argc, char **argv) {
     TREENODE root;
     int i, iterations;
@@ -276,7 +273,7 @@ int main(int argc, char **argv) {
     root.level = 1;
 
     if (argc > 1 && (iterations = atoi(argv[1])) > 0) {
-        /* 
+        /*
          * printf( "Display \"a.tif\" \"framebuffer\" \"rgba\"\n" );
          * printf( "Format 300 300 1\nClipping 0.001 1000\n" );
          * printf( "Projection \"perspective\" \"fov\" [ 40 ]\n" );
@@ -284,7 +281,7 @@ int main(int argc, char **argv) {
          * printf( "WorldBegin\n" );
          * printf( "LightSource \"distantlight\" 1 \"intensity\" [0.5 ]\n" );
          * printf( "LightSource \"ambientlight\" 2 \"intensity\" [0.1 ]\n" );
-         * printf( "Translate 0 -20 0\n" ); 
+         * printf( "Translate 0 -20 0\n" );
          * printf( "Rotate -90 1 0 0\n" );
          * printf( "Rotate 50 0 0 1\n" );
          */
@@ -297,7 +294,7 @@ int main(int argc, char **argv) {
         RiWorldBegin();
         RiLightSource("distantlight", "intensity", &distantlight, RI_NULL);
         RiLightSource("ambientlight", "intensity", &ambientlight, RI_NULL);
-        RiTranslate(0.0, -20.0, 0.0);   /* move tree down into scene */
+        RiTranslate(0.0, -20.0, 0.0); /* move tree down into scene */
         RiRotate(-90.0, 1.0, 0.0, 0.0);
         RiRotate(50.0, 0.0, 0.0, 1.0);
 
@@ -305,7 +302,7 @@ int main(int argc, char **argv) {
 
         for (i = 0; i < iterations; i++) {
             GrowTree(&root);
-		}
+        }
 
         PrintTreeNode(&root, 0);
 

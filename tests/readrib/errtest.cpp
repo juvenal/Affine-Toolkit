@@ -14,9 +14,9 @@ extern char gRibErrorHandlerTable[];
 }
 
 TEST_CASE("Error library tests", "[readrib]") {
-   SECTION("gRibErrorHandlerTable lookup") {
-      REQUIRE(RibReadStringForToken((char*)"ignore", gRibErrorHandlerTable, NULL) == kRIBTABLES_IGNORE);
-      REQUIRE(RibReadStringForToken((char*)"print", gRibErrorHandlerTable, NULL) == kRIBTABLES_PRINT);
-      REQUIRE(RibReadStringForToken((char*)"abort", gRibErrorHandlerTable, NULL) == kRIBTABLES_ABORT);
-   }
+    SECTION("gRibErrorHandlerTable lookup") {
+        REQUIRE(RibReadStringForToken((char *)"ignore", gRibErrorHandlerTable, NULL) == kRIBTABLES_IGNORE);
+        REQUIRE(RibReadStringForToken((char *)"print", gRibErrorHandlerTable, NULL) == kRIBTABLES_PRINT);
+        REQUIRE(RibReadStringForToken((char *)"abort", gRibErrorHandlerTable, NULL) == kRIBTABLES_ABORT);
+    }
 }

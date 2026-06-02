@@ -1,32 +1,32 @@
-/* 
- * Copyright (c) 1998-1999 Thomas E. Burge.  All rights reserved.  
- * 
+/*
+ * Copyright (c) 1998-1999 Thomas E. Burge.  All rights reserved.
+ *
  * Affine is a trademark of Thomas E. Burge
  *
  * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
- * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
- * PARTICULAR PURPOSE.  
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * In no event shall Thomas E. Burge be liable for any indirect or
- * consequential damages or loss of data resulting from use or performance 
+ * consequential damages or loss of data resulting from use or performance
  * of this software.
- * 
+ *
  * Permission is granted to include compiled versions of this code in
  * noncommercially sold software provided the following copyrights and
  * notices appear in all software and any related documentation:
  *
- *                  The Affine Libraries and Tools are 
- *                Copyright (c) 1995-1999 Thomas E. Burge  
+ *                  The Affine Libraries and Tools are
+ *                Copyright (c) 1995-1999 Thomas E. Burge
  *                          All rights reserved.
  *
- * Also refer to any additional requirements presently set by Pixar 
+ * Also refer to any additional requirements presently set by Pixar
  * in regards to the RenderMan (R) Interface Procedures and Protocol.
  *
- * Those wishing to distribute this software commercially and those wishing 
- * to redistribute the source code must get written permission from the 
- * author, Thomas E. Burge.  
+ * Those wishing to distribute this software commercially and those wishing
+ * to redistribute the source code must get written permission from the
+ * author, Thomas E. Burge.
  *
- * Basically for now, I would like folks to get the source code directly 
+ * Basically for now, I would like folks to get the source code directly
  * from me rather than to have a bunch of different versions circulating
  * about.
  *
@@ -36,11 +36,11 @@
  * FILE:  closequad.c
  *
  * DESCRIPTION:  Takes quadrics and closes them to make solids.
- *               When needed disks, bilinear and bicubic patches 
+ *               When needed disks, bilinear and bicubic patches
  *               are added to make the quadric represent a solid.
  *
  *    Contains:
- *  
+ *
  *     History:
  *        07-06-98  Created based on some previously written quadric split
  *                  written a few years back based on the references listed
@@ -49,13 +49,13 @@
  *                  a table length parameter.
  *
  *    References:
- *        [FAUX79]  Faux, I. D. and Pratt, M. J., Computational Geometry 
- *                  for Design and Manufacture, Ellis Horwood Ltd., 
+ *        [FAUX79]  Faux, I. D. and Pratt, M. J., Computational Geometry
+ *                  for Design and Manufacture, Ellis Horwood Ltd.,
  *                  Chichester England, p. 134 1979.
- *        [PIXA89]  Pixar, The RenderMan Interface, Version 3.1, Richmond, CA, 
+ *        [PIXA89]  Pixar, The RenderMan Interface, Version 3.1, Richmond, CA,
  *                  September 1989.
  *        [UPST90]  Upstill, Steve, The RenderMan Companion: A Programmer's
- *                  Guide to Realistic Computer Graphics, Addison Wesley, 
+ *                  Guide to Realistic Computer Graphics, Addison Wesley,
  *                  1990, pp. 129.
  *
  *
@@ -77,21 +77,18 @@
 #define Y 1
 #define Z 2
 
-
 int main(int argc, char **argv);
 void PrintHelp(const char *toolname);
 void PrintVersion(const char *toolname);
 void PrintError(char *file);
 int CloseQuadric(char *input, char *output, RtBoolean readarchives);
 
-
 RtVoid ClosedConeV(RtFloat height, RtFloat radius, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]);
 RtVoid ClosedCylinderV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]);
 RtVoid ClosedHyperboloidV(RtPoint point1, RtPoint point2, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]);
 RtVoid ClosedParaboloidV(RtFloat rmax, RtFloat zmin, RtFloat zmax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]);
 RtVoid ClosedSphereV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]);
-RtVoid ClosedTorusV(RtFloat majorradius, RtFloat minorradius,
-                    RtFloat phimin, RtFloat phimax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]);
+RtVoid ClosedTorusV(RtFloat majorradius, RtFloat minorradius, RtFloat phimin, RtFloat phimax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]);
 
 /*
  * Have rib handle set up as a global variable.
@@ -99,12 +96,11 @@ RtVoid ClosedTorusV(RtFloat majorradius, RtFloat minorradius,
  */
 RIB_HANDLE rib;
 
-#define DEG_TO_RAD   (3.141592654/180.0)
-#define RAD_TO_DEG   (180.0/3.141592654)
-#define PI           (3.141592654)
-#define HALF_PI      (3.141592654/2.0)
-#define UNIT_CIRCLE  (0.5522847)
-
+#define DEG_TO_RAD (3.141592654 / 180.0)
+#define RAD_TO_DEG (180.0 / 3.141592654)
+#define PI (3.141592654)
+#define HALF_PI (3.141592654 / 2.0)
+#define UNIT_CIRCLE (0.5522847)
 
 int main(int argc, char **argv) {
     char *outputfilename = NULL;
@@ -163,12 +159,12 @@ int main(int argc, char **argv) {
         }
     }
 
-    gRibRITable[kRIB_CONE] = (PRIB_RIPROC) ClosedConeV;
-    gRibRITable[kRIB_CYLINDER] = (PRIB_RIPROC) ClosedCylinderV;
-    gRibRITable[kRIB_HYPERBOLOID] = (PRIB_RIPROC) ClosedHyperboloidV;
-    gRibRITable[kRIB_PARABOLOID] = (PRIB_RIPROC) ClosedParaboloidV;
-    gRibRITable[kRIB_SPHERE] = (PRIB_RIPROC) ClosedSphereV;
-    gRibRITable[kRIB_TORUS] = (PRIB_RIPROC) ClosedTorusV;
+    gRibRITable[kRIB_CONE] = (PRIB_RIPROC)ClosedConeV;
+    gRibRITable[kRIB_CYLINDER] = (PRIB_RIPROC)ClosedCylinderV;
+    gRibRITable[kRIB_HYPERBOLOID] = (PRIB_RIPROC)ClosedHyperboloidV;
+    gRibRITable[kRIB_PARABOLOID] = (PRIB_RIPROC)ClosedParaboloidV;
+    gRibRITable[kRIB_SPHERE] = (PRIB_RIPROC)ClosedSphereV;
+    gRibRITable[kRIB_TORUS] = (PRIB_RIPROC)ClosedTorusV;
 
     if (i < argc) {
         while (i < argc) {
@@ -182,35 +178,33 @@ int main(int argc, char **argv) {
 
     return 0;
 
-  CommandLineError:
+CommandLineError:
     PrintHelp(toolname);
     return 1;
 }
 
-
 void PrintHelp(const char *toolname) {
-    printf( "%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+    printf("%s\n%s%s", toolname, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT);
     printf("Usage: %s [-o file] [-r] [filename . . .]\n"
            "  -v, --version    Show version information\n"
            "  -h, --help       Show this help message\n"
            "   [-o file]          Output file name.  If not given, stdout is used.\n"
            "   [-r]               Recursively expand ReadArchive statements.\n"
-           "   [filename . . .]   If no file names are given then closequad will\n" "                      use standard input.\n", toolname);
+           "   [filename . . .]   If no file names are given then closequad will\n"
+           "                      use standard input.\n",
+           toolname);
 }
 
 void PrintVersion(const char *toolname) {
-    printf( "%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT );
+    printf("%s version %s\n%s%s", toolname, AFFINE_VERSION, RAT_COPYRIGHT_STATEMENT, RENDERMAN_COPYRIGHT_STATEMENT);
 }
-
 
 void PrintError(char *file) {
     printf("Error:  Couldn't open file: %s\n", file);
 }
 
-
 int CloseQuadric(char *input, char *output, RtBoolean readarchives) {
     int err = kRIB_OK;
-
 
     rib = RibOpen(input, kRIB_LAST_RI, gRibRITable);
     if (!rib) {
@@ -234,14 +228,12 @@ int CloseQuadric(char *input, char *output, RtBoolean readarchives) {
     return err;
 }
 
-
 RtVoid ClosedConeV(RtFloat height, RtFloat radius, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]) {
     static RtPoint P[4];
 
-
-    /* Could call RiCylinder() with a degenerate top or could call 
-     *    RiHyperboloid().  
-     * For this program we'll put the code here in this function. 
+    /* Could call RiCylinder() with a degenerate top or could call
+     *    RiHyperboloid().
+     * For this program we'll put the code here in this function.
      */
     RiConeV(height, radius, thetamax, n, tokens, parms);
 
@@ -260,11 +252,11 @@ RtVoid ClosedConeV(RtFloat height, RtFloat radius, RtFloat thetamax, RtInt n, Rt
      *   setup the tokens[] and parms[] arrays.
      */
     if (RibCacheVector(rib, 1, &tokens, &parms))
-        return;                 /* Oops, out of memory.  Just return. */
+        return; /* Oops, out of memory.  Just return. */
 
     /* Now add in the positional data. */
     tokens[n] = RI_P;
-    parms[n] = (RtPointer) P;
+    parms[n] = (RtPointer)P;
     n++;
 
     P[0][X] = 0.0;
@@ -289,10 +281,8 @@ RtVoid ClosedConeV(RtFloat height, RtFloat radius, RtFloat thetamax, RtInt n, Rt
     RiAttributeEnd();
 }
 
-
 RtVoid ClosedCylinderV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]) {
     static RtPoint P[4];
-
 
     if (zmin == zmax) {
         RiArchiveRecord(RI_COMMENT, "WARNING:  Invalid zmin Cylinder (line:%u).", RibGetLineCount(rib));
@@ -300,7 +290,7 @@ RtVoid ClosedCylinderV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat theta
     }
 
     /* Could call RiHyperboloid() to create a cylinder, but
-     *    for this program we'll put the code here in this function. 
+     *    for this program we'll put the code here in this function.
      */
     RiCylinderV(radius, zmin, zmax, thetamax, n, tokens, parms);
 
@@ -322,11 +312,11 @@ RtVoid ClosedCylinderV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat theta
      *   setup the tokens[] and parms[] arrays.
      */
     if (RibCacheVector(rib, 1, &tokens, &parms))
-        return;                 /* Oops, out of memory.  Just return. */
+        return; /* Oops, out of memory.  Just return. */
 
     /* Now add in the positional data. */
     tokens[n] = RI_P;
-    parms[n] = (RtPointer) P;
+    parms[n] = (RtPointer)P;
     n++;
 
     P[0][X] = 0.0;
@@ -349,9 +339,7 @@ RtVoid ClosedCylinderV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat theta
     RiReverseOrientation();
     RiPatchV(RI_BILINEAR, n, tokens, parms);
     RiAttributeEnd();
-
 }
-
 
 RtFloat CalcAngle(RtFloat x, RtFloat y);
 RtFloat CalcAngle(RtFloat x, RtFloat y) {
@@ -365,13 +353,11 @@ RtFloat CalcAngle(RtFloat x, RtFloat y) {
     return angle;
 }
 
-
 RtVoid ClosedHyperboloidV(RtPoint point1, RtPoint point2, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]) {
     static RtPoint P1[4];
     static RtPoint P2[4];
     RtBoolean twisted = RI_FALSE;
     RtFloat angle, radius, z;
-
 
     if (thetamax == 0.0)
         return;
@@ -408,7 +394,7 @@ RtVoid ClosedHyperboloidV(RtPoint point1, RtPoint point2, RtFloat thetamax, RtIn
      *   setup the tokens[] and parms[] arrays.
      */
     if (RibCacheVector(rib, 1, &tokens, &parms))
-        return;                 /* Oops, out of memory.  Just return. */
+        return; /* Oops, out of memory.  Just return. */
 
     /* One patch from a hyperboloid's straight edge to the vertical axis
      *    might get twisted if the line between point1 and point2 goes
@@ -416,15 +402,11 @@ RtVoid ClosedHyperboloidV(RtPoint point1, RtPoint point2, RtFloat thetamax, RtIn
      * A twist would result in the normal being reversed and pointing into
      *    the solid on one half of the twisted patch, so use use two patches.
      */
-    if (((point1[Y] < 0.0 && point2[Y] > 0.0)
-         || (point2[Y] < 0.0 && point1[Y] > 0.0))
-        && fabs((point1[X] / point1[Y]) + (point2[X] / point2[Y])) < 1E-05) {
+    if (((point1[Y] < 0.0 && point2[Y] > 0.0) || (point2[Y] < 0.0 && point1[Y] > 0.0)) && fabs((point1[X] / point1[Y]) + (point2[X] / point2[Y])) < 1E-05) {
         z = point1[Z] - (point2[Z] * point1[Y]) / point2[Y];
         twisted = RI_TRUE;
     }
-    else if (((point1[X] < 0.0 && point2[X] > 0.0)
-              || (point2[X] < 0.0 && point1[X] > 0.0))
-             && fabs((point1[Y] / point1[X]) + (point2[Y] / point2[X])) < 1E-05) {
+    else if (((point1[X] < 0.0 && point2[X] > 0.0) || (point2[X] < 0.0 && point1[X] > 0.0)) && fabs((point1[Y] / point1[X]) + (point2[Y] / point2[X])) < 1E-05) {
         z = point1[Z] - (point2[Z] * point1[X]) / point2[X];
         twisted = RI_TRUE;
     }
@@ -475,12 +457,12 @@ RtVoid ClosedHyperboloidV(RtPoint point1, RtPoint point2, RtFloat thetamax, RtIn
     /* Now add in the positional data. */
     tokens[n] = RI_P;
 
-    parms[n] = (RtPointer) P1;
+    parms[n] = (RtPointer)P1;
     RiPatchV(RI_BILINEAR, n + 1, tokens, parms);
     if (twisted && P2[0][Z] != P2[2][Z]) {
-        parms[n] = (RtPointer) P2;
+        parms[n] = (RtPointer)P2;
         RiPatchV(RI_BILINEAR, n + 1, tokens, parms);
-        parms[n] = (RtPointer) P1;
+        parms[n] = (RtPointer)P1;
     }
 
     RiAttributeBegin();
@@ -488,27 +470,29 @@ RtVoid ClosedHyperboloidV(RtPoint point1, RtPoint point2, RtFloat thetamax, RtIn
     RiReverseOrientation();
     RiPatchV(RI_BILINEAR, n + 1, tokens, parms);
     if (twisted && P2[0][Z] != P2[2][Z]) {
-        parms[n] = (RtPointer) P2;
+        parms[n] = (RtPointer)P2;
         RiPatchV(RI_BILINEAR, n + 1, tokens, parms);
     }
     RiAttributeEnd();
 }
-
 
 RtVoid ClosedParaboloidV(RtFloat rmax, RtFloat zmin, RtFloat zmax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]) {
     static RtPoint P[16];
     RtFloat rmin = 0.0;
     RtFloat Sx, Sy, B0, B3, K;
 
-
     if (zmin < 0.0) {
         RiArchiveRecord(RI_COMMENT, "WARNING:  "
-                        "Invalid zmin (%g) value given to Paraboloid " "(line:%u).", zmin, RibGetLineCount(rib));
+                                    "Invalid zmin (%g) value given to Paraboloid "
+                                    "(line:%u).",
+                        zmin, RibGetLineCount(rib));
         return;
     }
     if (zmax <= 0.0) {
         RiArchiveRecord(RI_COMMENT, "WARNING:  "
-                        "Invalid zmax (%g) value given to Paraboloid " "(line:%u).", zmax, RibGetLineCount(rib));
+                                    "Invalid zmax (%g) value given to Paraboloid "
+                                    "(line:%u).",
+                        zmax, RibGetLineCount(rib));
         return;
     }
     RiParaboloidV(rmax, zmin, zmax, thetamax, n, tokens, parms);
@@ -534,26 +518,26 @@ RtVoid ClosedParaboloidV(RtFloat rmax, RtFloat zmin, RtFloat zmax, RtFloat theta
      *   setup the tokens[] and parms[] arrays.
      */
     if (RibCacheVector(rib, 1, &tokens, &parms))
-        return;                 /* Oops, out of memory.  Just return. */
+        return; /* Oops, out of memory.  Just return. */
 
     /* Now add in the positional data. */
     tokens[n] = RI_P;
-    parms[n] = (RtPointer) P;
+    parms[n] = (RtPointer)P;
     n++;
 
     /* The Y coordinates need to be zero, so just clear everything. */
     memset(P, '\0', 16 * sizeof(RtFloat));
 
     /* While calculating zmin check if the paraboloid is closed at the bottom */
-    P[0][Z] = P[1][Z] = P[2][Z] = P[3][Z] = zmin;   /* height */
-    /* P[0][X] = 0.0; *//* Note memset() did this already. */
-    P[3][X] = (zmin > 0.0 ? rmax * rmin : 0.0); /* radius */
+    P[0][Z] = P[1][Z] = P[2][Z] = P[3][Z] = zmin; /* height */
+    /* P[0][X] = 0.0; */                          /* Note memset() did this already. */
+    P[3][X] = (zmin > 0.0 ? rmax * rmin : 0.0);   /* radius */
     P[1][X] = P[3][X] / 3.0;
     P[2][X] = 2 * P[1][X];
 
     /* Calculate zmax. */
     P[12][Z] = P[13][Z] = P[14][Z] = P[15][Z] = zmax;
-    /* P[12][X] = 0.0; *//* Note memset() did this already. */
+    /* P[12][X] = 0.0; */ /* Note memset() did this already. */
     P[15][X] = rmax;
     P[13][X] = P[15][X] / 3.0;
     P[14][X] = 2 * P[13][X];
@@ -566,13 +550,13 @@ RtVoid ClosedParaboloidV(RtFloat rmax, RtFloat zmin, RtFloat zmax, RtFloat theta
      *  S1 = (S0 + 2Si)/3,  S2 = (S3 + 2Si)/3
      *
      *   S0 = (X0,Y0) with slope Y0'
-     *   S3 = (X3,Y3) with slope Y3'       
+     *   S3 = (X3,Y3) with slope Y3'
      *
      *   Tangent at S0 is the line L0 = Y0'*X + B0
-     *   Tangent at S3 is the line L3 = Y3'*X + B3       
+     *   Tangent at S3 is the line L3 = Y3'*X + B3
      *
      *   Set L0 and L3 equal:   Y0'*X + B0 = Y3'*X + B3
-     * 
+     *
      *   Intersection of the two tangents at S is (Sx,Sy) where
      *      Sx = (B3-B0) / (Y0' - Y3')
      *      Sy = Y0'*Sx + B0
@@ -599,14 +583,14 @@ RtVoid ClosedParaboloidV(RtFloat rmax, RtFloat zmin, RtFloat zmax, RtFloat theta
 
     /* Calculate CVs one up from zmin. */
     P[4][Z] = P[5][Z] = P[6][Z] = P[7][Z] = (P[0][Z] + 2 * Sy) / 3;
-    /* P[4][X] = 0.0; *//* Note memset() did this already. */
+    /* P[4][X] = 0.0; */ /* Note memset() did this already. */
     P[7][X] = (rmin + 2 * Sx) / 3;
     P[5][X] = P[7][X] / 3.0;
     P[6][X] = 2 * P[5][X];
 
     /* Calculate CVs two up from zmin and one down from zmax. */
     P[8][Z] = P[9][Z] = P[10][Z] = P[11][Z] = (P[12][Z] + 2 * Sy) / 3;
-    /* P[8][X]  = 0.0; *//* Note memset() did this already. */
+    /* P[8][X]  = 0.0; */ /* Note memset() did this already. */
     P[11][X] = (rmax + 2 * Sx) / 3;
     P[9][X] = P[11][X] / 3.0;
     P[10][X] = 2 * P[9][X];
@@ -619,7 +603,6 @@ RtVoid ClosedParaboloidV(RtFloat rmax, RtFloat zmin, RtFloat zmax, RtFloat theta
     RiAttributeEnd();
 }
 
-
 RtVoid ClosedSphereV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]) {
     static RtPoint P1[16];
     static RtPoint P2[16];
@@ -627,7 +610,6 @@ RtVoid ClosedSphereV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetama
     RtFloat xmid, zmid;
     RtFloat angle, circle;
     RtFloat phimax, phimin, phidiff;
-
 
     if (radius == 0.0)
         return;
@@ -676,7 +658,7 @@ RtVoid ClosedSphereV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetama
      *   setup the tokens[] and parms[] arrays.
      */
     if (RibCacheVector(rib, 1, &tokens, &parms))
-        return;                 /* Oops, out of memory.  Just return. */
+        return; /* Oops, out of memory.  Just return. */
 
     /* Now add in the positional data. */
     tokens[n] = RI_P;
@@ -686,14 +668,14 @@ RtVoid ClosedSphereV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetama
     memset(P2, '\0', 16 * sizeof(RtFloat));
 
     /* Calculate the patch from bottom to middle. */
-    P1[0][Z] = P1[1][Z] = P1[2][Z] = P1[3][Z] = zmin;   /* height */
-    /* P1[0][X] = 0.0; *//* Note memset() did this already. */
-    P1[3][X] = rmin;            /* radius */
+    P1[0][Z] = P1[1][Z] = P1[2][Z] = P1[3][Z] = zmin; /* height */
+    /* P1[0][X] = 0.0; */                             /* Note memset() did this already. */
+    P1[3][X] = rmin;                                  /* radius */
     P1[1][X] = P1[3][X] / 3.0;
     P1[2][X] = 2 * P1[1][X];
 
-    P1[12][Z] = P1[13][Z] = P1[14][Z] = P1[15][Z] = zmid;   /* middle's height */
-    /* P1[12][X] = 0.0; *//* Note memset() did this already. */
+    P1[12][Z] = P1[13][Z] = P1[14][Z] = P1[15][Z] = zmid; /* middle's height */
+    /* P1[12][X] = 0.0; */                                /* Note memset() did this already. */
     P1[15][X] = xmid;
     P1[13][X] = P1[15][X] / 3.0;
     P1[14][X] = 2 * P1[13][X];
@@ -702,29 +684,28 @@ RtVoid ClosedSphereV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetama
     circle = (UNIT_CIRCLE / PI) * radius * phidiff;
 
     P1[4][Z] = P1[5][Z] = P1[6][Z] = P1[7][Z] = zmin + circle * sin(angle);
-    /* P1[4][X] = 0.0; *//* Note memset() did this already. */
+    /* P1[4][X] = 0.0; */ /* Note memset() did this already. */
     P1[7][X] = rmin + circle * cos(angle);
     P1[5][X] = P1[7][X] / 3.0;
     P1[6][X] = 2 * P1[5][X];
 
     angle = phimin + phidiff / 2.0 - HALF_PI;
     P1[8][Z] = P1[9][Z] = P1[10][Z] = P1[11][Z] = zmid + circle * sin(angle);
-    /* P1[8][X]  = 0.0; *//* Note memset() did this already. */
+    /* P1[8][X]  = 0.0; */ /* Note memset() did this already. */
     P1[11][X] = xmid + circle * cos(angle);
     P1[9][X] = P1[11][X] / 3.0;
     P1[10][X] = 2 * P1[9][X];
 
-
     /* Calculate the patch from equator to top. */
-    P2[0][Z] = P2[1][Z] = P2[2][Z] = P2[3][Z] = zmid;   /* middle's height */
-    /* P2[0][X] = 0.0; *//* Note memset() did this already. */
+    P2[0][Z] = P2[1][Z] = P2[2][Z] = P2[3][Z] = zmid; /* middle's height */
+    /* P2[0][X] = 0.0; */                             /* Note memset() did this already. */
     P2[3][X] = xmid;
     P2[1][X] = P2[3][X] / 3.0;
     P2[2][X] = 2 * P2[1][X];
 
-    P2[12][Z] = P2[13][Z] = P2[14][Z] = P2[15][Z] = zmax;   /* height */
-    /* P2[12][X] = 0.0; *//* Note memset() did this already. */
-    P2[15][X] = rmax;           /* Radius at zmax. */
+    P2[12][Z] = P2[13][Z] = P2[14][Z] = P2[15][Z] = zmax; /* height */
+    /* P2[12][X] = 0.0; */                                /* Note memset() did this already. */
+    P2[15][X] = rmax;                                     /* Radius at zmax. */
     P2[13][X] = P2[15][X] / 3.0;
     P2[14][X] = 2 * P2[13][X];
 
@@ -732,44 +713,41 @@ RtVoid ClosedSphereV(RtFloat radius, RtFloat zmin, RtFloat zmax, RtFloat thetama
     circle = (UNIT_CIRCLE / PI) * radius * phidiff;
 
     P2[4][Z] = P2[5][Z] = P2[6][Z] = P2[7][Z] = zmid + circle * sin(angle);
-    /* P2[4][X] = 0.0; *//* Note memset() did this already. */
+    /* P2[4][X] = 0.0; */ /* Note memset() did this already. */
     P2[7][X] = xmid + circle * cos(angle);
     P2[5][X] = P2[7][X] / 3.0;
     P2[6][X] = 2 * P2[5][X];
 
     angle = phimin + phidiff - HALF_PI;
     P2[8][Z] = P2[9][Z] = P2[10][Z] = P2[11][Z] = zmax + circle * sin(angle);
-    /* P2[8][X]  = 0.0; *//* Note memset() did this already. */
+    /* P2[8][X]  = 0.0; */ /* Note memset() did this already. */
     P2[11][X] = rmax + circle * cos(angle);
     P2[9][X] = P2[11][X] / 3.0;
     P2[10][X] = 2 * P2[9][X];
 
-    parms[n] = (RtPointer) P1;
+    parms[n] = (RtPointer)P1;
     RiPatchV(RI_BICUBIC, n + 1, tokens, parms);
-    parms[n] = (RtPointer) P2;
+    parms[n] = (RtPointer)P2;
     RiPatchV(RI_BICUBIC, n + 1, tokens, parms);
     RiAttributeBegin();
     RiRotate(thetamax, 0, 0, 1);
     RiReverseOrientation();
-    parms[n] = (RtPointer) P1;
+    parms[n] = (RtPointer)P1;
     RiPatchV(RI_BICUBIC, n + 1, tokens, parms);
-    parms[n] = (RtPointer) P2;
+    parms[n] = (RtPointer)P2;
     RiPatchV(RI_BICUBIC, n + 1, tokens, parms);
     RiAttributeEnd();
 }
 
-
-RtVoid ClosedTorusV(RtFloat majorradius, RtFloat minorradius,
-                    RtFloat phimin, RtFloat phimax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]) {
+RtVoid ClosedTorusV(RtFloat majorradius, RtFloat minorradius, RtFloat phimin, RtFloat phimax, RtFloat thetamax, RtInt n, RtToken tokens[], RtPointer parms[]) {
     RtFloat phidiff, phiminR, phidiffR;
     RtPoint center;
     RtPoint rim;
 
-
-    /* Probably could divide the following case up a bit more. 
+    /* Probably could divide the following case up a bit more.
      * Note that if phimax and phimin are set so the torus is open
      *    on the top and major < minor, the result is a flower like
-     *    geometry where one cup is inside another.  Use PRMan to 
+     *    geometry where one cup is inside another.  Use PRMan to
      *    see this.
      */
     if (fabs(majorradius) - fabs(minorradius) < 0.0) {

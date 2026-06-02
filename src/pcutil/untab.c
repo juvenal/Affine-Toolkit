@@ -1,33 +1,33 @@
-/* 
- * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
- * 
+/*
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
+ *
  * Affine (R) is a registered trademark of Thomas E. Burge
  *
  * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
- * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
- * PARTICULAR PURPOSE.  
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * In no event shall Thomas E. Burge be liable for any indirect or
- * consequential damages or loss of data resulting from use or performance 
+ * consequential damages or loss of data resulting from use or performance
  * of this software.
- * 
+ *
  * Permission is granted to include compiled versions of this code in
  * noncommercially sold software provided the following copyrights and
  * notices appear in all software and any related documentation:
  *
- *                 The Affine (R) Libraries and Tools are 
- *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                 The Affine (R) Libraries and Tools are
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.
  *                          All rights reserved.
  *         Affine (R) is a registered trademark of Thomas E. Burge.
  *
- * Also refer to any additional requirements presently set by Pixar 
+ * Also refer to any additional requirements presently set by Pixar
  * in regards to the RenderMan (R) Interface Procedures and Protocol.
  *
- * Those wishing to distribute this software commercially and those wishing 
- * to redistribute the source code must get written permission from the 
- * author, Thomas E. Burge.  
+ * Those wishing to distribute this software commercially and those wishing
+ * to redistribute the source code must get written permission from the
+ * author, Thomas E. Burge.
  *
- * Basically for now, I would like folks to get the source code directly 
+ * Basically for now, I would like folks to get the source code directly
  * from me rather than to have a bunch of different versions circulating
  * about.
  *
@@ -36,10 +36,10 @@
  *
  * FILE:  untab.c
  *
- * DESCRIPTION:  Utility to remove tabs and replace with spaces.  
- *   
+ * DESCRIPTION:  Utility to remove tabs and replace with spaces.
+ *
  *    Contains:
- * 
+ *
  *    References:
  *
  */
@@ -48,29 +48,28 @@
 #include <string.h>
 #include "config.h"
 
-void PrintVersion(const char* toolname) {
+void PrintVersion(const char *toolname) {
     printf("%s version %s\n", toolname, AFFINE_VERSION);
     printf("%s\n", RAT_COPYRIGHT_STATEMENT);
     printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
 }
 
-void PrintHelp(const char* toolname);
+void PrintHelp(const char *toolname);
 void PrintError(char *file);
 int untab(FILE *fpin, FILE *fpout, int nspaces);
 
 /* Strings */
-static char ErrorOutputAndEdit[] = 
-"Error: Option -o and -edit both specified.\n";
-
+static char ErrorOutputAndEdit[] =
+    "Error: Option -o and -edit both specified.\n";
 
 int main(int argc, char *argv[]) {
-    FILE      *fpin;
-    FILE      *fpout;
-    char      tmpfilename[FILENAME_MAX+1];
-    char      *outputfilename = NULL;
-    int       nspaces=8;
-    int       edit = 0;
-    auto int  i,j;
+    FILE *fpin;
+    FILE *fpout;
+    char tmpfilename[FILENAME_MAX + 1];
+    char *outputfilename = NULL;
+    int nspaces = 8;
+    int edit = 0;
+    auto int i, j;
 
     if (argc > 1) {
         if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
@@ -82,17 +81,17 @@ int main(int argc, char *argv[]) {
             exit(0);
         }
     }
-   
+
     fpout = stdout;
     i = 1;
     while (i < argc) {
-        if (argv[i][0]=='-') {
+        if (argv[i][0] == '-') {
             if ((i + 1 < argc) && argv[i][1] == 'o' && argv[i][2] == '\0') {
                 i++;
                 if (edit) {
                     fprintf(stderr, "%s", ErrorOutputAndEdit);
                     PrintHelp(argv[0]);
-                    return 1;       
+                    return 1;
                 }
                 if (fpout == stdout) {
                     fpout = fopen(argv[i], "wb");
@@ -143,16 +142,16 @@ int main(int argc, char *argv[]) {
      * Was doing this in the while loop that opened and worked on each file,
      *   but an error like this indicates a mistake on the command line and
      *   an input file would have already been written over by the time
-     *   the error was found.  
+     *   the error was found.
      * So do a special loop just to check.
      */
     if (i < argc && outputfilename) {
         j = i;
         while (j < argc) {
             if (!strcmp(argv[j], outputfilename)) {
-                fprintf( stderr, "Output filename %s matches an input filename.\n", argv[j]);
+                fprintf(stderr, "Output filename %s matches an input filename.\n", argv[j]);
                 PrintHelp(argv[0]);
-                return 1;    
+                return 1;
             }
             j++;
         }
@@ -168,11 +167,11 @@ int main(int argc, char *argv[]) {
                     return 1;
                 }
                 tmpfilename[j] = '~';
-                tmpfilename[j+1] = '\0';
+                tmpfilename[j + 1] = '\0';
                 if (rename(argv[i], tmpfilename)) {
                     fprintf(stderr, "Error: Could not create back-up file: %s\n", argv[i]);
                     return 1;
-                }              
+                }
                 fpin = fopen(tmpfilename, "rb");
                 if (!fpin) {
                     PrintError(tmpfilename);
@@ -199,15 +198,14 @@ int main(int argc, char *argv[]) {
         }
     }
     else {
-        untab( stdin, fpout, nspaces );
+        untab(stdin, fpout, nspaces);
     }
     return 0;
 }
 
-
 int untab(FILE *fpin, FILE *fpout, int nspaces) {
     static char spaces[25];
-    int   c;
+    int c;
 
     memset(spaces, ' ', nspaces);
     spaces[nspaces] = '\0';
@@ -222,26 +220,25 @@ int untab(FILE *fpin, FILE *fpout, int nspaces) {
     return 0;
 }
 
-
-void PrintHelp(const char* toolname) {
+void PrintHelp(const char *toolname) {
     printf("%s\n", toolname);
     printf("%s\n", RAT_COPYRIGHT_STATEMENT);
     printf("%s\n", RENDERMAN_COPYRIGHT_STATEMENT);
     printf(
-            "Usage: %s [-t n] [-o outputfile|-edit] [filename . . .]\n"         \
-            "   [-t n]            Replace each tab with n number of\n"      \
-            "                     spaces.  Default is 8.  Maximum is 25.\n" \
-            "   [filename . . .]  If no file names are given then\n"        \
-            "                     %s will use standard input.\n"         \
-            "   [-o outputfile    File to write to.\n"                      \
-            "                     If no output file name is given then\n"   \
-            "                     %s will use standard output.\n"        \
-            "     | -edit]        Create a temporary file of the form\n"    \
-            "                     filename~ and edit the given file.\n\n", toolname, toolname, toolname);
+        "Usage: %s [-t n] [-o outputfile|-edit] [filename . . .]\n"
+        "   [-t n]            Replace each tab with n number of\n"
+        "                     spaces.  Default is 8.  Maximum is 25.\n"
+        "   [filename . . .]  If no file names are given then\n"
+        "                     %s will use standard input.\n"
+        "   [-o outputfile    File to write to.\n"
+        "                     If no output file name is given then\n"
+        "                     %s will use standard output.\n"
+        "     | -edit]        Create a temporary file of the form\n"
+        "                     filename~ and edit the given file.\n\n",
+        toolname, toolname, toolname);
     printf(
-            "   Note:  Don't use this on UNIX Makefiles.\n");
+        "   Note:  Don't use this on UNIX Makefiles.\n");
 }
-
 
 void PrintError(char *file) {
     printf("Error:  Couldn't open file: %s\n", file);

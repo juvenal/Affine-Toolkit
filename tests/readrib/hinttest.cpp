@@ -13,12 +13,12 @@ extern char gRibHintTokenTable[];
 }
 
 TEST_CASE("Hint library tests", "[readrib]") {
-   SECTION("gRibHintTokenTable lookup") {
-      // CameraOrientation is 0
-      REQUIRE(RibReadStringForToken((char*)"CameraOrientation", gRibHintTokenTable, NULL) == 0);
-      // Include is 6
-      REQUIRE(RibReadStringForToken((char*)"Include", gRibHintTokenTable, NULL) == 6);
-      // Scene is 8
-      REQUIRE(RibReadStringForToken((char*)"Scene", gRibHintTokenTable, NULL) == 8);
-   }
+    SECTION("gRibHintTokenTable lookup") {
+        // CameraOrientation is 0
+        REQUIRE(RibReadStringForToken((char *)"CameraOrientation", gRibHintTokenTable, NULL) == 0);
+        // Include is 6
+        REQUIRE(RibReadStringForToken((char *)"Include", gRibHintTokenTable, NULL) == 6);
+        // Scene is 8
+        REQUIRE(RibReadStringForToken((char *)"Scene", gRibHintTokenTable, NULL) == 8);
+    }
 }

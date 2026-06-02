@@ -1,33 +1,33 @@
-/* 
- * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.  
- * 
+/*
+ * Copyright (c) 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
+ *
  * Affine (R) is a registered trademark of Thomas E. Burge
  *
  * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
- * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
- * PARTICULAR PURPOSE.  
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * In no event shall Thomas E. Burge be liable for any indirect or
- * consequential damages or loss of data resulting from use or performance 
+ * consequential damages or loss of data resulting from use or performance
  * of this software.
- * 
+ *
  * Permission is granted to include compiled versions of this code in
  * noncommercially sold software provided the following copyrights and
  * notices appear in all software and any related documentation:
  *
- *                 The Affine (R) Libraries and Tools are 
- *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                 The Affine (R) Libraries and Tools are
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.
  *                          All rights reserved.
  *         Affine (R) is a registered trademark of Thomas E. Burge.
  *
- * Also refer to any additional requirements presently set by Pixar 
+ * Also refer to any additional requirements presently set by Pixar
  * in regards to the RenderMan (R) Interface Procedures and Protocol.
  *
- * Those wishing to distribute this software commercially and those wishing 
- * to redistribute the source code must get written permission from the 
- * author, Thomas E. Burge.  
+ * Those wishing to distribute this software commercially and those wishing
+ * to redistribute the source code must get written permission from the
+ * author, Thomas E. Burge.
  *
- * Basically for now, I would like folks to get the source code directly 
+ * Basically for now, I would like folks to get the source code directly
  * from me rather than to have a bunch of different versions circulating
  * about.
  *
@@ -37,10 +37,10 @@
  * FILE:  pixinfo.c
  *
  * DESCRIPTION:  Utility to print description of Alias/Wavefront pix files.
- *   
+ *
  *
  *    Contains:
- * 
+ *
  *    References:
  *
  */
@@ -48,110 +48,97 @@
 #include <string.h>
 #include "config.h"
 
-
-void PrintVersion(const char* toolname);
-void PrintHelp(const char* toolname);
-int pixinfo( char *filename );
+void PrintVersion(const char *toolname);
+void PrintHelp(const char *toolname);
+int pixinfo(char *filename);
 int main(int argc, char **argv);
 
-
-void PrintVersion(const char* toolname)
-{
-   printf("%s version %s\n", toolname, AFFINE_VERSION);
-   printf(RAT_COPYRIGHT_STATEMENT);
-   printf(RENDERMAN_COPYRIGHT_STATEMENT);
+void PrintVersion(const char *toolname) {
+    printf("%s version %s\n", toolname, AFFINE_VERSION);
+    printf(RAT_COPYRIGHT_STATEMENT);
+    printf(RENDERMAN_COPYRIGHT_STATEMENT);
 }
 
-
-void PrintHelp(const char* toolname)
-{
-   printf("%s\n", toolname);
-   printf(RAT_COPYRIGHT_STATEMENT);
-   printf(RENDERMAN_COPYRIGHT_STATEMENT);
-   printf("\nUsage: %s pix_filename . . .\n"                          \
-          "   pix_filename . . .  List of Alias/Wavefront pix files to read.\n", toolname);
+void PrintHelp(const char *toolname) {
+    printf("%s\n", toolname);
+    printf(RAT_COPYRIGHT_STATEMENT);
+    printf(RENDERMAN_COPYRIGHT_STATEMENT);
+    printf("\nUsage: %s pix_filename . . .\n"
+           "   pix_filename . . .  List of Alias/Wavefront pix files to read.\n",
+           toolname);
 }
 
+int main(int argc, char **argv) {
+    register int i;
 
-int main(int argc, char **argv) 
-{
-   register int  i;
+    if (argc > 1) {
+        if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+            PrintVersion("pixinfo");
+            return 0;
+        }
+        if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+            PrintHelp("pixinfo");
+            return 0;
+        }
+    }
 
+    if (argc < 2 || (argc > 1 && argv[1][0] == '-')) {
+        /* User tried to specify an option, so just print help text. */
+        PrintHelp("pixinfo");
+        return 1;
+    }
 
-   if (argc > 1) {
-      if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
-         PrintVersion("pixinfo");
-         return 0;
-      }
-      if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
-         PrintHelp("pixinfo");
-         return 0;
-      }
-   }
+    i = 1;
+    if (i < argc) {
+        while (i < argc)
+            pixinfo(argv[i++]);
+    }
 
-
-   if ( argc < 2 || (argc > 1 && argv[1][0]=='-') )
-   {
-      /* User tried to specify an option, so just print help text. */
-      PrintHelp("pixinfo");
-      return 1;
-   }
-
-   i = 1;
-   if ( i < argc )
-   {
-      while ( i < argc )
-        pixinfo( argv[i++] );
-   }
-   
-   return 0;
+    return 0;
 }
 
-int pixinfo( char *filename )
-{
-   FILE          *pix;
-   char          b[5];
-   unsigned int  xres, yres;
-   int           bitsperpel;
+int pixinfo(char *filename) {
+    FILE *pix;
+    char b[5];
+    unsigned int xres, yres;
+    int bitsperpel;
 
+    pix = fopen(filename, "rb");
+    if (!pix) {
+        fprintf(stderr, "Can't read %s\n", filename);
+        return 1;
+    }
 
-   pix = fopen( filename, "rb" );
-   if (!pix) 
-   {
-      fprintf( stderr, "Can't read %s\n", filename );
-      return 1;
-   }
+    printf("File: %s\n", filename);
 
-   printf( "File: %s\n", filename );
+    /* Read xres. */
+    if (fread(b, 1, 2, pix) < 2)
+        goto Error;
+    xres = (b[0] << 8) + b[1];
 
-   /* Read xres. */
-   if ( fread( b, 1, 2, pix ) < 2 )
-     goto Error;
-   xres = (b[0]<<8) + b[1];
+    /* Read yres. */
+    if (fread(b, 1, 2, pix) < 2)
+        goto Error;
+    yres = (b[0] << 8) + b[1];
 
-   /* Read yres. */
-   if ( fread( b, 1, 2, pix ) < 2 )
-     goto Error;
-   yres = (b[0]<<8) + b[1];
+    /* Read through unused fields.
+     * These fields are supposed to be unused, but the yoffset always seems
+     *    to be set to yres-1.
+     */
+    if (fread(b, 1, 4, pix) < 4)
+        goto Error;
 
-   /* Read through unused fields. 
-    * These fields are supposed to be unused, but the yoffset always seems
-    *    to be set to yres-1. 
-    */
-   if ( fread( b, 1, 4, pix ) < 4 )
-     goto Error;
+    /* Read bits per pixel. */
+    if (fread(b, 1, 2, pix) < 2)
+        goto Error;
+    bitsperpel = (b[0] << 8) + b[1];
 
-   /* Read bits per pixel. */
-   if ( fread( b, 1, 2, pix ) < 2 )
-     goto Error;
-   bitsperpel = (b[0]<<8) + b[1];
+    printf("  Image Width: %u\n  Image Length: %u\n  Bits/Pixel: %d\n",
+           xres, yres, bitsperpel);
 
-   printf( "  Image Width: %u\n  Image Length: %u\n  Bits/Pixel: %d\n", 
-          xres, yres, bitsperpel );
+    return 0;
 
-   return 0;
-
- Error:
-   fprintf( stderr, "Error reading %s\n", filename );
-   return 1;
+Error:
+    fprintf(stderr, "Error reading %s\n", filename);
+    return 1;
 }

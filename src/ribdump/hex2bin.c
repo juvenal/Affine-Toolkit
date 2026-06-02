@@ -1,34 +1,34 @@
 /* $RCSfile: hex2bin.c,v $  $Revision: 1.2 $ $Date: 1999/06/12 07:15:30 $
  *
  * Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  All rights reserved.
- * 
+ *
  * Affine (R) is a registered trademark of Thomas E. Burge
  *
  * THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT WARRANTY OF ANY KIND
- * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A 
- * PARTICULAR PURPOSE.  
+ * AND WITHOUT ANY GUARANTEE OF MERCHANTABILITY OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * In no event shall Thomas E. Burge be liable for any indirect or
- * consequential damages or loss of data resulting from use or performance 
+ * consequential damages or loss of data resulting from use or performance
  * of this software.
- * 
+ *
  * Permission is granted to include compiled versions of this code in
  * noncommercially sold software provided the following copyrights and
  * notices appear in all software and any related documentation:
  *
- *                 The Affine (R) Libraries and Tools are 
- *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.  
+ *                 The Affine (R) Libraries and Tools are
+ *          Copyright (c) 1995, 1996, 1997, 1998 Thomas E. Burge.
  *                          All rights reserved.
  *         Affine (R) is a registered trademark of Thomas E. Burge.
  *
- * Also refer to any additional requirements presently set by Pixar 
+ * Also refer to any additional requirements presently set by Pixar
  * in regards to the RenderMan (R) Interface Procedures and Protocol.
  *
- * Those wishing to distribute this software commercially and those wishing 
- * to redistribute the source code must get written permission from the 
- * author, Thomas E. Burge.  
+ * Those wishing to distribute this software commercially and those wishing
+ * to redistribute the source code must get written permission from the
+ * author, Thomas E. Burge.
  *
- * Basically for now, I would like folks to get the source code directly 
+ * Basically for now, I would like folks to get the source code directly
  * from me rather than to have a bunch of different versions circulating
  * about.
  *
@@ -39,9 +39,9 @@
  *
  * DESCRIPTION:  Utility to convert hex ASCII printed numbers into a binary
  *               format.
- *   
+ *
  *    Contains:
- * 
+ *
  *    References:
  *
  */
@@ -49,155 +49,126 @@
 #include <stdio.h>
 #include <string.h>
 
-
-int ReadHexNumbers( FILE *fp );
-void PrintHelp( const char *toolname );
-void PrintVersion( const char *toolname );
-void PrintError( char *file );
+int ReadHexNumbers(FILE *fp);
+void PrintHelp(const char *toolname);
+void PrintVersion(const char *toolname);
+void PrintError(char *file);
 int main(int argc, char **argv);
 
 /* globals */
-FILE  *fout;
+FILE *fout;
 
+int main(int argc, char **argv) {
+    char *outputfilename = NULL;
+    FILE *fp;
+    int i, n;
+    char *toolname = argv[0];
 
-int main(int argc, char **argv) 
-{
-   char  *outputfilename = NULL;
-   FILE  *fp;
-   int   i,n;
-   char  *toolname = argv[0];
-
-   if ( argc > 1 )
-   {
-      if ( !strcmp(argv[1], "-v") || !strcmp(argv[1], "--version") )
-      {
-         PrintVersion(toolname);
-         return 0;
-      }
-      if ( !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") )
-      {
-         PrintHelp(toolname);
-         return 0;
-      }
-   }
-
-   fout = stdout;
-   i = 1;
-   while ( i < argc )
-   {
-      if ( argv[i][0]=='-' )
-      {
-         if ( (i+1<argc) 
-             && argv[i][1]=='o' && argv[i][2]=='\0' )
-         {
-            i++;
-            if ( fout == stdout )
-            {
-               outputfilename = argv[i];
-               fout = fopen( argv[i], "w" );
-            }
-            else
-            {
-               printf( "Error: Option -o specified more than once.\n" );
-               PrintHelp(toolname);
-               return 1;
-            }
-            if (!fout)
-            {
-               PrintError( argv[i] );
-               return 1;
-            }
-         }
-         else
-         {
-            PrintHelp(toolname);
-            return 1;
-         }
-      }
-      else
-      {
-         break;
-      }
-      i++;
-   }
-   
-   /* Check that none of the input file names matches the output file name. */
-   if ( i < argc && outputfilename )
-   {
-      n = i;
-      while ( n < argc )
-      {
-         if (!strcmp(argv[n],outputfilename))
-         {
-            fprintf( stderr, 
-                    "Output filename \"%s\" matches an input filename.\n\n",
-                    argv[n] );
-            PrintHelp(toolname);
-            return 1;
-         }
-         n++;
-      }
-   }
-
-   if ( i < argc )
-     while ( i < argc )
-     {
-        fp = fopen(argv[i],"r");
-        
-        if (!fp)
-        {
-           PrintError( argv[i] );
-           return 1;
+    if (argc > 1) {
+        if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
+            PrintVersion(toolname);
+            return 0;
         }
-        ReadHexNumbers( fp );
-        fclose( fp );
+        if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+            PrintHelp(toolname);
+            return 0;
+        }
+    }
+
+    fout = stdout;
+    i = 1;
+    while (i < argc) {
+        if (argv[i][0] == '-') {
+            if ((i + 1 < argc) && argv[i][1] == 'o' && argv[i][2] == '\0') {
+                i++;
+                if (fout == stdout) {
+                    outputfilename = argv[i];
+                    fout = fopen(argv[i], "w");
+                }
+                else {
+                    printf("Error: Option -o specified more than once.\n");
+                    PrintHelp(toolname);
+                    return 1;
+                }
+                if (!fout) {
+                    PrintError(argv[i]);
+                    return 1;
+                }
+            }
+            else {
+                PrintHelp(toolname);
+                return 1;
+            }
+        }
+        else {
+            break;
+        }
         i++;
-     }
-   else
-   {
-      fp = stdin;
-      ReadHexNumbers( fp );
-   }
-   
-   return 0;
+    }
+
+    /* Check that none of the input file names matches the output file name. */
+    if (i < argc && outputfilename) {
+        n = i;
+        while (n < argc) {
+            if (!strcmp(argv[n], outputfilename)) {
+                fprintf(stderr,
+                        "Output filename \"%s\" matches an input filename.\n\n",
+                        argv[n]);
+                PrintHelp(toolname);
+                return 1;
+            }
+            n++;
+        }
+    }
+
+    if (i < argc)
+        while (i < argc) {
+            fp = fopen(argv[i], "r");
+
+            if (!fp) {
+                PrintError(argv[i]);
+                return 1;
+            }
+            ReadHexNumbers(fp);
+            fclose(fp);
+            i++;
+        }
+    else {
+        fp = stdin;
+        ReadHexNumbers(fp);
+    }
+
+    return 0;
 }
 
+int ReadHexNumbers(FILE *fp) {
+    int d;
 
-int ReadHexNumbers( FILE *fp )
-{
-   int d;
-
-   while ( fscanf(fp,"%x",&d) == 1 )
-   {
-      fputc( (char)d, fout );
-   }
-   return 0;
+    while (fscanf(fp, "%x", &d) == 1) {
+        fputc((char)d, fout);
+    }
+    return 0;
 }
 
-
-void PrintHelp( const char *toolname )
-{
-   printf( "%s\n", toolname );
-   printf( RAT_COPYRIGHT_STATEMENT );
-   printf( RENDERMAN_COPYRIGHT_STATEMENT );
-   printf( 
-"\nUsage: %s [-o file] [filename . . .]\n"                                 \
-"   [-o file]          Output file name.  If not given, stdout is used.\n"\
-"   [filename . . .]   If no file names are given then %s\n"              \
-"                      will use standard input.\n", toolname, toolname );
-   return;
+void PrintHelp(const char *toolname) {
+    printf("%s\n", toolname);
+    printf(RAT_COPYRIGHT_STATEMENT);
+    printf(RENDERMAN_COPYRIGHT_STATEMENT);
+    printf(
+        "\nUsage: %s [-o file] [filename . . .]\n"
+        "   [-o file]          Output file name.  If not given, stdout is used.\n"
+        "   [filename . . .]   If no file names are given then %s\n"
+        "                      will use standard input.\n",
+        toolname, toolname);
+    return;
 }
 
-
-void PrintVersion( const char *toolname )
-{
-   printf( "%s %s\n", toolname, AFFINE_VERSION );
-   printf( RAT_COPYRIGHT_STATEMENT );
-   printf( RENDERMAN_COPYRIGHT_STATEMENT );
+void PrintVersion(const char *toolname) {
+    printf("%s %s\n", toolname, AFFINE_VERSION);
+    printf(RAT_COPYRIGHT_STATEMENT);
+    printf(RENDERMAN_COPYRIGHT_STATEMENT);
 }
 
-
-void PrintError( char *file )
-{
-   printf( "Error:  Couldn't open file: %s\n", file );
+void PrintError(char *file) {
+    printf("Error:  Couldn't open file: %s\n", file);
 }
